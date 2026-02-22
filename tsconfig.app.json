@@ -1,38 +1,42 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "useDefineForClassFields": true,
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "module": "ESNext",
-        "skipLibCheck": true,
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
 
-        /* Bundler mode */
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "isolatedModules": true,
-        "moduleDetection": "force",
-        "noEmit": true,
-        "jsx": "react-jsx",
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
 
-        /* Linting */
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
 
-        /* Path aliasing */
-        "baseUrl": "./src",
-        "paths": {
-            "@assets/*": ["assets/*"],
-            "@constant": ["constant/index"],
-            "@theme": ["theme/index"],
-            "@component": ["component/index"],
-            "@container": ["container/index"],
-            "@layout": ["layout/index"],
-            "@util": ["util/index"],
-            "@hook": ["hook/index"],
-            "@service": ["service/index"]
-        }
-    },
-    "include": ["src"]
+    /* Path aliasing */
+    "baseUrl": "./src",
+    "paths": {
+      "@assets/*": ["assets/*"],
+      "@constant": ["constant/index"],
+      "@theme": ["theme/index"],
+      "@component": ["component/index"],
+      "@container": ["container/index"],
+      "@layout": ["layout/index"],
+      "@util": ["util/index"],
+      "@hook": ["hook/index"],
+      "@service": ["service/index"],
+      "@context": ["context/index"],
+      "@hook": ["hook/index"],
+      "@page": ["page/index"],
+      "@type": ["type/index"]
+    }
+  },
+  "include": ["src"]
 }
