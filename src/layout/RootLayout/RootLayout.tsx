@@ -17,14 +17,14 @@ export const RootLayout = () => {
 
         if (accessToken) {
             if (isPublicPath || location.pathname === '/') {
-                navigate(PATHS.PROJECTS, { replace: true });
+                void navigate(PATHS.PROJECTS, { replace: true });
             }
         } else {
             if (!isPublicPath) {
-                navigate(PATHS.LOGIN, { replace: true });
+                void navigate(PATHS.LOGIN, { replace: true });
             }
         }
-    }, [accessToken, location.pathname]);
+    }, [accessToken, location.pathname, navigate]);
 
     return (
         <RootContainer>

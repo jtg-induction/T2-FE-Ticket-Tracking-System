@@ -33,7 +33,7 @@ export const RegisterForm = () => {
         handleSubmit,
     } = useRegisterForm(tokenFromUrl, async (data) => {
         await registerApi(data);
-        navigate(PATHS.LOGIN, {
+        void navigate(PATHS.LOGIN, {
             state: { message: 'Registration complete! Please log in.' },
         });
     });
@@ -48,7 +48,13 @@ export const RegisterForm = () => {
 
     return (
         <RegisterContainer>
-            <RegisterInner component="form" onSubmit={handleSubmit} noValidate>
+            <RegisterInner
+                component="form"
+                onSubmit={(e) => {
+                    void handleSubmit(e);
+                }}
+                noValidate
+            >
                 <Typography variant="h3" fontWeight={600} color="info">
                     Create Account
                 </Typography>

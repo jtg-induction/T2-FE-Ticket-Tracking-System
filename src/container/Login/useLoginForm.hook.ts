@@ -84,9 +84,9 @@ export function useLoginForm() {
                 password: values.password,
             });
             login(data);
-        } catch (err: any) {
-            console.error('Hook caught error:', err);
-            setFormError(err?.message || 'Login failed');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Login failed';
+            setFormError(message);
         } finally {
             setLoading(false);
         }

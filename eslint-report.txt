@@ -1,0 +1,111 @@
+yarn run v1.22.22
+$ /home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/node_modules/.bin/eslint --fix
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/container/Login/useLoginForm.hook.ts
+  87:19  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  88:20  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`  @typescript-eslint/no-unsafe-argument
+  88:25  error  Unsafe member access .message on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/container/Register/RegisterForm.tsx
+   27:5   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   28:5   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   35:23  error  Unsafe argument of type `any` assigned to a parameter of type `RegisterRequest`                                                                                     @typescript-eslint/no-unsafe-argument
+   36:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   54:11  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   74:22  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   74:30  error  Unsafe member access .firstName on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+   74:52  error  Unsafe member access .firstName on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+   75:27  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   75:35  error  Unsafe member access .firstName on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+   75:55  error  Unsafe member access .firstName on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+   89:22  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   89:30  error  Unsafe member access .lastName on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   89:51  error  Unsafe member access .lastName on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   90:27  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   90:35  error  Unsafe member access .lastName on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   90:54  error  Unsafe member access .lastName on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  104:22  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  104:30  error  Unsafe member access .jiraId on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  104:49  error  Unsafe member access .jiraId on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  105:27  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  105:35  error  Unsafe member access .jiraId on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  105:52  error  Unsafe member access .jiraId on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  120:22  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  120:30  error  Unsafe member access .password on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  120:51  error  Unsafe member access .password on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  121:27  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  121:35  error  Unsafe member access .password on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  121:54  error  Unsafe member access .password on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  136:22  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  136:30  error  Unsafe member access .confirmPassword on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+  136:58  error  Unsafe member access .confirmPassword on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+  137:27  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  137:35  error  Unsafe member access .confirmPassword on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+  137:61  error  Unsafe member access .confirmPassword on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/container/Register/useRegisterForm.hook.ts
+    5:23  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   15:10  error  Unsafe array destructuring of a tuple element with an `any` value                       @typescript-eslint/no-unsafe-assignment
+   15:40  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   16:10  error  Unsafe array destructuring of a tuple element with an `any` value                       @typescript-eslint/no-unsafe-assignment
+   16:42  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   21:22  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   25:17  error  Unsafe member access .firstName on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+   29:17  error  Unsafe member access .lastName on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   33:17  error  Unsafe member access .jiraId on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   37:17  error  Unsafe member access .password on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   40:17  error  Unsafe member access .password on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   44:17  error  Unsafe member access .confirmPassword on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+   58:17  error  Unsafe member access [name] on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+   65:23  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   65:32  error  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+   93:19  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   94:20  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`  @typescript-eslint/no-unsafe-argument
+   94:25  error  Unsafe member access .message on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  102:5   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+  103:5   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/container/Signup/SignupForm.tsx
+  31:34  error  Unsafe member access .email on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+  39:11  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/container/Signup/useSignUpForm.hook.ts
+   3:51  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  68:19  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  69:20  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`  @typescript-eslint/no-unsafe-argument
+  69:25  error  Unsafe member access .message on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/context/AuthProvider/AuthProvider.tsx
+  12:3   error    'children' is missing in props validation                                                                                                                           react/prop-types
+  31:9   error    Unexpected console statement                                                                                                                                        no-console
+  38:5   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  48:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                      react-refresh/only-export-components
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/layout/RootLayout/RootLayout.tsx
+  20:9  error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  24:9  error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  27:6  warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array                                                         react-hooks/exhaustive-deps
+
+/home/ubuntu/Documents/Ticket-Management-System-Anmol-Amit/src/service/authService/authApi.ts
+  19:11  error  Unsafe assignment of an `any` value                                                 @typescript-eslint/no-unsafe-assignment
+  41:11  error  Unsafe assignment of an `any` value                                                 @typescript-eslint/no-unsafe-assignment
+  60:11  error  Unsafe assignment of an `any` value                                                 @typescript-eslint/no-unsafe-assignment
+  63:18  error  Unsafe member access .email on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+  63:46  error  Unsafe member access .email on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+  64:29  error  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`  @typescript-eslint/no-unsafe-argument
+  64:34  error  Unsafe member access .email on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+  66:25  error  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`  @typescript-eslint/no-unsafe-argument
+  66:30  error  Unsafe member access .message on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  69:5   error  Unsafe return of a value of type `any`                                              @typescript-eslint/no-unsafe-return
+  82:11  error  Unsafe assignment of an `any` value                                                 @typescript-eslint/no-unsafe-assignment
+  85:15  error  Unsafe assignment of an `any` value                                                 @typescript-eslint/no-unsafe-assignment
+  86:18  error  Unsafe member access .token on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+  87:18  error  Unsafe member access .jira_id on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  88:18  error  Unsafe member access .password on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  89:18  error  Unsafe member access .message on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  91:25  error  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`  @typescript-eslint/no-unsafe-argument
+  94:5   error  Unsafe return of a value of type `any`                                              @typescript-eslint/no-unsafe-return
+
+✖ 89 problems (87 errors, 2 warnings)
+
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

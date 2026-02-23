@@ -29,7 +29,13 @@ export const LoginForm = () => {
 
     return (
         <LoginRoot>
-            <LoginInner component="form" onSubmit={handleSubmit} noValidate>
+            <LoginInner
+                component="form"
+                onSubmit={(e) => {
+                    void handleSubmit(e);
+                }}
+                noValidate
+            >
                 {formError && <Alert severity="error">{formError}</Alert>}
 
                 {/* Email Field */}
@@ -83,7 +89,9 @@ export const LoginForm = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    onClick={handleSubmit}
+                    onClick={(e) => {
+                        void handleSubmit(e);
+                    }}
                     disabled={loading}
                 >
                     {loading ? 'Logging in...' : 'Login'}

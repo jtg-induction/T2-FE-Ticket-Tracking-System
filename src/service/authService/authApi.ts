@@ -16,13 +16,13 @@ export const refreshAccessTokenApi = async (): Promise<RefreshResponse> => {
         credentials: 'include',
     });
 
-    const data: RefreshResponse = await response.json();
+    const data: unknown = await response.json();
 
     if (!response.ok) {
         throw new Error('Refresh failed');
     }
 
-    return data;
+    return data as RefreshResponse;
 };
 
 // Login API
@@ -38,13 +38,13 @@ export const loginApi = async (
         credentials: 'include',
     });
 
-    const data: LoginResponse = await response.json();
+    const data: unknown = await response.json();
 
     if (!response.ok) {
         throw new Error('Login failed');
     }
 
-    return data;
+    return data as LoginResponse;
 };
 
 //Signup API
@@ -57,20 +57,33 @@ export const signupApi = async (email: string): Promise<SignupResponse> => {
         body: JSON.stringify({ email }),
     });
 
-    const data = await response.json();
+    const data: unknown = await response.json();
 
     if (!response.ok) {
-        if (data.email && Array.isArray(data.email)) {
-            throw new Error(data.email[0]);
+        if (
+            data &&
+            typeof data === 'object' &&
+            data !== null &&
+            'email' in data
+        ) {
+            const emailField = (data as { email: unknown }).email;
+            if (Array.isArray(emailField)) {
+                throw new Error(String(emailField[0]));
+            }
         }
-        throw new Error(data.message || 'Signup failed');
+        const message = (data as { message?: unknown }).message;
+        throw new Error(
+            typeof message === 'string' ? message : 'Signup failed',
+        );
     }
 
-    return data;
+    return data as SignupResponse;
 };
 
 // Register API
-export const registerApi = async (request: RegisterRequest) => {
+export const registerApi = async (
+    request: RegisterRequest,
+): Promise<unknown> => {
     const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.REGISTER}`;
 
     const response = await fetch(url, {
@@ -79,15 +92,29 @@ export const registerApi = async (request: RegisterRequest) => {
         body: JSON.stringify(request),
     });
 
-    const data = await response.json();
+    const data: unknown = await response.json();
 
     if (!response.ok) {
-        const errorMsg =
-            data.token?.[0] ||
-            data.jira_id?.[0] ||
-            data.password?.[0] ||
-            data.message ||
-            'Registration failed';
+        const d = data as {
+            token?: unknown[];
+            jira_id?: unknown[];
+            password?: unknown[];
+            message?: unknown;
+        };
+        let errorMsg: string = 'Registration failed';
+        if (d.token?.[0]) {
+            const val = d.token[0];
+            errorMsg = typeof val === 'string' ? val : 'Invalid token';
+        } else if (d.jira_id?.[0]) {
+            const val = d.jira_id[0];
+            errorMsg = typeof val === 'string' ? val : 'Invalid jira_id';
+        } else if (d.password?.[0]) {
+            const val = d.password[0];
+            errorMsg = typeof val === 'string' ? val : 'Invalid password';
+        } else if (d.message) {
+            const val = d.message;
+            errorMsg = typeof val === 'string' ? val : 'Registration failed';
+        }
         throw new Error(errorMsg);
     }
 

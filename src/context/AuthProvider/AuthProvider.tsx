@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
+import PropTypes from 'prop-types';
+
 import { LoadingPage } from '@page';
 import { refreshAccessTokenApi } from '@service';
 import { LoginResponse } from '@type';
@@ -27,15 +29,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             try {
                 const data = await refreshAccessTokenApi();
                 setAccessToken(data.access);
-            } catch (error) {
-                console.error('Session expired', error);
+            } catch {
                 logout();
             } finally {
                 setIsLoading(false);
             }
         };
 
-        initAuth();
+        void initAuth();
     }, []);
 
     return (
@@ -45,11 +46,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 };
 
+AuthProvider.propTypes = {
+    children: PropTypes.node,
+};
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
 
     if (!context) {
-        throw new Error('useAuth must be used inside AuthProvider');
+        throw Error('useAuth must be used inside AuthProvider');
     }
     return context;
 };

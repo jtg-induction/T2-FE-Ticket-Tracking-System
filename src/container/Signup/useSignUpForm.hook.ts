@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
-export const useSignupForm = (onSubmitApi: (data: any) => Promise<void>) => {
+export const useSignupForm = (
+    onSubmitApi: (data: { email: string }) => Promise<void>,
+) => {
     const [values, setValues] = useState({
         email: '',
     });
@@ -65,8 +67,12 @@ export const useSignupForm = (onSubmitApi: (data: any) => Promise<void>) => {
             setLoading(true);
             await onSubmitApi(values);
             setSuccess(true);
-        } catch (err: any) {
-            setFormError(err?.message || 'Failed to send verification email');
+        } catch (err: unknown) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to send verification email';
+            setFormError(message);
         } finally {
             setLoading(false);
         }

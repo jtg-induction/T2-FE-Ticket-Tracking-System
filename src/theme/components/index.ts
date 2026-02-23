@@ -1,7 +1,7 @@
-import type { Components } from "@mui/material/styles";
+import type { Components } from '@mui/material/styles';
 
-import interVariableWoff from "@assets/fonts/inter/inter-variable.woff";
-import interVariableWoff2 from "@assets/fonts/inter/inter-variable.woff2";
+import interVariableWoff from '@assets/fonts/inter/inter-variable.woff';
+import interVariableWoff2 from '@assets/fonts/inter/inter-variable.woff2';
 
 const globalCss = `
        html {
@@ -18,22 +18,22 @@ const globalCss = `
     `;
 
 export const components: Components = {
-  MuiFormControl: {
-    styleOverrides: {
-      root: {
-        gap: 8,
-      },
+    MuiFormControl: {
+        styleOverrides: {
+            root: {
+                gap: 8,
+            },
+        },
     },
-  },
-  MuiAlert: {
-    styleOverrides: {
-      message: {
-        overflowX: "hidden",
-        textOverflow: "ellipsis",
-      },
+    MuiAlert: {
+        styleOverrides: {
+            message: {
+                overflowX: 'hidden',
+                textOverflow: 'ellipsis',
+            },
+        },
     },
-  },
-  MuiCssBaseline: {
-    styleOverrides: globalCss,
-  },
+    MuiCssBaseline: {
+        styleOverrides: globalCss,
+    },
 };

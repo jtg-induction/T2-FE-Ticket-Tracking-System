@@ -7,6 +7,6 @@ export const SidePanel = () => (
             src="/images/project-illustration.webp"
             alt=""
         />
-        <Logo component={'img'} src="/logo/logo-light.png" alt="" />
+        <Logo component={'img'} src="/src/assets/logo/logo-light.webp" alt="" />
     </SidePanelRoot>
 );

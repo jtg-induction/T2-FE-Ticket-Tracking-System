@@ -33,7 +33,13 @@ export const SignupForm = () => {
 
     return (
         <SignupRoot>
-            <SignupInner component="form" onSubmit={handleSubmit} noValidate>
+            <SignupInner
+                component="form"
+                onSubmit={(e) => {
+                    void handleSubmit(e);
+                }}
+                noValidate
+            >
                 {/* Form error*/}
                 {formError && <Alert severity="error">{formError}</Alert>}
 

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
+import { RegisterRequest } from '@type';
+
 export const useRegisterForm = (
     tokenFromUrl: string,
-    onSubmitApi: (data: any) => Promise<void>,
+    onSubmitApi: (data: RegisterRequest) => Promise<void>,
 ) => {
     const [values, setValues] = useState({
         firstName: '',
@@ -12,13 +14,13 @@ export const useRegisterForm = (
         confirmPassword: '',
     });
 
-    const [errors, setErrors] = useState<any>({});
-    const [touched, setTouched] = useState<any>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [formError, setFormError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const validate = (currentValues = values) => {
-        const newErrors: any = {};
+        const newErrors: Record<string, string> = {};
         let isValid = true;
 
         if (!currentValues.firstName) {
@@ -62,7 +64,7 @@ export const useRegisterForm = (
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name } = e.target;
-        setTouched((prev: any) => ({ ...prev, [name]: true }));
+        setTouched((prev) => ({ ...prev, [name]: true }));
         validate();
     };
 
@@ -90,8 +92,10 @@ export const useRegisterForm = (
                 password: values.password,
                 token: tokenFromUrl,
             });
-        } catch (err: any) {
-            setFormError(err?.message || 'Registration failed');
+        } catch (err: unknown) {
+            const message =
+                err instanceof Error ? err.message : 'Registration failed';
+            setFormError(message);
         } finally {
             setLoading(false);
         }
