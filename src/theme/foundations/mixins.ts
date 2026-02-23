@@ -1,7 +1,7 @@
 import type {
-    CSSProperties,
-    MixinsOptions,
-} from '@mui/material/styles/createMixins';
+  CSSProperties,
+  MixinsOptions,
+} from "@mui/material/styles/createMixins";
 
 /**
  * Creates a CSS block for clamping text to a specified number of lines
@@ -9,13 +9,13 @@ import type {
  * @returns Returns Line clamp CSS properties
  */
 const lineClamp = (lines: number = 1): CSSProperties => ({
-    display: '-webkit-box',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    flexDirection: 'column',
-    WebkitLineClamp: lines,
+  display: "-webkit-box",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  flexDirection: "column",
+  WebkitLineClamp: lines,
 });
 
 export const mixins: MixinsOptions = {
-    lineClamp,
+  lineClamp,
 };
