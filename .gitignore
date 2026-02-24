@@ -15,3 +15,15 @@ dist
 .idea
 .DS_Store
 *.sw?
+
+# --- Build Outputs ---
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# --- TypeScript & IDE Metadata ---
+.tscache/
+tsconfig.tsbuildinfo
+.eslintcache
+.vscode/*

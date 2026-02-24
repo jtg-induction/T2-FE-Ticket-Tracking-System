@@ -12,7 +12,7 @@ export const commonConfig: UserConfig = {
       output: {
         entryFileNames: "js/[name]-[hash].js",
         assetFileNames: ({ name }) => {
-          if (/\.(webp|jpe?g|png)$/.test(name ?? "")) {
+          if (/\.(webp)$/.test(name ?? "")) {
             return "assets/images/[name]-[hash][extname]";
           }
           if (/\.(woff2|ttf)$/.test(name ?? ""))
