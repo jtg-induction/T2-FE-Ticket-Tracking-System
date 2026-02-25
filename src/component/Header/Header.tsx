@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router';
 
 import { Menu as MenuIcon } from '@mui/icons-material';
-import { Avatar, Box, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 import Logo from '@assets/logo/logo-light.webp';
 import { PATHS } from '@constant';
 
-import { StyledAppBar, StyledLogo, StyledToolbar } from './Header.style';
+import {
+    StyledAppBar,
+    StyledAvatar,
+    StyledLogo,
+    StyledToolbar,
+} from './Header.style';
 import { HeaderProps } from './Header.types';
 
 export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
@@ -32,7 +37,9 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
                     onClick={() => void navigator(PATHS.PROFILE)}
                     aria-label="Go to profile"
                 >
-                    <Avatar aria-label="User avatar">{userInitial}</Avatar>
+                    <StyledAvatar aria-label="User avatar">
+                        {userInitial}
+                    </StyledAvatar>
                 </IconButton>
             </StyledToolbar>
         </StyledAppBar>
