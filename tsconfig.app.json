@@ -35,7 +35,8 @@
             "@context": ["context/index"],
             "@page": ["page/index"],
             "@type/*": ["type/*"],
-            "@type": ["type/index"]
+            "@type": ["type/index"],
+            "@store": ["store/index"]
         }
     },
     "include": ["src"]

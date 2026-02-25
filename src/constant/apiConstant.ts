@@ -5,5 +5,6 @@ export const API_CONSTANTS = {
         REGISTER: '/api/user/',
         REFRESH: '/api/login/refresh/',
         LOGOUT: '/api/logout/',
+        USER: '/api/user/',
     },
 } as const;

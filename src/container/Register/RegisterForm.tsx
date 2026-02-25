@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
-import { registerApi } from '@service';
 
 import { RegisterContainer, RegisterInner } from './registerForm.style';
 import { useRegisterForm } from './useRegisterForm.hook';
@@ -19,7 +18,6 @@ import { useRegisterForm } from './useRegisterForm.hook';
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-
     const tokenFromUrl = searchParams.get('token') || '';
 
     const {
@@ -27,14 +25,14 @@ export const RegisterForm = () => {
         errors,
         touched,
         formError,
-        loading,
+        isLoading,
         handleChange,
         handleBlur,
         handleSubmit,
-    } = useRegisterForm(tokenFromUrl, async (data) => {
-        await registerApi(data);
+    } = useRegisterForm(tokenFromUrl, () => {
         void navigate(PATHS.LOGIN, {
             state: { message: 'Registration complete! Please log in.' },
+            replace: true,
         });
     });
 
@@ -108,6 +106,24 @@ export const RegisterForm = () => {
                     </FormControl>
 
                     <FormControl fullWidth>
+                        <FormLabel>Jira API Token</FormLabel>
+                        <TextField
+                            placeholder="Jira API Token"
+                            name="jiraApiToken"
+                            value={values.jiraApiToken}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={
+                                touched.jiraApiToken && !!errors.jiraApiToken
+                            }
+                            helperText={
+                                touched.jiraApiToken && errors.jiraApiToken
+                            }
+                            fullWidth
+                        />
+                    </FormControl>
+
+                    <FormControl fullWidth>
                         <FormLabel>Password</FormLabel>
 
                         <TextField
@@ -150,10 +166,10 @@ export const RegisterForm = () => {
                     type="submit"
                     variant="contained"
                     size="large"
-                    disabled={loading}
+                    disabled={isLoading}
                     sx={{ mt: 3 }}
                 >
-                    {loading ? 'Processing...' : 'Complete Registration'}
+                    {isLoading ? 'Processing...' : 'Complete Registration'}
                 </Button>
             </RegisterInner>
         </RegisterContainer>

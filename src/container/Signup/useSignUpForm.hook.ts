@@ -1,23 +1,15 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 
-export const useSignupForm = (
-    onSubmitApi: (data: { email: string }) => Promise<void>,
-) => {
-    const [values, setValues] = useState({
-        email: '',
-    });
+import { useSignupMutation } from '@service';
+import { resolveApiError } from '@util';
 
-    const [errors, setErrors] = useState({
-        email: '',
-    });
+export const useSignupForm = () => {
+    const [signupTrigger, { isLoading, isSuccess }] = useSignupMutation();
 
-    const [touched, setTouched] = useState({
-        email: false,
-    });
-
+    const [values, setValues] = useState({ email: '' });
+    const [errors, setErrors] = useState({ email: '' });
+    const [touched, setTouched] = useState({ email: false });
     const [formError, setFormError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     const validate = (currentValues = values) => {
         const newErrors = { email: '' };
@@ -65,23 +57,14 @@ export const useSignupForm = (
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setFormError('');
-        setSuccess(false);
 
-        const isValid = validate();
-        if (!isValid) return;
+        if (!validate()) return;
 
         try {
-            setLoading(true);
-            await onSubmitApi(values);
-            setSuccess(true);
+            await signupTrigger({ email: values.email }).unwrap();
         } catch (err) {
-            const message =
-                err instanceof Error
-                    ? err.message
-                    : 'Failed to send verification email';
+            const message = resolveApiError(err);
             setFormError(message);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -90,8 +73,8 @@ export const useSignupForm = (
         errors,
         touched,
         formError,
-        success,
-        loading,
+        success: isSuccess,
+        loading: isLoading,
         handleChange,
         handleBlur,
         handleSubmit,

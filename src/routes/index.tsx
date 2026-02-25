@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 import { PATHS } from '@constant';
 import { LoginForm, RegisterForm, SignupForm } from '@container';
 import { RootLayout } from '@layout';
-import { AuthPage, ErrorPage } from '@page';
+import { AuthPage, ErrorPage, ProfilePage } from '@page';
 
 export const router = createBrowserRouter([
     {
@@ -23,6 +23,7 @@ export const router = createBrowserRouter([
             },
             // TODO: Create actual projects page
             { path: PATHS.PROJECTS, element: <Box>Projects Page</Box> },
+            { path: PATHS.PROFILE, element: <ProfilePage /> },
         ],
     },
 ]);

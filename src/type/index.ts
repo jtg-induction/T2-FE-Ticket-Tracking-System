@@ -1,8 +1,10 @@
-export type { User } from './user.type';
+export type { User, EditProfileRequest, UserResponse } from './user.type';
 export type {
     LoginRequest,
     LoginResponse,
+    RefreshResponse,
     RegisterRequest,
     SignupResponse,
-    RefreshResponse,
+    ApiErrorData,
+    ErrorResponse,
 } from './api.type';

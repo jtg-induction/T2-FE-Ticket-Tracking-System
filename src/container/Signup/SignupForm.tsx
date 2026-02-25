@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
-import { signupApi } from '@service';
 
 import { SignupInner, SignupRoot } from './signupForm.style';
 import { useSignupForm } from './useSignUpForm.hook';
@@ -27,9 +26,7 @@ export const SignupForm = () => {
         handleChange,
         handleBlur,
         handleSubmit,
-    } = useSignupForm(async (data) => {
-        await signupApi(data.email);
-    });
+    } = useSignupForm();
 
     return (
         <SignupRoot>

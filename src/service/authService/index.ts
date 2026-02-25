@@ -1,7 +1,8 @@
 export {
-    loginApi,
-    refreshAccessTokenApi,
-    registerApi,
-    signupApi,
-    logoutApi,
+    authApi,
+    useLoginMutation,
+    useLogoutMutation,
+    useRefreshMutation,
+    useRegisterMutation,
+    useSignupMutation,
 } from './authApi';

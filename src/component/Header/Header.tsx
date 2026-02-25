@@ -1,0 +1,35 @@
+import MenuIcon from '@mui/icons-material/Menu';
+import { Avatar, Box, IconButton } from '@mui/material';
+
+import logo from '@assets/logo/logo-light.webp';
+import { theme } from '@theme';
+
+import { HeaderLeft, HeaderRoot } from './header.style';
+import { HeaderProps } from './header.type';
+
+export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => (
+    <HeaderRoot>
+        <HeaderLeft direction="row">
+            <IconButton onClick={onSidebarToggle}>
+                <MenuIcon
+                    sx={{
+                        color: theme.palette.background.paper,
+                        height: 32,
+                        width: 32,
+                    }}
+                />
+            </IconButton>
+            <Box
+                component={'img'}
+                src={logo}
+                alt="Logo"
+                sx={{
+                    height: '80%',
+                }}
+            />
+        </HeaderLeft>
+        <IconButton>
+            <Avatar>{userInitial}</Avatar>
+        </IconButton>
+    </HeaderRoot>
+);

@@ -1,7 +1,9 @@
 export {
-    loginApi,
-    refreshAccessTokenApi,
-    registerApi,
-    signupApi,
-    logoutApi,
+    useLoginMutation,
+    useLogoutMutation,
+    useRefreshMutation,
+    useRegisterMutation,
+    useSignupMutation,
 } from './authService';
+
+export { useGetUserByIdQuery, useUpdateUserMutation } from './userService';

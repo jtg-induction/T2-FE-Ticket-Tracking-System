@@ -1,5 +1,9 @@
 import { User } from '@type/user.type';
 
+export interface RefreshResponse {
+    access: string;
+}
+
 export interface LoginRequest {
     email: string;
     password: string;
@@ -19,9 +23,20 @@ export interface RegisterRequest {
     last_name: string;
     password: string;
     jira_id: string;
+    jira_api_token: string;
     token: string;
 }
 
-export interface RefreshResponse {
-    access: string;
+export type FieldErrors = Record<string, string[] | string>;
+
+export interface ApiErrorData {
+    [key: string]: unknown;
+    detail?: string;
+    message?: string;
+    non_field_errors?: string[];
+}
+
+export interface ErrorResponse {
+    status: number | string;
+    data: ApiErrorData;
 }

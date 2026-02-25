@@ -18,7 +18,7 @@ import { useLoginForm } from './useLoginForm.hook';
 export const LoginForm = () => {
     const {
         values,
-        loading,
+        isLoading,
         handleChange,
         handleSubmit,
         formError,
@@ -88,9 +88,12 @@ export const LoginForm = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    disabled={loading}
+                    onClick={(e) => {
+                        void handleSubmit(e);
+                    }}
+                    disabled={isLoading}
                 >
-                    {loading ? 'Logging in...' : 'Login'}
+                    {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
                 <Typography sx={{ textAlign: 'center' }}>
                     Don&apos;t have an account?{' '}
