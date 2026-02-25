@@ -3,7 +3,8 @@ export const PATHS = {
     SIGNUP: '/signup',
     REGISTER: '/register',
     PROJECTS: '/projects',
-    PROFILE: '/profile/:id',
+    PROFILE: '/profile',
+    TASKS: '/tasks',
 } as const;
 
 const AUTH_PUBLIC_PATHS = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.REGISTER] as const;

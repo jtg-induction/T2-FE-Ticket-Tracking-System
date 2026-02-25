@@ -1,4 +1,5 @@
 export type { UserRole, EditProfileRequest, UserResponse } from './user.type';
+
 export type {
     LoginRequest,
     LoginResponse,
@@ -8,6 +9,8 @@ export type {
     RegisterFormValues,
     SignupFormValues,
 } from './auth.type';
+
+export type { ProjectRequest, Project } from './project.type';
 
 export type {
     EntityResponse,
