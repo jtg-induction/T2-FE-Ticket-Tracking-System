@@ -1,4 +1,10 @@
-export type { UserRole, EditProfileRequest, UserResponse } from './user.types';
+export type {
+    UserRole,
+    EditProfileRequest,
+    UserResponse,
+    ProjectMember,
+} from './user.types';
+
 export type {
     LoginRequest,
     LoginResponse,

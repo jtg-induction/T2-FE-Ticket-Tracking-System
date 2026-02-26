@@ -32,3 +32,16 @@ export interface UserResponse {
  * Inferred directly from the {@link profileSchema} validation.
  */
 export type EditProfileRequest = z.infer<typeof profileSchema>;
+
+/**
+ * Specific access levels or permissions assigned within the context of a project.
+ */
+export type ProjectRole = 'admin' | 'role' | 'member';
+
+/**
+ * Represents a user in the context of a specific project, extending base user.
+ */
+export interface ProjectMember extends UserResponse {
+    /** The specific role assigned to the user for this individual project. */
+    projectRole: ProjectRole;
+}

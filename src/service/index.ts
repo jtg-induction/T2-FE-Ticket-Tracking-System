@@ -15,3 +15,12 @@ export {
     useGetProjectsQuery,
     useUpdateProjectMutation,
 } from './projectsService';
+
+export {
+    useGetProjectMembersQuery,
+    useInviteMemberMutation,
+    useUpdateMemberRoleMutation,
+    useRemoveMemberMutation,
+    useAcceptInviteMutation,
+    useRejectInviteMutation,
+} from './ProjectMemberService';

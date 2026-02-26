@@ -5,3 +5,4 @@ export { ProfilePage } from './ProfilePage';
 export { ProjectPage } from './ProjectPage';
 export { TasksPage } from './TasksPage';
 export { ProjectDetailPage } from './ProjectDetailPage';
+export { AcceptInviteContainer } from './AcceptInvite';

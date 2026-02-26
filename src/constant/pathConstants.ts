@@ -5,6 +5,7 @@ export const PATHS = {
     PROJECTS: '/projects',
     PROFILE: '/profile',
     TASKS: '/tasks',
+    ACCEPT_INVITE: '/accept-invite/:token',
 } as const;
 
 const AUTH_PUBLIC_PATHS = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.REGISTER] as const;
