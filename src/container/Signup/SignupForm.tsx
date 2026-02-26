@@ -54,6 +54,7 @@ export const SignupForm = () => {
                 <FormControl sx={{ gap: 2 }}>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
+                        id="email"
                         name="email"
                         value={values.email}
                         onChange={handleChange}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, FocusEvent, FormEvent, useState } from 'react';
 
 import { useAuth } from '@context';
 import { loginApi } from '@service';
@@ -48,7 +48,7 @@ export function useLoginForm() {
         return isValid;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const newValues = { ...values, [name]: value };
 
@@ -59,7 +59,7 @@ export function useLoginForm() {
         }
     };
 
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
         const { name } = e.target;
         setTouched((prev) => ({
             ...prev,
@@ -68,7 +68,7 @@ export function useLoginForm() {
         validate();
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setFormError('');
 
@@ -84,7 +84,7 @@ export function useLoginForm() {
                 password: values.password,
             });
             login(data);
-        } catch (err: unknown) {
+        } catch (err) {
             const message = err instanceof Error ? err.message : 'Login failed';
             setFormError(message);
         } finally {

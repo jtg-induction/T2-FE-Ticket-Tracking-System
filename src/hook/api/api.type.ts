@@ -4,5 +4,5 @@ export type Request = {
     pathParams?: Record<string, string | number>;
     queryParams?: Record<string, string | number | boolean>;
     headers?: Record<string, string>;
-    body?: unknown;
+    body?: unknown; // Because response body can be of different types
 };

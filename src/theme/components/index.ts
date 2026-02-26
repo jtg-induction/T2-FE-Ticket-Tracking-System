@@ -30,6 +30,7 @@ export const components: Components = {
             message: {
                 overflowX: 'hidden',
                 textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
             },
         },
     },

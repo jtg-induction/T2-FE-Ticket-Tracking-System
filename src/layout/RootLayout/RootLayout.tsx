@@ -12,9 +12,12 @@ export const RootLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {
-        const isPublicPath = PUBLICPATHS.includes(location.pathname);
+    const isPublicPath = PUBLICPATHS.includes(location.pathname);
+    const isLoading =
+        (accessToken && (isPublicPath || location.pathname === '/')) ||
+        (!accessToken && !isPublicPath);
 
+    useEffect(() => {
         if (accessToken) {
             if (isPublicPath || location.pathname === '/') {
                 void navigate(PATHS.PROJECTS, { replace: true });
@@ -25,6 +28,8 @@ export const RootLayout = () => {
             }
         }
     }, [accessToken, location.pathname, navigate]);
+
+    if (isLoading) return null;
 
     return (
         <RootContainer>

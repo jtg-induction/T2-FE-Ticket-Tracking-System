@@ -1,13 +1,9 @@
 import { Stack, styled } from '@mui/material';
 
-export const AuthPageRoot = styled(Stack)(({ theme }) => ({
+export const AuthPageRoot = styled(Stack)(() => ({
     height: '100%',
     width: '100%',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     margin: 'auto',
-
-    [theme.breakpoints.up('xs')]: {
-        flexDirection: 'row',
-    },
 }));

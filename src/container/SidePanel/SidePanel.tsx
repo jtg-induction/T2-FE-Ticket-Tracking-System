@@ -1,3 +1,5 @@
+import logoLight from '@assets/logo/logo-light.webp';
+
 import { Illustration, Logo, SidePanelRoot } from './sidePanel.style';
 
 export const SidePanel = () => (
@@ -7,6 +9,6 @@ export const SidePanel = () => (
             src="/images/project-illustration.webp"
             alt=""
         />
-        <Logo component={'img'} src="/src/assets/logo/logo-light.webp" alt="" />
+        <Logo component={'img'} src={logoLight} alt="Logo" />
     </SidePanelRoot>
 );

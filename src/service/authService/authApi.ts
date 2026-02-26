@@ -16,13 +16,13 @@ export const refreshAccessTokenApi = async (): Promise<RefreshResponse> => {
         credentials: 'include',
     });
 
-    const data: unknown = await response.json();
+    const data = (await response.json()) as RefreshResponse;
 
     if (!response.ok) {
         throw new Error('Refresh failed');
     }
 
-    return data as RefreshResponse;
+    return data;
 };
 
 // Login API
@@ -38,13 +38,13 @@ export const loginApi = async (
         credentials: 'include',
     });
 
-    const data: unknown = await response.json();
+    const data = (await response.json()) as LoginResponse;
 
     if (!response.ok) {
         throw new Error('Login failed');
     }
 
-    return data as LoginResponse;
+    return data;
 };
 
 //Signup API
@@ -57,7 +57,7 @@ export const signupApi = async (email: string): Promise<SignupResponse> => {
         body: JSON.stringify({ email }),
     });
 
-    const data: unknown = await response.json();
+    const data = (await response.json()) as SignupResponse;
 
     if (!response.ok) {
         if (
@@ -66,18 +66,18 @@ export const signupApi = async (email: string): Promise<SignupResponse> => {
             data !== null &&
             'email' in data
         ) {
-            const emailField = (data as { email: unknown }).email;
+            const emailField = (data as { email: string }).email;
             if (Array.isArray(emailField)) {
                 throw new Error(String(emailField[0]));
             }
         }
-        const message = (data as { message?: unknown }).message;
+        const message = (data as { message?: string }).message;
         throw new Error(
             typeof message === 'string' ? message : 'Signup failed',
         );
     }
 
-    return data as SignupResponse;
+    return data;
 };
 
 // Register API
@@ -92,14 +92,15 @@ export const registerApi = async (
         body: JSON.stringify(request),
     });
 
+    // Using unknown because response body is not needed, only status matters (success/error)
     const data: unknown = await response.json();
 
     if (!response.ok) {
         const d = data as {
-            token?: unknown[];
-            jira_id?: unknown[];
-            password?: unknown[];
-            message?: unknown;
+            token?: string[];
+            jira_id?: string[];
+            password?: string[];
+            message?: string;
         };
         let errorMsg: string = 'Registration failed';
         if (d.token?.[0]) {

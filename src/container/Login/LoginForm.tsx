@@ -57,7 +57,6 @@ export const LoginForm = () => {
                         required
                         fullWidth
                         variant="outlined"
-                        color={false ? 'error' : 'primary'}
                     />
                 </FormControl>
 
@@ -70,9 +69,9 @@ export const LoginForm = () => {
                         onBlur={handleBlur}
                         error={touched.password && !!errors.password}
                         helperText={
-                            touched.password &&
-                            errors.password &&
-                            errors.password
+                            touched.password && errors.password
+                                ? errors.password
+                                : ''
                         }
                         name="password"
                         placeholder="Enter your password"
@@ -89,9 +88,6 @@ export const LoginForm = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    onClick={(e) => {
-                        void handleSubmit(e);
-                    }}
                     disabled={loading}
                 >
                     {loading ? 'Logging in...' : 'Login'}

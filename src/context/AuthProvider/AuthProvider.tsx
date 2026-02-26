@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+    createContext,
+    FC,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -10,9 +17,7 @@ import { AuthContextType } from './authProvider.type';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-    children,
-}) => {
+export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 

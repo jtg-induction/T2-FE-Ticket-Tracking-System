@@ -89,8 +89,7 @@ export const useApi = <T>(request: Request, dependencies: unknown[] = []) => {
 
     useEffect(() => {
         void execute();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [...dependencies]);
+    }, [execute, ...dependencies]);
 
     return { data, loading, error, refresh: execute };
 };

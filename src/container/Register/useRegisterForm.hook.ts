@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, FocusEvent, FormEvent, useState } from 'react';
 
 import { RegisterRequest } from '@type';
 
@@ -51,7 +51,7 @@ export const useRegisterForm = (
         return isValid;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const nextValues = { ...values, [name]: value };
         setValues(nextValues);
@@ -62,13 +62,13 @@ export const useRegisterForm = (
         }
     };
 
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
         const { name } = e.target;
         setTouched((prev) => ({ ...prev, [name]: true }));
         validate();
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         setTouched({
@@ -79,7 +79,7 @@ export const useRegisterForm = (
             confirmPassword: true,
         });
 
-        // if (!validate()) return;
+        if (!validate()) return;
 
         try {
             setLoading(true);
@@ -92,7 +92,7 @@ export const useRegisterForm = (
                 password: values.password,
                 token: tokenFromUrl,
             });
-        } catch (err: unknown) {
+        } catch (err) {
             const message =
                 err instanceof Error ? err.message : 'Registration failed';
             setFormError(message);

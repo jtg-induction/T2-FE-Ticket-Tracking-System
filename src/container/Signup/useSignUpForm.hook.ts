@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 export const useSignupForm = (
     onSubmitApi: (data: { email: string }) => Promise<void>,
@@ -39,7 +39,7 @@ export const useSignupForm = (
         return isValid;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const newValues = { ...values, [name]: value };
 
@@ -55,7 +55,7 @@ export const useSignupForm = (
         validate();
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setFormError('');
         setSuccess(false);
@@ -67,7 +67,7 @@ export const useSignupForm = (
             setLoading(true);
             await onSubmitApi(values);
             setSuccess(true);
-        } catch (err: unknown) {
+        } catch (err) {
             const message =
                 err instanceof Error
                     ? err.message

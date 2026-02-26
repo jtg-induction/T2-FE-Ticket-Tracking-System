@@ -3,4 +3,5 @@ export {
     refreshAccessTokenApi,
     registerApi,
     signupApi,
+    logoutApi,
 } from './authApi';
