@@ -2,6 +2,7 @@ import { Container, Stack, styled } from '@mui/material';
 
 export const LoginRoot = styled(Container)(({ theme }) => ({
     width: '100%',
+    overflowY: 'auto',
     flex: 3,
     backgroundColor: theme.palette.background.paper,
     [theme.breakpoints.up('lg')]: {
@@ -10,10 +11,10 @@ export const LoginRoot = styled(Container)(({ theme }) => ({
 }));
 
 export const LoginInner = styled(Stack)(() => ({
-    padding: '32px',
+    padding: 32,
     marginInline: 'auto',
-    height: '100%',
-    maxWidth: '420px',
+    minHeight: '100%',
+    maxWidth: 420,
     justifyContent: 'center',
-    gap: '20px',
+    gap: 10,
 })) as typeof Stack;

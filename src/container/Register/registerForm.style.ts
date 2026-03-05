@@ -2,17 +2,18 @@ import { styled } from '@mui/material';
 import { Container, Stack } from '@mui/system';
 
 export const RegisterContainer = styled(Container)(({ theme }) => ({
-    display: 'flex',
+    width: '100%',
+    overflowY: 'auto',
     flex: 3,
-    justifyContent: 'center',
+    padding: 28,
     backgroundColor: theme.palette.background.paper,
 }));
 
 export const RegisterInner = styled(Stack)(() => ({
-    maxWidth: '500px',
-    height: '100%',
-    width: '100%',
-    gap: '24px',
-    padding: '28px',
+    maxWidth: 500,
+    marginInline: 'auto',
+    minHeight: '100%',
+    gap: 24,
+    padding: 28,
     justifyContent: 'center',
 })) as typeof Stack;

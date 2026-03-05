@@ -14,10 +14,10 @@ export const SidePanelRoot = styled(Stack)(({ theme }) => ({
 }));
 
 export const Illustration = styled(Box)(() => ({
-    width: '500px',
+    width: 500,
     transform: 'translateX(10%)',
 })) as typeof Box;
 
 export const Logo = styled(Box)(() => ({
-    width: '300px',
+    width: 300,
 })) as typeof Box;
