@@ -24,8 +24,6 @@ export const RootLayout = () => {
     useEffect(() => {
         if (isLoading) return;
 
-        const isPublicPath = PUBLICPATHS.includes(location.pathname);
-
         if (accessToken) {
             if (isPublicPath || location.pathname === '/') {
                 void navigate(PATHS.PROJECTS);

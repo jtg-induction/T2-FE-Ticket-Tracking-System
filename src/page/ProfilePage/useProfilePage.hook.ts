@@ -6,6 +6,8 @@ import { useGetUserByIdQuery, useUpdateUserMutation } from '@service';
 import { EditProfileRequest } from '@type';
 import { resolveApiError } from '@util';
 
+import { ROLES } from './profilePage.type';
+
 export const useProfileForm = () => {
     const { id } = useParams<{ id: string }>();
     const [isEditing, setIsEditing] = useState(false);
@@ -37,10 +39,13 @@ export const useProfileForm = () => {
 
     useEffect(() => {
         if (profile) {
+            const currentRole =
+                ROLES.find((r) => r.value === profile.role)?.label ||
+                profile.role;
             setTempProfile({
                 firstName: profile.first_name || '',
                 lastName: profile.last_name || '',
-                role: profile.role || '',
+                role: currentRole,
                 dob: profile.dob || '',
                 about: profile.about || '',
                 jiraApiToken: '',
@@ -51,12 +56,15 @@ export const useProfileForm = () => {
     const handleSave = async () => {
         try {
             setSaveError('');
+            const roleCode =
+                ROLES.find((r) => r.label === tempProfile.role)?.value ||
+                tempProfile.role;
             const body: EditProfileRequest = {
                 first_name: tempProfile.firstName,
                 last_name: tempProfile.lastName,
-                role: tempProfile.role,
+                role: roleCode,
                 dob: tempProfile.dob || null,
-                about: tempProfile.about || null,
+                about: tempProfile.about,
             };
 
             if (tempProfile.jiraApiToken.trim()) {

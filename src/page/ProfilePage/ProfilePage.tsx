@@ -51,7 +51,9 @@ export const ProfilePage = () => {
                         {profile.first_name} {profile.last_name}
                     </Typography>
                     <Typography variant="h4" color="textDisabled">
-                        {profile.role}
+                        {ROLES.find((r) => r.value === profile.role)?.label ||
+                            profile.role ||
+                            'Not set'}
                     </Typography>
                 </Box>
                 {canUserEdit && (
@@ -68,7 +70,9 @@ export const ProfilePage = () => {
                                 <Button
                                     variant="contained"
                                     startIcon={<SaveIcon />}
-                                    onClick={void handleSave}
+                                    onClick={() => {
+                                        void handleSave();
+                                    }}
                                 >
                                     Save Changes
                                 </Button>
@@ -132,7 +136,10 @@ export const ProfilePage = () => {
                     value={
                         isEditing
                             ? tempProfile.role
-                            : profile?.role || 'Not set'
+                            : ROLES.find((r) => r.value === profile.role)
+                                  ?.label ||
+                              profile.role ||
+                              'Not set'
                     }
                     onChange={handleChange}
                     fullWidth
@@ -142,9 +149,9 @@ export const ProfilePage = () => {
                     select={isEditing}
                 >
                     {isEditing
-                        ? ROLES.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                  {option}
+                        ? ROLES.map((role) => (
+                              <MenuItem key={role.value} value={role.label}>
+                                  {role.label}
                               </MenuItem>
                           ))
                         : null}
