@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { API_CONSTANTS } from '@constant';
-
 import type { Request } from './api.type';
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 export const useApi = <T>(request: Request, dependencies: unknown[] = []) => {
     const [data, setData] = useState<T | null>(null);
@@ -28,7 +28,7 @@ export const useApi = <T>(request: Request, dependencies: unknown[] = []) => {
         setError(null);
 
         try {
-            const baseUrl = API_CONSTANTS.BASE_URL.replace(/\/$/, '');
+            const baseUrl = BASE_URL.replace(/\/$/, '');
             const cleanEndpoint = endpoint.startsWith('/')
                 ? endpoint
                 : `/${endpoint}`;

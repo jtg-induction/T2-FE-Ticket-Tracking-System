@@ -25,15 +25,6 @@ export const components: Components = {
             },
         },
     },
-    MuiAlert: {
-        styleOverrides: {
-            message: {
-                overflowX: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-            },
-        },
-    },
     MuiCssBaseline: {
         styleOverrides: globalCss,
     },

@@ -1,6 +1,7 @@
 import {
     blue,
     blueGrey,
+    grey,
     lightGreen,
     orange,
     red,
@@ -26,8 +27,7 @@ export const palette: PaletteOptions = {
         disabled: blueGrey[600],
     },
     background: {
-        default: blueGrey[100],
-        paper: blueGrey[50],
+        default: grey[50],
     },
     error: {
         main: red[700],

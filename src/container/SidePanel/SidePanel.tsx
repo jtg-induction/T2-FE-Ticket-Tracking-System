@@ -5,10 +5,10 @@ import { Illustration, Logo, SidePanelRoot } from './sidePanel.style';
 export const SidePanel = () => (
     <SidePanelRoot>
         <Illustration
-            component={'img'}
+            component="img"
             src="/images/project-illustration.webp"
-            alt=""
+            alt="Project illustration"
         />
-        <Logo component={'img'} src={logoLight} alt="Logo" />
+        <Logo component="img" src={logoLight} alt="Logo" />
     </SidePanelRoot>
 );

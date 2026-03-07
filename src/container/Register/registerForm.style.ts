@@ -4,7 +4,7 @@ import { Container, Stack } from '@mui/system';
 export const RegisterContainer = styled(Container)(({ theme }) => ({
     width: '100%',
     overflowY: 'auto',
-    flex: 3,
+    flex: 2,
     padding: 28,
     backgroundColor: theme.palette.background.paper,
 }));

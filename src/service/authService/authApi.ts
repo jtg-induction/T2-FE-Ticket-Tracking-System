@@ -7,9 +7,11 @@ import {
     SignupResponse,
 } from '@type';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
 // Refresh access token API
 export const refreshAccessTokenApi = async (): Promise<RefreshResponse> => {
-    const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.REFRESH}`;
+    const url = `${BASE_URL}${API_CONSTANTS.ENDPOINTS.REFRESH}`;
 
     const response = await fetch(url, {
         method: 'POST',
@@ -29,7 +31,7 @@ export const refreshAccessTokenApi = async (): Promise<RefreshResponse> => {
 export const loginApi = async (
     request: LoginRequest,
 ): Promise<LoginResponse> => {
-    const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.LOGIN}`;
+    const url = `${BASE_URL}${API_CONSTANTS.ENDPOINTS.LOGIN}`;
 
     const response = await fetch(url, {
         method: 'POST',
@@ -41,7 +43,7 @@ export const loginApi = async (
     const data = (await response.json()) as LoginResponse;
 
     if (!response.ok) {
-        throw new Error('Login failed');
+        throw new Error('Login failed lgn failed long text hello wrodld');
     }
 
     return data;
@@ -49,7 +51,7 @@ export const loginApi = async (
 
 //Signup API
 export const signupApi = async (email: string): Promise<SignupResponse> => {
-    const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.SIGNUP}`;
+    const url = `${BASE_URL}${API_CONSTANTS.ENDPOINTS.SIGNUP}`;
 
     const response = await fetch(url, {
         method: 'POST',
@@ -84,7 +86,7 @@ export const signupApi = async (email: string): Promise<SignupResponse> => {
 export const registerApi = async (
     request: RegisterRequest,
 ): Promise<unknown> => {
-    const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.REGISTER}`;
+    const url = `${BASE_URL}${API_CONSTANTS.ENDPOINTS.REGISTER}`;
 
     const response = await fetch(url, {
         method: 'POST',
@@ -124,7 +126,7 @@ export const registerApi = async (
 
 // Logout API
 export const logoutApi = async (): Promise<void> => {
-    const url = `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.LOGOUT}`;
+    const url = `${BASE_URL}${API_CONSTANTS.ENDPOINTS.LOGOUT}`;
 
     const response = await fetch(url, {
         method: 'POST',

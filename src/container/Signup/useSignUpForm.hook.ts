@@ -26,6 +26,9 @@ export const useSignupForm = (
         if (!currentValues.email) {
             newErrors.email = 'Email is required';
             isValid = false;
+        } else if (currentValues.email.length > 255) {
+            newErrors.email = 'Email must be 255 characters or less';
+            isValid = false;
         } else if (
             !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
                 currentValues.email,
@@ -40,13 +43,17 @@ export const useSignupForm = (
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const newValues = { ...values, [name]: value };
+        if (success) setSuccess(false);
+        if (formError) setFormError('');
+        if (!loading) {
+            const { name, value } = e.target;
+            const newValues = { ...values, [name]: value };
 
-        setValues(newValues);
+            setValues(newValues);
 
-        if (touched.email) {
-            validate(newValues);
+            if (touched.email) {
+                validate(newValues);
+            }
         }
     };
 

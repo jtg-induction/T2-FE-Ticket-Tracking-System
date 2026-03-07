@@ -73,7 +73,11 @@ export const SignupForm = () => {
                     variant="contained"
                     disabled={loading || success}
                 >
-                    {loading ? 'Sending...' : 'Send Verification Email'}
+                    {loading
+                        ? 'Sending...'
+                        : success
+                          ? 'Verification Email sent'
+                          : 'Send Verification Email'}
                 </Button>
                 <Typography sx={{ textAlign: 'center' }}>
                     Already have an account?{' '}
