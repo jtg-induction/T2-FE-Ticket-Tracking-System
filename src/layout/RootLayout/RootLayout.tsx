@@ -41,13 +41,16 @@ export const RootLayout = () => {
 
     return (
         <RootContainer>
+            {/* TODO: Add logic to hide header when we are on Auth page */}
             <Header userInitial="U" onSidebarToggle={() => {}} />
             <Box
                 sx={{
                     position: 'fixed',
-                    height: '100%',
-                    width: '100%',
                     top: LAYOUT.HEADER,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    overflowY: 'auto',
                 }}
             >
                 <Outlet />

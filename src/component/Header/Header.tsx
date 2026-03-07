@@ -10,7 +10,7 @@ import { HeaderProps } from './header.type';
 export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => (
     <HeaderRoot>
         <HeaderLeft direction="row">
-            <IconButton onClick={onSidebarToggle}>
+            <IconButton aria-label="Toggle sidebar" onClick={onSidebarToggle}>
                 <MenuIcon
                     sx={{
                         color: theme.palette.background.paper,
@@ -28,8 +28,9 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => (
                 }}
             />
         </HeaderLeft>
+        {/* TODO: Add actual logic for avatar click */}
         <IconButton>
-            <Avatar>{userInitial}</Avatar>
+            <Avatar aria-label="User avatar">{userInitial}</Avatar>
         </IconButton>
     </HeaderRoot>
 );

@@ -110,6 +110,8 @@ export const RegisterForm = () => {
                         <TextField
                             placeholder="Jira API Token"
                             name="jiraApiToken"
+                            type="password"
+                            autoComplete="new-password"
                             value={values.jiraApiToken}
                             onChange={handleChange}
                             onBlur={handleBlur}

@@ -8,8 +8,6 @@ import {
     SignupResponse,
 } from '@type';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
-
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginRequest>({
@@ -31,7 +29,7 @@ export const authApi = baseApi.injectEndpoints({
 
         register: builder.mutation<unknown, RegisterRequest>({
             query: (body) => ({
-                url: API_CONSTANTS.ENDPOINTS.REGISTER,
+                url: API_CONSTANTS.ENDPOINTS.USER,
                 method: 'POST',
                 body,
             }),
@@ -41,6 +39,7 @@ export const authApi = baseApi.injectEndpoints({
             query: () => ({
                 url: API_CONSTANTS.ENDPOINTS.LOGOUT,
                 method: 'POST',
+                credentials: 'include',
             }),
         }),
 

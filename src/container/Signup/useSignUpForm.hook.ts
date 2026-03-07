@@ -35,9 +35,8 @@ export const useSignupForm = () => {
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (success) setSuccess(false);
         if (formError) setFormError('');
-        if (!loading) {
+        if (!isLoading) {
             const { name, value } = e.target;
             const newValues = { ...values, [name]: value };
 

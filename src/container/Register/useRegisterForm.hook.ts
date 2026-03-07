@@ -25,12 +25,13 @@ export const useRegisterForm = (
     const validate = (currentValues = values) => {
         const newErrors: Record<string, string> = {};
 
-        if (!currentValues.firstName)
+        if (!currentValues.firstName.trim())
             newErrors.firstName = 'First name is required';
-        if (!currentValues.lastName)
+        if (!currentValues.lastName.trim())
             newErrors.lastName = 'Last name is required';
-        if (!currentValues.jiraId) newErrors.jiraId = 'Jira ID is required';
-        if (!currentValues.jiraApiToken)
+        if (!currentValues.jiraId.trim())
+            newErrors.jiraId = 'Jira ID is required';
+        if (!currentValues.jiraApiToken.trim())
             newErrors.jiraApiToken = 'Jira API Token is required';
         if (!currentValues.password) {
             newErrors.password = 'Password is required';

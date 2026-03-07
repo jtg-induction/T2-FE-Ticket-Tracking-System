@@ -7,6 +7,7 @@ export const HeaderRoot = styled(Box)(({ theme }) => ({
     top: 0,
     height: LAYOUT.HEADER,
     maxHeight: LAYOUT.HEADER,
+    boxSizing: 'border-box',
     width: '100%',
     zIndex: theme.zIndex.appBar,
     display: 'flex',

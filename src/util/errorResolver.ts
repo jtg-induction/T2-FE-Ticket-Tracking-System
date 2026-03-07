@@ -10,8 +10,12 @@ export const resolveApiError = (error: unknown): string => {
     }
 
     if (typeof error === 'object' && error !== null && 'data' in error) {
-        const fbqError = error as FetchBaseQueryError;
+        const fbqError = error as FetchBaseQueryError & { error?: string };
         const errorData = fbqError.data;
+
+        if (typeof errorData === 'string' && errorData.trim()) {
+            return errorData;
+        }
 
         if (
             errorData &&
@@ -33,6 +37,10 @@ export const resolveApiError = (error: unknown): string => {
             if (typeof firstError === 'string') {
                 return firstError;
             }
+        }
+
+        if (typeof fbqError.error === 'string' && fbqError.error.trim()) {
+            return fbqError.error;
         }
     }
 

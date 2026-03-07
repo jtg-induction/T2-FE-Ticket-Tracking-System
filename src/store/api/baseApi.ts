@@ -1,6 +1,5 @@
 import { Mutex } from 'async-mutex';
 
-import { API_CONSTANTS } from '@constant';
 import {
     BaseQueryFn,
     createApi,
@@ -8,13 +7,14 @@ import {
     fetchBaseQuery,
     FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { RootState } from '@store';
+import type { RootState } from '@store';
 import { logOut, setCredentials } from '@store';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 const mutex = new Mutex();
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: API_CONSTANTS.BASE_URL,
+    baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.accessToken;
         if (token && !headers.has('authorization')) {

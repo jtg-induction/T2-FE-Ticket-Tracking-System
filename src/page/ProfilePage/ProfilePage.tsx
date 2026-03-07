@@ -15,6 +15,8 @@ import {
     Typography,
 } from '@mui/material';
 
+import { ROLES } from '@constant';
+
 import {
     FormGrid,
     FullWidthItem,
@@ -22,7 +24,6 @@ import {
     StyledContainer,
     TextFieldStyle,
 } from './profilePage.style';
-import { ROLES } from './profilePage.type';
 import { useProfileForm } from './useProfilePage.hook';
 
 export const ProfilePage = () => {
@@ -117,7 +118,7 @@ export const ProfilePage = () => {
                     sx={TextFieldStyle}
                 />
                 <TextField
-                    label={isEditing ? null : 'DateBirth'}
+                    label="Date of Birth"
                     name="dob"
                     type={isEditing ? 'date' : 'text'}
                     value={
@@ -128,6 +129,11 @@ export const ProfilePage = () => {
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
                     sx={TextFieldStyle}
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        },
+                    }}
                 />
 
                 <TextField
@@ -150,7 +156,7 @@ export const ProfilePage = () => {
                 >
                     {isEditing
                         ? ROLES.map((role) => (
-                              <MenuItem key={role.value} value={role.label}>
+                              <MenuItem key={role.value} value={role.value}>
                                   {role.label}
                               </MenuItem>
                           ))
@@ -180,12 +186,17 @@ export const ProfilePage = () => {
                             label="Jira API Token"
                             name="jiraApiToken"
                             type="password"
-                            placeholder="Enter new token to update (leave blank to keep current)"
                             value={tempProfile.jiraApiToken}
                             onChange={handleChange}
                             fullWidth
                             variant="outlined"
                             sx={TextFieldStyle}
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                            }}
+                            placeholder="••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••"
                         />
                     </FullWidthItem>
                 )}

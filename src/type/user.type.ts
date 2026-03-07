@@ -1,8 +1,12 @@
+import { ROLES } from '@constant';
+
+export type UserRole = (typeof ROLES)[number]['value'];
+
 export interface User {
     user_id: string;
     email: string;
     first_name: string;
-    role: 'SD' | 'Admin' | 'User';
+    role: UserRole;
     jira_id: string;
 }
 
@@ -13,7 +17,7 @@ export interface UserResponse {
     first_name: string;
     last_name: string;
     about: string | null;
-    role: string;
+    role: UserRole;
     dob: string | null;
     created_at: string;
     canEdit: boolean;
@@ -23,7 +27,7 @@ export interface EditProfileRequest {
     first_name: string;
     last_name: string;
     about: string | null;
-    role: string;
+    role: UserRole;
     dob: string | null;
     jira_api_token?: string;
 }

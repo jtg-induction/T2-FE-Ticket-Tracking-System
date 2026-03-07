@@ -13,7 +13,7 @@ export const RegisterInner = styled(Stack)(() => ({
     maxWidth: 500,
     marginInline: 'auto',
     minHeight: '100%',
-    gap: 24,
+    gap: 8,
     padding: 28,
     justifyContent: 'center',
 })) as typeof Stack;
