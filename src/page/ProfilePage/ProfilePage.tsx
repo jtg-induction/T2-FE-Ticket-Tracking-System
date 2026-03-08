@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import { ROLES } from '@constant';
+import { convertIsoToDateYear } from '@util';
 
 import {
     FormGrid,
@@ -60,7 +61,12 @@ export const ProfilePage = () => {
                 {canUserEdit && (
                     <>
                         {isEditing ? (
-                            <Stack direction="row" gap={8} mt={8}>
+                            <Stack
+                                direction={{ xs: 'column', sm: 'row' }}
+                                gap={{ sm: 8 }}
+                                mt={8}
+                                flexWrap="wrap"
+                            >
                                 <Button
                                     startIcon={<CloseIcon />}
                                     onClick={handleToggleEdit}
@@ -122,7 +128,9 @@ export const ProfilePage = () => {
                     name="dob"
                     type={isEditing ? 'date' : 'text'}
                     value={
-                        isEditing ? tempProfile.dob : profile?.dob || 'Not set'
+                        isEditing
+                            ? tempProfile.dob
+                            : convertIsoToDateYear(profile?.dob || '')
                     }
                     onChange={handleChange}
                     fullWidth

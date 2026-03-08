@@ -9,7 +9,7 @@ export const TextFieldStyle = {
         borderRadius: 2,
     },
     [`&& .${filledInputClasses.root}`]: {
-        backgroundColor: theme.palette.grey[300],
+        backgroundColor: theme.palette.grey[200],
     },
     [`&& .${inputBaseClasses.input}`]: {
         minHeight: 40,
