@@ -36,7 +36,9 @@
             "@page": ["page/index"],
             "@type/*": ["type/*"],
             "@type": ["type/index"],
-            "@store": ["store/index"]
+            "@store": ["store/index"],
+            "@store-logic": ["store/auth/index"],
+            "@schema": ["schema/index"]
         }
     },
     "include": ["src"]

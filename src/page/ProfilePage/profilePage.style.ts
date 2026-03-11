@@ -1,9 +1,7 @@
 import { Box, filledInputClasses, inputBaseClasses } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, Theme } from '@mui/material/styles';
 
-import { theme } from '@theme';
-
-export const TextFieldStyle = {
+export const getTextFieldStyle = (theme: Theme) => ({
     [`&& .${inputBaseClasses.root}`]: {
         color: theme.palette.common.black,
         borderRadius: 2,
@@ -19,26 +17,27 @@ export const TextFieldStyle = {
         borderBottomStyle: 'none',
         borderRadius: 2,
     },
-};
-export const StyledContainer = styled(Box)(() => ({
+});
+
+export const StyledContainer = styled(Box)(({ theme }) => ({
     height: '100%',
     width: '100%',
-    paddingBlock: theme.spacing(10),
-    paddingInline: theme.spacing(60),
+    paddingBlock: 10,
+    paddingInline: 60,
     backgroundColor: theme.palette.background.paper,
     [theme.breakpoints.down('md')]: {
-        padding: theme.spacing(10),
+        padding: 10,
     },
     [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(6),
+        padding: 6,
     },
-}));
+})) as typeof Box;
 
-export const FormGrid = styled(Box)(() => ({
+export const FormGrid = styled(Box)(({ theme }) => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: theme.spacing(8),
-    marginTop: theme.spacing(8),
+    gap: 8,
+    marginTop: 8,
     [theme.breakpoints.down('sm')]: {
         gridTemplateColumns: '1fr',
     },
@@ -52,5 +51,5 @@ export const HeadingBox = styled(Box)(() => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing(8),
+    marginBottom: 8,
 }));

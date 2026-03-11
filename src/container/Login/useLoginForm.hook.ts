@@ -1,76 +1,63 @@
-import { ChangeEvent, FocusEvent, FormEvent, useState } from 'react';
+import { useState } from 'react';
+
+import { useForm } from 'react-hook-form';
 
 import { useAppDispatch } from '@hook';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@schema';
 import { useLoginMutation } from '@service';
 import { setCredentials } from '@store';
-import { resolveApiError } from '@util';
+import { ErrorResponse, LoginRequest } from '@type';
 
 export function useLoginForm() {
     const dispatch = useAppDispatch();
-
     const [loginTrigger, { isLoading }] = useLoginMutation();
+    const [formError, setFormError] = useState<string>('');
 
-    const [values, setValues] = useState({ email: '', password: '' });
-    const [errors, setErrors] = useState({ email: '', password: '' });
-    const [touched, setTouched] = useState({ email: false, password: false });
-    const [formError, setFormError] = useState('');
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors },
+    } = useForm<LoginRequest>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { email: '', password: '' },
+    });
 
-    const validate = (currentValues = values) => {
-        const newErrors = { email: '', password: '' };
-        let isValid = true;
-        if (!currentValues.email) {
-            newErrors.email = 'Email is required';
-            isValid = false;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentValues.email)) {
-            newErrors.email = 'Invalid email format';
-            isValid = false;
-        }
-        if (!currentValues.password) {
-            newErrors.password = 'Password is required';
-            isValid = false;
-        }
-        setErrors(newErrors);
-        return isValid;
-    };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const newValues = { ...values, [name]: value };
-        setValues(newValues);
-        if (touched[name as 'email' | 'password']) validate(newValues);
-    };
-
-    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-        const { name } = e.target;
-        setTouched((prev) => ({ ...prev, [name]: true }));
-        validate();
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (values: LoginRequest) => {
         setFormError('');
-        setTouched({ email: true, password: true });
-
-        if (!validate()) return;
-
         try {
             const data = await loginTrigger(values).unwrap();
-
             dispatch(setCredentials(data.access));
         } catch (err) {
-            const errorMessage = resolveApiError(err);
-            setFormError(errorMessage);
+            const apiError = err as ErrorResponse;
+
+            if (apiError.errors) {
+                const allErrorMessages = Object.values(apiError.errors).flat();
+
+                if (allErrorMessages.length > 0) {
+                    setFormError(allErrorMessages[0]);
+                }
+            } else {
+                setFormError(apiError.message || 'Login failed');
+            }
+
+            if (apiError.errors) {
+                Object.entries(apiError.errors).forEach(([key, messages]) => {
+                    setError(key as keyof LoginRequest, {
+                        type: 'server',
+                        message: messages[0],
+                    });
+                });
+            }
         }
     };
 
     return {
-        values,
+        register,
+        handleSubmit: handleSubmit(onSubmit),
         errors,
-        touched,
         formError,
         isLoading,
-        handleChange,
-        handleBlur,
-        handleSubmit,
     };
 }

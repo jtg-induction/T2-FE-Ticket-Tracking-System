@@ -13,6 +13,7 @@ import {
     TextField,
     Tooltip,
     Typography,
+    useTheme,
 } from '@mui/material';
 
 import { ROLES } from '@constant';
@@ -21,32 +22,41 @@ import { convertIsoToDateYear } from '@util';
 import {
     FormGrid,
     FullWidthItem,
+    getTextFieldStyle,
     HeadingBox,
     StyledContainer,
-    TextFieldStyle,
 } from './profilePage.style';
 import { useProfileForm } from './useProfilePage.hook';
 
 export const ProfilePage = () => {
+    const theme = useTheme();
     const {
         profile,
-        tempProfile,
         isEditing,
         canUserEdit,
         loading,
         fetchError,
         saveError,
         handleToggleEdit,
-        handleChange,
         handleSave,
+        register,
+        errors,
+        formValues,
+        isDirty,
     } = useProfileForm();
 
     if (loading && !profile) return <Typography>Loading Profile...</Typography>;
-    if (fetchError) return <Typography color="error">{fetchError}</Typography>;
-    if (!profile) return <Typography>No profile found.</Typography>;
+    if (fetchError || !profile)
+        return <Typography color="error">Error loading profile</Typography>;
 
     return (
-        <StyledContainer>
+        <StyledContainer
+            component="form"
+            onSubmit={(e) => {
+                void handleSave(e);
+            }}
+            noValidate
+        >
             <HeadingBox>
                 <Box>
                     <Typography variant="h3" fontWeight={700}>
@@ -54,36 +64,30 @@ export const ProfilePage = () => {
                     </Typography>
                     <Typography variant="h4" color="textDisabled">
                         {ROLES.find((r) => r.value === profile.role)?.label ||
-                            profile.role ||
-                            'Not set'}
+                            profile.role}
                     </Typography>
                 </Box>
                 {canUserEdit && (
-                    <>
+                    <Stack direction="row" gap={2}>
                         {isEditing ? (
-                            <Stack
-                                direction={{ xs: 'column', sm: 'row' }}
-                                gap={{ sm: 8 }}
-                                mt={8}
-                                flexWrap="wrap"
-                            >
+                            <>
                                 <Button
+                                    variant="outlined"
                                     startIcon={<CloseIcon />}
                                     onClick={handleToggleEdit}
-                                    color="inherit"
+                                    color="error"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     variant="contained"
+                                    type="submit"
                                     startIcon={<SaveIcon />}
-                                    onClick={() => {
-                                        void handleSave();
-                                    }}
+                                    disabled={loading || !isDirty}
                                 >
-                                    Save Changes
+                                    {loading ? 'Saving...' : 'Save Changes'}
                                 </Button>
-                            </Stack>
+                            </>
                         ) : (
                             <Tooltip title="Edit Profile">
                                 <Fab
@@ -95,72 +99,61 @@ export const ProfilePage = () => {
                                 </Fab>
                             </Tooltip>
                         )}
-                    </>
+                    </Stack>
                 )}
             </HeadingBox>
             <Divider sx={{ my: 10 }} />
             <FormGrid>
                 <TextField
                     label="First Name"
-                    name="firstName"
-                    value={
-                        isEditing ? tempProfile.firstName : profile.first_name
-                    }
-                    onChange={handleChange}
+                    {...register('first_name')}
+                    error={!!errors.first_name}
+                    helperText={errors.first_name?.message}
                     fullWidth
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
-                    sx={TextFieldStyle}
+                    sx={getTextFieldStyle(theme)}
                 />
                 <TextField
                     label="Last Name"
-                    name="lastName"
-                    type="text"
-                    value={isEditing ? tempProfile.lastName : profile.last_name}
-                    onChange={handleChange}
+                    {...register('last_name')}
+                    error={!!errors.last_name}
+                    helperText={errors.last_name?.message}
                     fullWidth
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
-                    sx={TextFieldStyle}
+                    sx={getTextFieldStyle(theme)}
                 />
                 <TextField
                     label="Date of Birth"
-                    name="dob"
+                    {...(isEditing && register('dob'))}
+                    {...(!isEditing && {
+                        value: profile.dob
+                            ? convertIsoToDateYear(profile.dob)
+                            : 'Not set',
+                    })}
                     type={isEditing ? 'date' : 'text'}
-                    value={
-                        isEditing
-                            ? tempProfile.dob
-                            : convertIsoToDateYear(profile?.dob || '')
-                    }
-                    onChange={handleChange}
                     fullWidth
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
-                    sx={TextFieldStyle}
-                    slotProps={{
-                        inputLabel: {
-                            shrink: true,
-                        },
-                    }}
+                    sx={getTextFieldStyle(theme)}
+                    slotProps={{ inputLabel: { shrink: true } }}
                 />
 
                 <TextField
                     label="Role"
-                    name="role"
-                    value={
-                        isEditing
-                            ? tempProfile.role
-                            : ROLES.find((r) => r.value === profile.role)
-                                  ?.label ||
-                              profile.role ||
-                              'Not set'
-                    }
-                    onChange={handleChange}
+                    {...(isEditing && register('role'))}
+                    select={isEditing}
                     fullWidth
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
-                    sx={TextFieldStyle}
-                    select={isEditing}
+                    sx={getTextFieldStyle(theme)}
+                    value={
+                        !isEditing
+                            ? ROLES.find((r) => r.value === profile.role)
+                                  ?.label || profile.role
+                            : formValues.role || ''
+                    }
                 >
                     {isEditing
                         ? ROLES.map((role) => (
@@ -172,54 +165,45 @@ export const ProfilePage = () => {
                 </TextField>
                 <TextField
                     label="Email"
-                    name="email"
                     value={profile.email}
                     fullWidth
                     disabled
                     variant="filled"
-                    sx={TextFieldStyle}
+                    sx={getTextFieldStyle(theme)}
                 />
                 <TextField
                     label="Jira ID"
-                    name="jiraId"
                     value={profile.jira_id}
                     fullWidth
                     disabled
                     variant="filled"
-                    sx={TextFieldStyle}
+                    sx={getTextFieldStyle(theme)}
                 />
+
                 {isEditing && (
                     <FullWidthItem>
                         <TextField
                             label="Jira API Token"
-                            name="jiraApiToken"
+                            {...register('jira_api_token')}
                             type="password"
-                            value={tempProfile.jiraApiToken}
-                            onChange={handleChange}
                             fullWidth
-                            variant="outlined"
-                            sx={TextFieldStyle}
-                            slotProps={{
-                                inputLabel: {
-                                    shrink: true,
-                                },
-                            }}
-                            placeholder="••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••"
+                            sx={getTextFieldStyle(theme)}
+                            placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
+                            slotProps={{ inputLabel: { shrink: true } }}
                         />
                     </FullWidthItem>
                 )}
+
                 <FullWidthItem>
                     <TextField
                         label="About"
-                        name="about"
-                        value={isEditing ? tempProfile.about : profile.about}
-                        onChange={handleChange}
+                        {...register('about')}
                         fullWidth
                         multiline
                         rows={4}
                         disabled={!isEditing}
                         variant={isEditing ? 'outlined' : 'filled'}
-                        sx={TextFieldStyle}
+                        sx={getTextFieldStyle(theme)}
                     />
                 </FullWidthItem>
             </FormGrid>
@@ -231,9 +215,7 @@ export const ProfilePage = () => {
                     justifyContent: 'center',
                 }}
             >
-                <Alert severity="error" variant="filled">
-                    {saveError}
-                </Alert>
+                <Alert severity="error">{saveError}</Alert>
             </Snackbar>
         </StyledContainer>
     );

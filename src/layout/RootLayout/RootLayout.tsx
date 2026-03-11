@@ -45,7 +45,7 @@ export const RootLayout = () => {
             <Header userInitial="U" onSidebarToggle={() => {}} />
             <Box
                 sx={{
-                    position: 'fixed',
+                    height: '100%',
                     top: LAYOUT.HEADER,
                     left: 0,
                     right: 0,

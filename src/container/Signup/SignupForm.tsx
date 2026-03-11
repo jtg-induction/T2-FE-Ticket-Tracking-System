@@ -17,15 +17,13 @@ import { useSignupForm } from './useSignUpForm.hook';
 
 export const SignupForm = () => {
     const {
-        values,
+        register,
+        handleSubmit,
         errors,
-        touched,
         formError,
+        emailValue,
         success,
         loading,
-        handleChange,
-        handleBlur,
-        handleSubmit,
     } = useSignupForm();
 
     return (
@@ -37,30 +35,29 @@ export const SignupForm = () => {
                 }}
                 noValidate
             >
-                {/* Form error*/}
-                {formError && <Alert severity="error">{formError}</Alert>}
-
-                {/* Success message */}
-                {success && (
-                    <Alert severity="success">
-                        Verification email sent to {values.email}
+                {formError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {formError}
                     </Alert>
                 )}
 
-                {/* Email Field */}
-                <FormControl sx={{ gap: 2 }}>
+                {success && (
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                        Verification email sent to {emailValue}
+                    </Alert>
+                )}
+
+                <FormControl fullWidth sx={{ mb: 2 }}>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
+                        {...register('email')}
                         id="email"
-                        name="email"
-                        value={values.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.email && !!errors.email}
-                        helperText={touched.email && errors.email}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                         placeholder="your@email.com"
                         fullWidth
                         required
+                        disabled={loading || success}
                     />
                 </FormControl>
 
@@ -76,7 +73,8 @@ export const SignupForm = () => {
                           ? 'Verification Email sent'
                           : 'Send Verification Email'}
                 </Button>
-                <Typography sx={{ textAlign: 'center' }}>
+
+                <Typography sx={{ textAlign: 'center', mt: 2 }}>
                     Already have an account?{' '}
                     <Link
                         component={ReactLink}

@@ -1,3 +1,5 @@
+export { baseApi } from './apiService';
+
 export {
     useLoginMutation,
     useLogoutMutation,

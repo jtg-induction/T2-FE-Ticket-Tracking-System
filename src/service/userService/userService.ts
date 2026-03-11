@@ -1,5 +1,5 @@
 import { API_CONSTANTS } from '@constant';
-import { baseApi } from '@store';
+import { baseApi } from '@service';
 import { EditProfileRequest, UserResponse } from '@type';
 
 export const userApi = baseApi.injectEndpoints({

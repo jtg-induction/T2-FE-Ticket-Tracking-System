@@ -1,33 +1,35 @@
-import { ROLES } from '@constant';
+import { z } from 'zod';
 
+import { ROLES } from '@constant';
+import { profileSchema } from '@schema';
+
+/**
+ * Valid string values for user roles extracted from the ROLES constant.
+ */
 export type UserRole = (typeof ROLES)[number]['value'];
 
-export interface User {
-    user_id: string;
-    email: string;
-    first_name: string;
-    role: UserRole;
-    jira_id: string;
-}
-
+/**
+ * Complete user profile data returned by the API.
+ */
 export interface UserResponse {
     user_id: string;
     email: string;
     jira_id: string;
     first_name: string;
     last_name: string;
+    /** Short bio or description. */
     about: string | null;
+    /** Role of the user in their company. */
     role: UserRole;
+    /** Date of birth in ISO format or null. */
     dob: string | null;
     created_at: string;
-    canEdit: boolean;
+    /** Permissions flag indicating if the current requester can modify this profile. */
+    can_edit: boolean;
 }
 
-export interface EditProfileRequest {
-    first_name: string;
-    last_name: string;
-    about: string | null;
-    role: UserRole;
-    dob: string | null;
-    jira_api_token?: string;
-}
+/**
+ * The data structure for updating a user profile.
+ * Inferred directly from the {@link profileSchema} validation.
+ */
+export type EditProfileRequest = z.infer<typeof profileSchema>;

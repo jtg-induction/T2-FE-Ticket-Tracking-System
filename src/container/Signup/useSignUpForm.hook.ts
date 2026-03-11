@@ -1,81 +1,64 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { useState } from 'react';
 
+import { useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signupSchema } from '@schema';
 import { useSignupMutation } from '@service';
-import { resolveApiError } from '@util';
+import { ErrorResponse, SignupFormValues } from '@type';
 
 export const useSignupForm = () => {
     const [signupTrigger, { isLoading, isSuccess }] = useSignupMutation();
-
-    const [values, setValues] = useState({ email: '' });
-    const [errors, setErrors] = useState({ email: '' });
-    const [touched, setTouched] = useState({ email: false });
     const [formError, setFormError] = useState('');
 
-    const validate = (currentValues = values) => {
-        const newErrors = { email: '' };
-        let isValid = true;
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        formState: { errors },
+    } = useForm<SignupFormValues>({
+        resolver: zodResolver(signupSchema),
+        defaultValues: { email: '' },
+    });
 
-        if (!currentValues.email) {
-            newErrors.email = 'Email is required';
-            isValid = false;
-        } else if (currentValues.email.length > 255) {
-            newErrors.email = 'Email must be 255 characters or less';
-            isValid = false;
-        } else if (
-            !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                currentValues.email,
-            )
-        ) {
-            newErrors.email = 'Invalid email format';
-            isValid = false;
-        }
+    const emailValue = watch('email');
 
-        setErrors(newErrors);
-        return isValid;
-    };
+    const onSubmit = async (values: SignupFormValues) => {
+        setFormError('');
+        try {
+            await signupTrigger({ email: values.email }).unwrap();
+        } catch (err) {
+            const apiError = err as ErrorResponse;
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (formError) setFormError('');
-        if (!isLoading) {
-            const { name, value } = e.target;
-            const newValues = { ...values, [name]: value };
+            const fieldErrors = apiError.errors
+                ? Object.values(apiError.errors).flat()
+                : [];
+            const bestMessage =
+                fieldErrors[0] || apiError.message || 'Signup failed';
 
-            setValues(newValues);
+            setFormError(bestMessage);
 
-            if (touched.email) {
-                validate(newValues);
+            if (apiError.errors) {
+                Object.entries(apiError.errors).forEach(([key, messages]) => {
+                    setError(key as keyof SignupFormValues, {
+                        type: 'server',
+                        message: Array.isArray(messages)
+                            ? messages[0]
+                            : messages,
+                    });
+                });
             }
         }
     };
 
-    const handleBlur = () => {
-        setTouched({ email: true });
-        validate();
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setFormError('');
-
-        if (!validate()) return;
-
-        try {
-            await signupTrigger({ email: values.email }).unwrap();
-        } catch (err) {
-            const message = resolveApiError(err);
-            setFormError(message);
-        }
-    };
-
     return {
-        values,
+        register,
+        handleSubmit: handleSubmit(onSubmit),
         errors,
-        touched,
         formError,
+        emailValue,
         success: isSuccess,
         loading: isLoading,
-        handleChange,
-        handleBlur,
-        handleSubmit,
     };
 };

@@ -3,7 +3,7 @@ import { Box, Stack, styled } from '@mui/material';
 import { LAYOUT } from '@constant';
 
 export const HeaderRoot = styled(Box)(({ theme }) => ({
-    position: 'fixed',
+    position: 'sticky',
     top: 0,
     height: LAYOUT.HEADER,
     maxHeight: LAYOUT.HEADER,
@@ -11,8 +11,8 @@ export const HeaderRoot = styled(Box)(({ theme }) => ({
     width: '100%',
     zIndex: theme.zIndex.appBar,
     display: 'flex',
-    paddingInline: theme.spacing(8),
-    paddingBlock: theme.spacing(4),
+    paddingInline: 8,
+    paddingBlock: 4,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: theme.palette.primary.dark,

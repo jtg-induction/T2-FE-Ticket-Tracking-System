@@ -1,4 +1,4 @@
 export { logOut, setCredentials, setLoading } from './auth';
-export { baseApi } from './api';
-export type { AppDispatch, RootState } from './store';
+export type { AppDispatch } from './store';
 export { store } from './store';
+export type { RootState } from './store.type';

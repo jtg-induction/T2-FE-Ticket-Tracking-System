@@ -1,103 +1,89 @@
-import { ChangeEvent, FocusEvent, FormEvent, useState } from 'react';
+import { useState } from 'react';
 
+import { useForm } from 'react-hook-form';
+
+import { useAppDispatch } from '@hook';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema } from '@schema';
 import { useRegisterMutation } from '@service';
-import { resolveApiError } from '@util';
+import { setCredentials } from '@store';
+import { ErrorResponse, RegisterFormValues } from '@type';
 
-export const useRegisterForm = (
-    tokenFromUrl: string,
-    onSuccess: () => void,
-) => {
+export const useRegisterForm = (tokenFromUrl: string) => {
+    const dispatch = useAppDispatch();
     const [registerTrigger, { isLoading }] = useRegisterMutation();
-
-    const [values, setValues] = useState({
-        firstName: '',
-        lastName: '',
-        jiraId: '',
-        jiraApiToken: '',
-        password: '',
-        confirmPassword: '',
-    });
-
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [formError, setFormError] = useState('');
 
-    const validate = (currentValues = values) => {
-        const newErrors: Record<string, string> = {};
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors },
+    } = useForm<RegisterFormValues>({
+        resolver: zodResolver(registerSchema),
+        defaultValues: {
+            first_name: '',
+            last_name: '',
+            jira_id: '',
+            jira_api_token: '',
+            password: '',
+            confirm_password: '',
+        },
+    });
 
-        if (!currentValues.firstName.trim())
-            newErrors.firstName = 'First name is required';
-        if (!currentValues.lastName.trim())
-            newErrors.lastName = 'Last name is required';
-        if (!currentValues.jiraId.trim())
-            newErrors.jiraId = 'Jira ID is required';
-        if (!currentValues.jiraApiToken.trim())
-            newErrors.jiraApiToken = 'Jira API Token is required';
-        if (!currentValues.password) {
-            newErrors.password = 'Password is required';
-        } else if (currentValues.password.length < 6) {
-            newErrors.password = 'Minimum 6 characters required';
-        }
-        if (currentValues.password !== currentValues.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const nextValues = { ...values, [name]: value };
-        setValues(nextValues);
+    const onSubmit = async (values: RegisterFormValues) => {
         setFormError('');
-        if (touched[name]) validate(nextValues);
-    };
-
-    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-        const { name } = e.target;
-        setTouched((prev) => ({ ...prev, [name]: true }));
-        validate();
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setTouched({
-            firstName: true,
-            lastName: true,
-            jiraId: true,
-            password: true,
-            confirmPassword: true,
-        });
-
-        if (!validate()) return;
-
         try {
-            setFormError('');
-            await registerTrigger({
-                first_name: values.firstName,
-                last_name: values.lastName,
-                jira_id: values.jiraId,
-                jira_api_token: values.jiraApiToken,
-                password: values.password,
+            const data = await registerTrigger({
+                ...values,
                 token: tokenFromUrl,
             }).unwrap();
 
-            onSuccess();
+            if (data.access) {
+                dispatch(setCredentials(data.access));
+            }
         } catch (err) {
-            const message = resolveApiError(err);
-            setFormError(message);
+            const apiError = err as ErrorResponse;
+
+            const firstErrorMessage = apiError.errors
+                ? Object.values(apiError.errors).flat()[0]
+                : null;
+
+            setFormError(
+                firstErrorMessage || apiError.message || 'Registration failed',
+            );
+
+            if (apiError.errors) {
+                const fieldMapping: Record<string, keyof RegisterFormValues> = {
+                    first_name: 'first_name',
+                    last_name: 'last_name',
+                    jira_id: 'jira_id',
+                    jira_api_token: 'jira_api_token',
+                    password: 'password',
+                };
+
+                Object.entries(apiError.errors).forEach(
+                    ([backendKey, messages]) => {
+                        const frontendKey =
+                            fieldMapping[backendKey] || backendKey;
+
+                        setError(frontendKey, {
+                            type: 'server',
+                            message: Array.isArray(messages)
+                                ? messages[0]
+                                : messages,
+                        });
+                    },
+                );
+            }
         }
     };
 
     return {
-        values,
+        register,
+        handleSubmit: handleSubmit(onSubmit),
         errors,
-        touched,
         formError,
         isLoading,
-        handleChange,
-        handleBlur,
-        handleSubmit,
     };
 };

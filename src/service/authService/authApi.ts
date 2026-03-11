@@ -1,5 +1,5 @@
 import { API_CONSTANTS } from '@constant';
-import { baseApi } from '@store';
+import { baseApi } from '@service';
 import {
     LoginRequest,
     LoginResponse,
@@ -27,7 +27,7 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        register: builder.mutation<unknown, RegisterRequest>({
+        register: builder.mutation<LoginResponse, RegisterRequest>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.USER,
                 method: 'POST',

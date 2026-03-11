@@ -1,105 +1,93 @@
 import { useEffect, useState } from 'react';
 
+import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileSchema } from '@schema';
 import { useGetUserByIdQuery, useUpdateUserMutation } from '@service';
-import { EditProfileRequest } from '@type';
-import { resolveApiError } from '@util';
+import { EditProfileRequest, ErrorResponse } from '@type';
 
 export const useProfileForm = () => {
     const { id } = useParams<{ id: string }>();
     const [isEditing, setIsEditing] = useState(false);
     const [saveError, setSaveError] = useState('');
 
-    useEffect(() => {
-        if (saveError) {
-            const timer = setTimeout(() => {
-                setSaveError('');
-            }, 2000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [saveError]);
-
     const {
         data: profile,
         isLoading,
-        error,
-    } = useGetUserByIdQuery(id ?? '', {
-        skip: !id,
-    });
-    useEffect(() => {}, [profile]);
-
+        error: fetchError,
+    } = useGetUserByIdQuery(id ?? '', { skip: !id });
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
-    const [tempProfile, setTempProfile] = useState({
-        firstName: '',
-        lastName: '',
-        role: '',
-        dob: '',
-        about: '',
-        jiraApiToken: '',
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors, isDirty, dirtyFields },
+    } = useForm<EditProfileRequest>({
+        resolver: zodResolver(profileSchema),
     });
+
+    const formValues = watch();
 
     useEffect(() => {
         if (profile) {
-            setTempProfile({
-                firstName: profile.first_name || '',
-                lastName: profile.last_name || '',
+            reset({
+                first_name: profile.first_name || '',
+                last_name: profile.last_name || '',
                 role: profile.role || '',
-                dob: profile.dob || '',
+                dob: profile.dob ? profile.dob.split('T')[0] : '',
                 about: profile.about || '',
-                jiraApiToken: '',
+                jira_api_token: '',
             });
         }
-    }, [profile]);
+    }, [profile, reset]);
 
-    const handleSave = async () => {
+    const onSave = async (values: EditProfileRequest) => {
         try {
             setSaveError('');
-            const body: EditProfileRequest = {
-                first_name: tempProfile.firstName,
-                last_name: tempProfile.lastName,
-                role: tempProfile.role,
-                dob: tempProfile.dob || null,
-                about: tempProfile.about,
-            };
 
-            if (tempProfile.jiraApiToken.trim()) {
-                body.jira_api_token = tempProfile.jiraApiToken.trim();
+            const payload: Partial<EditProfileRequest> = {};
+            const dirtyKeys = Object.keys(dirtyFields) as Array<
+                keyof EditProfileRequest
+            >;
+
+            dirtyKeys.forEach((key) => {
+                const value = values[key];
+                payload[key] = value;
+            });
+
+            if (Object.keys(payload).length > 0) {
+                await updateUser({
+                    body: payload as EditProfileRequest,
+                }).unwrap();
             }
 
-            await updateUser({ body }).unwrap();
-            setTempProfile((prev) => ({ ...prev, jiraApiToken: '' }));
             setIsEditing(false);
         } catch (err) {
-            setSaveError(resolveApiError(err));
+            setSaveError(
+                (err as ErrorResponse).message || 'Failed to update profile',
+            );
         }
     };
 
     return {
-        profile: profile,
-        tempProfile,
+        profile,
         isEditing,
-        canUserEdit: profile?.canEdit ?? false,
+        errors,
+        register,
+        canUserEdit: profile?.can_edit ?? false,
+        formValues,
+        isDirty,
         loading: isLoading || isUpdating,
-        fetchError: error ? resolveApiError(error) : null,
+        fetchError,
         saveError,
         handleToggleEdit: () => {
-            if (isEditing && profile) {
-                setTempProfile({
-                    firstName: profile.first_name,
-                    lastName: profile.last_name,
-                    role: profile.role,
-                    dob: profile.dob || '',
-                    about: profile.about || '',
-                    jiraApiToken: '',
-                });
-            }
+            if (isEditing) reset();
             setIsEditing(!isEditing);
         },
-        handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-            setTempProfile({ ...tempProfile, [e.target.name]: e.target.value }),
-        handleSave,
+        handleSave: handleSubmit(onSave),
     };
 };

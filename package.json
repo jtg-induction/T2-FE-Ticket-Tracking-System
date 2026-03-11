@@ -17,14 +17,17 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "11.14.0",
+        "@hookform/resolvers": "^5.2.2",
         "@mui/icons-material": "6.4.1",
         "@mui/material": "6.4.1",
         "@reduxjs/toolkit": "^2.11.2",
         "async-mutex": "^0.5.0",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
+        "react-hook-form": "^7.71.2",
         "react-redux": "^9.2.0",
-        "react-router": "^7.13.0"
+        "react-router": "^7.13.0",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@types/eslint-plugin-jsx-a11y": "6",
