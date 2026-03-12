@@ -8,7 +8,7 @@ import { Header } from '@component';
 import { LAYOUT, PATHS, PUBLICPATHS } from '@constant';
 import { useAppSelector } from '@hook';
 
-import { RootContainer } from './rootLayout.style';
+import { RootContainer } from './RootLayout.style';
 
 export const RootLayout = () => {
     const { accessToken, isLoading } = useAppSelector((state) => state.auth);

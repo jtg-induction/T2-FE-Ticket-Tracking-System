@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material';
 
-import { LoadingWrapper } from './loadingPage.style';
+import { LoadingWrapper } from './LoadingPage.style';
 
 export const LoadingPage = () => (
     <LoadingWrapper>

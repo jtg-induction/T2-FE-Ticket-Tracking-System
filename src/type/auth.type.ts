@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { loginSchema, registerSchema, signupSchema } from '@schema';
-import { User } from '@type/user.type';
+import { UserResponse } from '@type';
 
 /**
  * Response returned after a successful token refresh.
@@ -24,7 +24,7 @@ export interface LoginResponse {
     /** The access token. */
     access: string;
     /** The profile data of the authenticated user. */
-    user: User;
+    user: UserResponse;
 }
 
 /**

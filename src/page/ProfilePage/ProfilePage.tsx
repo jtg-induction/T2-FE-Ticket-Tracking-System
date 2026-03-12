@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 
 import { ROLES } from '@constant';
+import { useProfileForm } from '@hook';
 import { convertIsoToDateYear } from '@util';
 
 import {
@@ -25,8 +26,7 @@ import {
     getTextFieldStyle,
     HeadingBox,
     StyledContainer,
-} from './profilePage.style';
-import { useProfileForm } from './useProfilePage.hook';
+} from './ProfilePage.style';
 
 export const ProfilePage = () => {
     const theme = useTheme();

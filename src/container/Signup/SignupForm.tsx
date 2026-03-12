@@ -11,9 +11,9 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
+import { useSignupForm } from '@hook';
 
-import { SignupInner, SignupRoot } from './signupForm.style';
-import { useSignupForm } from './useSignUpForm.hook';
+import { SignupInner, SignupRoot } from './SignupForm.style';
 
 export const SignupForm = () => {
     const {

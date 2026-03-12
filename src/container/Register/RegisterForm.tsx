@@ -2,8 +2,9 @@ import { useSearchParams } from 'react-router';
 
 import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
 
-import { RegisterContainer, RegisterInner } from './registerForm.style';
-import { useRegisterForm } from './useRegisterForm.hook';
+import { useRegisterForm } from '@hook';
+
+import { RegisterContainer, RegisterInner } from './RegisterForm.style';
 
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();

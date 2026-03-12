@@ -11,9 +11,9 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
+import { useLoginForm } from '@hook';
 
-import { LoginInner, LoginRoot } from './loginForm.style';
-import { useLoginForm } from './useLoginForm.hook';
+import { LoginInner, LoginRoot } from './LoginForm.style';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formError, errors, isLoading } =

@@ -56,7 +56,7 @@ export const useProfileForm = () => {
 
             dirtyKeys.forEach((key) => {
                 const value = values[key];
-                payload[key] = value;
+                payload[key] = value ?? '';
             });
 
             if (Object.keys(payload).length > 0) {
