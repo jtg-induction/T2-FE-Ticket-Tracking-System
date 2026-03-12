@@ -27,12 +27,13 @@ import { useProjectForm } from './useProjectDetail.hook';
 export const ProjectDetailPage = () => {
     const {
         project,
-        tempProject,
+        formValues,
+        errors,
+        register,
         isEditing,
         isNew,
         loading,
         handleToggleEdit,
-        handleChange,
         handleSave,
         navigate,
         snackbarOpen,
@@ -58,8 +59,6 @@ export const ProjectDetailPage = () => {
             </Box>
         );
     }
-
-    const isInputDisabled = !isEditing || project?.is_archived;
 
     return (
         <Box
@@ -117,7 +116,7 @@ export const ProjectDetailPage = () => {
                                 {isNew
                                     ? 'Create Project'
                                     : isEditing
-                                      ? tempProject.title
+                                      ? formValues.title
                                       : project?.title}
                                 {project?.is_archived && (
                                     <Typography
@@ -161,7 +160,7 @@ export const ProjectDetailPage = () => {
                             )}
                             {!isNew &&
                                 !project?.is_archived &&
-                                project?.can_edit &&
+                                true &&
                                 !isEditing && (
                                     <Button
                                         variant="contained"
@@ -193,9 +192,7 @@ export const ProjectDetailPage = () => {
                                         color="primary"
                                         size="small"
                                         startIcon={<SaveIcon />}
-                                        onClick={() => {
-                                            void handleSave();
-                                        }}
+                                        type="submit"
                                         sx={{ borderRadius: pxToRem(8) }}
                                     >
                                         {isNew ? 'Create' : 'Save'}
@@ -217,56 +214,50 @@ export const ProjectDetailPage = () => {
                     scrollbarColor: `${palette.divider} transparent`,
                 }}
             >
-                <Container maxWidth="md">
-                    <Grid container spacing={3}>
-                        {!isNew && isEditing && (
-                            <Grid size={12}>
-                                <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                    sx={{
-                                        p: 1,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 1,
-                                    }}
-                                >
-                                    <Checkbox
-                                        name="is_archived"
-                                        checked={tempProject.is_archived}
-                                        onChange={handleChange}
-                                        color="error"
-                                        size="small"
-                                    />
-                                    <Typography
-                                        variant="body2"
-                                        color={
-                                            tempProject.is_archived
-                                                ? 'error'
-                                                : 'textPrimary'
-                                        }
-                                    >
-                                        {tempProject.is_archived
-                                            ? 'This project will be archived on save'
-                                            : 'Archive this project'}
-                                    </Typography>
-                                </Stack>
-                            </Grid>
-                        )}
+                        <Container maxWidth="md">
+                            <Box component="form" onSubmit={handleSave} noValidate>
+                            <Grid container spacing={3}>
+                                {!isNew && isEditing && (
+                                    <Grid size={12}>
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            spacing={1}
+                                            sx={{
+                                                p: 1,
+                                                border: '1px solid',
+                                                borderColor: 'divider',
+                                                borderRadius: 1,
+                                            }}
+                                        >
+                                            <Checkbox
+                                                {...register('is_archived')}
+                                                color="error"
+                                                size="small"
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color={
+                                                    formValues.is_archived
+                                                        ? 'error'
+                                                        : 'textPrimary'
+                                                }
+                                            >
+                                                {formValues.is_archived
+                                                    ? 'This project will be archived on save'
+                                                    : 'Archive this project'}
+                                            </Typography>
+                                        </Stack>
+                                    </Grid>
+                                )}
 
                         <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 label="Project Title"
-                                name="title"
-                                value={
-                                    isEditing
-                                        ? tempProject.title
-                                        : project?.title || ''
-                                }
-                                onChange={handleChange}
-                                disabled={isInputDisabled}
+                                {...register('title')}
+                                error={!!errors.title}
+                                helperText={errors.title?.message}
                             />
                         </Grid>
 
@@ -274,18 +265,13 @@ export const ProjectDetailPage = () => {
                             <TextField
                                 fullWidth
                                 label="Jira Project Key"
-                                name="jira_project_key"
-                                value={
-                                    isEditing
-                                        ? tempProject.jira_project_key
-                                        : project?.jira_project_key || ''
-                                }
-                                onChange={handleChange}
+                                {...register('jira_project_key')}
                                 disabled={!isNew}
+                                error={!!errors.jira_project_key}
                                 helperText={
                                     !isNew
                                         ? 'The key is locked for this project.'
-                                        : ''
+                                        : errors.jira_project_key?.message
                                 }
                             />
                         </Grid>
@@ -294,14 +280,10 @@ export const ProjectDetailPage = () => {
                             <TextField
                                 fullWidth
                                 label="Site URL"
-                                name="site_url"
-                                value={
-                                    isEditing
-                                        ? tempProject.site_url
-                                        : project?.site_url || ''
-                                }
-                                onChange={handleChange}
+                                {...register('site_url')}
                                 disabled={!isNew}
+                                error={!!errors.site_url}
+                                helperText={errors.site_url?.message}
                             />
                         </Grid>
 
@@ -311,17 +293,15 @@ export const ProjectDetailPage = () => {
                                 multiline
                                 rows={15}
                                 label="Description"
-                                name="description"
-                                value={
-                                    isEditing
-                                        ? tempProject.description
-                                        : project?.description || ''
-                                }
-                                onChange={handleChange}
-                                disabled={isInputDisabled}
+                                {...register('description')}
+                                error={!!errors.description}
+                                helperText={errors.description?.message}
                             />
                         </Grid>
                     </Grid>
+                            </Box>
+                        </Container>
+                    </Box>
                 </Container>
             </Box>
 
