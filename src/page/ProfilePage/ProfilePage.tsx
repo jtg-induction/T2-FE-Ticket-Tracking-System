@@ -16,7 +16,7 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { ROLES } from '@constant';
+import { FORM, ROLES } from '@constant';
 import { useProfileForm } from '@hook';
 import { convertIsoToDateYear } from '@util';
 
@@ -56,6 +56,7 @@ export const ProfilePage = () => {
                 void handleSave(e);
             }}
             noValidate
+            gap={4}
         >
             <HeadingBox>
                 <Box>
@@ -102,7 +103,7 @@ export const ProfilePage = () => {
                     </Stack>
                 )}
             </HeadingBox>
-            <Divider sx={{ my: 10 }} />
+            <Divider />
             <FormGrid>
                 <TextField
                     label="First Name"
@@ -188,7 +189,7 @@ export const ProfilePage = () => {
                             type="password"
                             fullWidth
                             sx={getTextFieldStyle(theme)}
-                            placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
+                            placeholder={FORM.MASK_PLACEHOLDER}
                             slotProps={{ inputLabel: { shrink: true } }}
                         />
                     </FullWidthItem>
@@ -207,14 +208,7 @@ export const ProfilePage = () => {
                     />
                 </FullWidthItem>
             </FormGrid>
-            <Snackbar
-                open={!!saveError}
-                sx={{
-                    display: 'flex',
-                    width: '100%',
-                    justifyContent: 'center',
-                }}
-            >
+            <Snackbar open={!!saveError}>
                 <Alert severity="error">{saveError}</Alert>
             </Snackbar>
         </StyledContainer>

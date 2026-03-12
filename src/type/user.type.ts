@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
-import { ROLES } from '@constant';
 import { profileSchema } from '@schema';
 
 /**
- * Valid string values for user roles extracted from the ROLES constant.
+ * Valid string values for user roles.
  */
-export type UserRole = (typeof ROLES)[number]['value'];
+export type UserRole = 'SD' | 'SSD' | 'QA' | 'M' | 'DG';
 
 /**
  * Complete user profile data returned by the API.

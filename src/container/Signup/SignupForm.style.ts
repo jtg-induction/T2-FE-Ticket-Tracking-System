@@ -1,17 +1,17 @@
 import { Container, Stack, styled } from '@mui/material';
 
-export const SignupRoot = styled(Container)(({ theme }) => ({
+export const SignupRoot = styled(Container)(({ theme: { palette } }) => ({
     width: '100%',
     overflowY: 'auto',
     flex: 2,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: palette.background.paper,
 }));
 
-export const SignupInner = styled(Stack)(() => ({
-    padding: 32,
+export const SignupInner = styled(Stack)(({ theme: { spacing } }) => ({
+    padding: spacing(8),
     marginInline: 'auto',
     minHeight: '100%',
-    maxWidth: 500,
+    maxWidth: spacing(125),
     justifyContent: 'center',
-    gap: 10,
+    gap: spacing(2),
 })) as typeof Stack;

@@ -35,19 +35,15 @@ export const SignupForm = () => {
                 }}
                 noValidate
             >
-                {formError && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
-                        {formError}
-                    </Alert>
-                )}
+                {formError && <Alert severity="error">{formError}</Alert>}
 
                 {success && (
-                    <Alert severity="success" sx={{ mb: 2 }}>
+                    <Alert severity="success">
                         Verification email sent to {emailValue}
                     </Alert>
                 )}
 
-                <FormControl fullWidth sx={{ mb: 2 }}>
+                <FormControl fullWidth>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
                         {...register('email')}
@@ -74,7 +70,7 @@ export const SignupForm = () => {
                           : 'Send Verification Email'}
                 </Button>
 
-                <Typography sx={{ textAlign: 'center', mt: 2 }}>
+                <Typography textAlign={'center'}>
                     Already have an account?{' '}
                     <Link
                         component={ReactLink}

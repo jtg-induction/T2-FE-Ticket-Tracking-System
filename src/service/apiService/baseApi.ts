@@ -38,7 +38,7 @@ const baseQuery = fetchBaseQuery({
  */
 const baseQueryWithReauth: BaseQueryFn<
     string | FetchArgs,
-    unknown,
+    unknown, // Using unknown because we normalize different response shapes here; unknown ensures the final type is determined by the specific API endpoint.
     ErrorResponse
 > = async (args, api, extraOptions) => {
     await mutex.waitForUnlock();

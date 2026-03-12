@@ -1,17 +1,22 @@
-import { Box, filledInputClasses, inputBaseClasses } from '@mui/material';
+import {
+    Box,
+    filledInputClasses,
+    inputBaseClasses,
+    Stack,
+} from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
-export const getTextFieldStyle = (theme: Theme) => ({
+export const getTextFieldStyle = ({ palette, spacing }: Theme) => ({
     [`&& .${inputBaseClasses.root}`]: {
-        color: theme.palette.common.black,
+        color: palette.common.black,
         borderRadius: 2,
     },
     [`&& .${filledInputClasses.root}`]: {
-        backgroundColor: theme.palette.grey[200],
+        backgroundColor: palette.grey[200],
     },
     [`&& .${inputBaseClasses.input}`]: {
-        minHeight: 40,
-        WebkitTextFillColor: theme.palette.text.primary,
+        minHeight: spacing(10),
+        WebkitTextFillColor: palette.text.primary,
     },
     [`&& .${inputBaseClasses.disabled}:before`]: {
         borderBottomStyle: 'none',
@@ -19,26 +24,28 @@ export const getTextFieldStyle = (theme: Theme) => ({
     },
 });
 
-export const StyledContainer = styled(Box)(({ theme }) => ({
-    height: '100%',
-    width: '100%',
-    paddingBlock: 10,
-    paddingInline: 60,
-    backgroundColor: theme.palette.background.paper,
-    [theme.breakpoints.down('md')]: {
-        padding: 10,
-    },
-    [theme.breakpoints.down('sm')]: {
-        padding: 6,
-    },
-})) as typeof Box;
+export const StyledContainer = styled(Stack)(
+    ({ theme: { palette, breakpoints, spacing } }) => ({
+        height: '100%',
+        width: '100%',
+        paddingBlock: spacing(2),
+        paddingInline: spacing(15),
+        backgroundColor: palette.background.paper,
+        [breakpoints.down('md')]: {
+            padding: spacing(2),
+        },
+        [breakpoints.down('sm')]: {
+            padding: spacing(1),
+        },
+    }),
+) as typeof Stack;
 
-export const FormGrid = styled(Box)(({ theme }) => ({
+export const FormGrid = styled(Box)(({ theme: { spacing, breakpoints } }) => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: 8,
-    marginTop: 8,
-    [theme.breakpoints.down('sm')]: {
+    gap: spacing(2),
+    marginTop: spacing(2),
+    [breakpoints.down('sm')]: {
         gridTemplateColumns: '1fr',
     },
 }));
@@ -47,9 +54,9 @@ export const FullWidthItem = styled(Box)(() => ({
     gridColumn: '1 / -1',
 }));
 
-export const HeadingBox = styled(Box)(() => ({
+export const HeadingBox = styled(Box)(({ theme: { spacing } }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing(2),
 }));

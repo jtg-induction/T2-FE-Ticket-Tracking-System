@@ -84,7 +84,6 @@ export const RegisterForm = () => {
                     variant="contained"
                     size="large"
                     disabled={isLoading}
-                    sx={{ mt: 3 }}
                 >
                     {isLoading ? 'Processing...' : 'Complete Registration'}
                 </Button>

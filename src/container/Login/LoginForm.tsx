@@ -28,13 +28,9 @@ export const LoginForm = () => {
                 }}
                 noValidate
             >
-                {formError && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
-                        {formError}
-                    </Alert>
-                )}
+                {formError && <Alert severity="error">{formError}</Alert>}
 
-                <FormControl fullWidth sx={{ mb: 2 }}>
+                <FormControl fullWidth>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
                         {...register('email')}
@@ -72,7 +68,7 @@ export const LoginForm = () => {
                 >
                     {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Typography sx={{ textAlign: 'center' }}>
+                <Typography textAlign={'center'}>
                     Don&apos;t have an account?{' '}
                     <Link
                         component={ReactLink}
