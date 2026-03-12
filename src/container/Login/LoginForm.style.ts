@@ -1,4 +1,4 @@
-import { Container, Stack, styled } from '@mui/material';
+import { Container, Stack, StackProps, styled } from '@mui/material';
 
 export const LoginRoot = styled(Container)(({ theme: { palette } }) => ({
     width: '100%',
@@ -7,11 +7,13 @@ export const LoginRoot = styled(Container)(({ theme: { palette } }) => ({
     backgroundColor: palette.background.paper,
 }));
 
-export const LoginInner = styled(Stack)(({ theme: { spacing } }) => ({
-    padding: spacing(8),
-    marginInline: 'auto',
-    minHeight: '100%',
-    maxWidth: spacing(125),
-    justifyContent: 'center',
-    gap: spacing(2),
-})) as typeof Stack;
+export const LoginInner = styled(Stack)<StackProps<'form'>>(
+    ({ theme: { spacing } }) => ({
+        padding: spacing(8),
+        marginInline: 'auto',
+        minHeight: '100%',
+        maxWidth: spacing(125),
+        justifyContent: 'center',
+        gap: spacing(2),
+    }),
+);

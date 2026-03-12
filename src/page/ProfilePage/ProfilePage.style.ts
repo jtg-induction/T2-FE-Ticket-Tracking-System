@@ -3,6 +3,7 @@ import {
     filledInputClasses,
     inputBaseClasses,
     Stack,
+    StackProps,
 } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
@@ -24,7 +25,7 @@ export const getTextFieldStyle = ({ palette, spacing }: Theme) => ({
     },
 });
 
-export const StyledContainer = styled(Stack)(
+export const StyledContainer = styled(Stack)<StackProps<'form'>>(
     ({ theme: { palette, breakpoints, spacing } }) => ({
         height: '100%',
         width: '100%',
@@ -38,7 +39,7 @@ export const StyledContainer = styled(Stack)(
             padding: spacing(1),
         },
     }),
-) as typeof Stack;
+);
 
 export const FormGrid = styled(Box)(({ theme: { spacing, breakpoints } }) => ({
     display: 'grid',

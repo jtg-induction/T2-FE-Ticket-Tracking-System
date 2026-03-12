@@ -186,6 +186,8 @@ export const ProfilePage = () => {
                         <TextField
                             label="Jira API Token"
                             {...register('jira_api_token')}
+                            error={!!errors.jira_api_token}
+                            helperText={errors.jira_api_token?.message}
                             type="password"
                             fullWidth
                             sx={getTextFieldStyle(theme)}
@@ -199,6 +201,8 @@ export const ProfilePage = () => {
                     <TextField
                         label="About"
                         {...register('about')}
+                        error={!!errors.about}
+                        helperText={errors.about?.message}
                         fullWidth
                         multiline
                         rows={4}

@@ -15,7 +15,12 @@ export const profileSchema = z.object({
         .max(50, 'First name can not be more than 50 characters long'),
     role: z.enum(ROLES.map((r) => r.value)),
     dob: z.string().nullable().optional(),
-    about: z.string().trim().nullable().optional(),
+    about: z
+        .string()
+        .trim()
+        .max(500, 'Ensure this field has no more than 500 characters')
+        .nullable()
+        .optional(),
     jira_api_token: z
         .string()
         .trim()
