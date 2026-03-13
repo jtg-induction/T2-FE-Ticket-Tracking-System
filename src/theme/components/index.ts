@@ -18,6 +18,13 @@ const globalCss = `
     `;
 
 export const components: Components = {
+    MuiFormControl: {
+        styleOverrides: {
+            root: {
+                gap: 8,
+            },
+        },
+    },
     MuiCssBaseline: {
         styleOverrides: globalCss,
     },

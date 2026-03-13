@@ -31,7 +31,11 @@
             "@layout": ["layout/index"],
             "@util": ["util/index"],
             "@hook": ["hook/index"],
-            "@service": ["service/index"]
+            "@service": ["service/index"],
+            "@context": ["context/index"],
+            "@page": ["page/index"],
+            "@type/*": ["type/*"],
+            "@type": ["type/index"]
         }
     },
     "include": ["src"]
