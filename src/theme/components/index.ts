@@ -35,6 +35,22 @@ export const components: Components = {
             },
         },
     },
+    MuiCard: {
+        variants: [
+            {
+                props: { variant: 'outlined' },
+                style: () => ({
+                    marginBottom: 2,
+                    borderRadius: 8,
+                    boxShadow: '2px 1px 2px rgb(0, 0, 0, 0.2);',
+                    cursor: 'pointer',
+                    '&:hover': {
+                        boxShadow: '2px 2px 4px rgb(0, 0, 0, 0.3);',
+                    },
+                }),
+            },
+        ],
+    },
     MuiCssBaseline: {
         styleOverrides: globalCss,
     },

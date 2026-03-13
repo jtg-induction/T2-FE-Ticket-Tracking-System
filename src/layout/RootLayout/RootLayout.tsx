@@ -4,10 +4,10 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 
 import { Header } from '@component';
 import { PATHS, PUBLICPATHS } from '@constant';
+import { Sidebar } from '@container';
 import { useAppSelector } from '@hook';
 
 import { StyledLayoutRoot, StyledMainContent } from './RootLayout.style';
-import { Sidebar } from '@container';
 
 export const RootLayout = () => {
     const { accessToken, isLoading } = useAppSelector((state) => state.auth);
@@ -45,7 +45,7 @@ export const RootLayout = () => {
 
     return (
         <StyledLayoutRoot maxWidth="xl" disableGutters>
-            {isPublicPath && (
+            {!isPublicPath && (
                 <>
                     <Header userInitial="U" onSidebarToggle={() => {}} />
                     <Sidebar onClose={handleDrawerToggle} open={sidebarOpen} />

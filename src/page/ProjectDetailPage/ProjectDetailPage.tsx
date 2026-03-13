@@ -6,7 +6,6 @@ import {
 } from '@mui/icons-material';
 import {
     Alert,
-    AlertTitle,
     Box,
     Button,
     Checkbox,
@@ -22,17 +21,18 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { useProjectForm } from './useProjectDetail.hook';
+import { useProjectForm } from '@hook';
 
 export const ProjectDetailPage = () => {
     const {
         project,
-        tempProject,
+        formValues,
+        errors,
+        register,
         isEditing,
         isNew,
         loading,
         handleToggleEdit,
-        handleChange,
         handleSave,
         navigate,
         snackbarOpen,
@@ -42,7 +42,6 @@ export const ProjectDetailPage = () => {
     } = useProjectForm();
 
     const {
-        palette,
         typography: { pxToRem },
     } = useTheme();
 
@@ -52,38 +51,19 @@ export const ProjectDetailPage = () => {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                height="100vh"
+                height="100%"
             >
                 <CircularProgress />
             </Box>
         );
     }
 
-    const isInputDisabled = !isEditing || project?.is_archived;
-
     return (
-        <Box
-            sx={{
-                height: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-            }}
-        >
-            <Box
-                sx={{
-                    flexShrink: 0,
-                    bgcolor: 'background.default',
-                    pt: { xs: pxToRem(20), md: pxToRem(40) },
-                    pb: pxToRem(20),
-                    zIndex: 10,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                }}
-            >
-                <Container maxWidth="md">
+        <Stack maxWidth="md" marginInline={'auto'} paddingBlock={4} gap={4}>
+            <Box>
+                <Container>
                     <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
+                        direction={'row'}
                         alignItems={{ xs: 'flex-start', sm: 'center' }}
                         justifyContent="space-between"
                         spacing={2}
@@ -95,6 +75,7 @@ export const ProjectDetailPage = () => {
                             sx={{ minWidth: 0 }}
                         >
                             <IconButton
+                                aria-label="Go back"
                                 onClick={() => void navigate(-1)}
                                 size="small"
                                 sx={{ flexShrink: 0 }}
@@ -102,34 +83,17 @@ export const ProjectDetailPage = () => {
                                 <ArrowBackIcon />
                             </IconButton>
 
-                            <Typography
-                                fontWeight="bold"
-                                noWrap
-                                sx={{
-                                    fontSize: {
-                                        xs: pxToRem(20),
-                                        md: pxToRem(32),
-                                    },
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
+                            <Typography variant="h5" fontWeight={600} noWrap>
                                 {isNew
                                     ? 'Create Project'
                                     : isEditing
-                                      ? tempProject.title
+                                      ? formValues.title
                                       : project?.title}
                                 {project?.is_archived && (
                                     <Typography
                                         component="span"
-                                        color="error.main"
-                                        sx={{
-                                            ml: 2,
-                                            fontSize: {
-                                                xs: pxToRem(14),
-                                                md: pxToRem(20),
-                                            },
-                                        }}
+                                        color="error"
+                                        marginLeft={2}
                                     >
                                         (Archived)
                                     </Typography>
@@ -137,53 +101,41 @@ export const ProjectDetailPage = () => {
                             </Typography>
                         </Stack>
 
-                        <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ flexShrink: 0 }}
-                        >
+                        <Stack direction="row" spacing={1}>
                             {!isNew && project?.is_archived && (
                                 <Tooltip title="Unarchive Project">
                                     <IconButton
+                                        aria-label="Unarchive project"
                                         color="warning"
                                         onClick={() => void handleUnarchive()}
                                         sx={{
-                                            borderRadius: pxToRem(8),
+                                            borderRadius: pxToRem(16),
                                             border: '1px solid',
-                                            borderColor: 'warning.main',
-                                            width: pxToRem(40),
-                                            height: pxToRem(40),
                                         }}
                                     >
-                                        <UnarchiveIcon fontSize="small" />
+                                        <UnarchiveIcon fontSize="medium" />
                                     </IconButton>
                                 </Tooltip>
                             )}
-                            {!isNew &&
-                                !project?.is_archived &&
-                                project?.can_edit &&
-                                !isEditing && (
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        startIcon={<EditIcon />}
-                                        onClick={() => handleToggleEdit(true)}
-                                        sx={{ borderRadius: pxToRem(8), px: 3 }}
-                                    >
-                                        Edit
-                                    </Button>
-                                )}
+                            {!isNew && !project?.is_archived && !isEditing && (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<EditIcon />}
+                                    onClick={() => handleToggleEdit(true)}
+                                >
+                                    Edit
+                                </Button>
+                            )}
                             {isEditing && (
-                                <Stack direction="row" spacing={1}>
+                                <Stack direction="row" spacing={2}>
                                     {!isNew && (
                                         <Button
                                             variant="outlined"
-                                            color="inherit"
-                                            size="small"
+                                            color="error"
+                                            size="medium"
                                             onClick={() =>
                                                 handleToggleEdit(false)
                                             }
-                                            sx={{ borderRadius: pxToRem(8) }}
                                         >
                                             Cancel
                                         </Button>
@@ -191,12 +143,11 @@ export const ProjectDetailPage = () => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        size="small"
+                                        size="medium"
                                         startIcon={<SaveIcon />}
-                                        onClick={() => {
-                                            void handleSave();
-                                        }}
-                                        sx={{ borderRadius: pxToRem(8) }}
+                                        disabled={loading}
+                                        type="submit"
+                                        form="project-form"
                                     >
                                         {isNew ? 'Create' : 'Save'}
                                     </Button>
@@ -207,146 +158,110 @@ export const ProjectDetailPage = () => {
                 </Container>
             </Box>
 
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    overflowY: 'auto',
-                    pt: pxToRem(30),
-                    pb: pxToRem(100),
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: `${palette.divider} transparent`,
-                }}
-            >
-                <Container maxWidth="md">
-                    <Grid container spacing={3}>
-                        {!isNew && isEditing && (
-                            <Grid size={12}>
-                                <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                    sx={{
-                                        p: 1,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 1,
-                                    }}
-                                >
-                                    <Checkbox
-                                        name="is_archived"
-                                        checked={tempProject.is_archived}
-                                        onChange={handleChange}
-                                        color="error"
-                                        size="small"
-                                    />
-                                    <Typography
-                                        variant="body2"
-                                        color={
-                                            tempProject.is_archived
-                                                ? 'error'
-                                                : 'textPrimary'
-                                        }
+            <Box>
+                <Container>
+                    <Box
+                        component="form"
+                        id="project-form"
+                        onSubmit={(e) => void handleSave(e)}
+                        noValidate
+                    >
+                        <Grid container spacing={3}>
+                            {!isNew && isEditing && (
+                                <Grid size={12}>
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        spacing={2}
                                     >
-                                        {tempProject.is_archived
-                                            ? 'This project will be archived on save'
-                                            : 'Archive this project'}
-                                    </Typography>
-                                </Stack>
+                                        <Checkbox
+                                            {...register('is_archived')}
+                                            color="error"
+                                            size="small"
+                                        />
+                                        <Typography
+                                            variant="body2"
+                                            color={
+                                                formValues.is_archived
+                                                    ? 'error'
+                                                    : 'textPrimary'
+                                            }
+                                        >
+                                            {formValues.is_archived
+                                                ? 'This project will be archived on save'
+                                                : 'Archive this project'}
+                                        </Typography>
+                                    </Stack>
+                                </Grid>
+                            )}
+
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Project Title"
+                                    {...register('title')}
+                                    disabled={!isEditing && !isNew}
+                                    error={!!errors.title}
+                                    helperText={errors.title?.message}
+                                />
                             </Grid>
-                        )}
 
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <TextField
-                                fullWidth
-                                label="Project Title"
-                                name="title"
-                                value={
-                                    isEditing
-                                        ? tempProject.title
-                                        : project?.title || ''
-                                }
-                                onChange={handleChange}
-                                disabled={isInputDisabled}
-                            />
-                        </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Jira Project Key"
+                                    {...register('jira_project_key')}
+                                    disabled={!isNew}
+                                    error={!!errors.jira_project_key}
+                                    helperText={
+                                        !isNew
+                                            ? 'The key is locked for this project.'
+                                            : errors.jira_project_key?.message
+                                    }
+                                />
+                            </Grid>
 
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <TextField
-                                fullWidth
-                                label="Jira Project Key"
-                                name="jira_project_key"
-                                value={
-                                    isEditing
-                                        ? tempProject.jira_project_key
-                                        : project?.jira_project_key || ''
-                                }
-                                onChange={handleChange}
-                                disabled={!isNew}
-                                helperText={
-                                    !isNew
-                                        ? 'The key is locked for this project.'
-                                        : ''
-                                }
-                            />
-                        </Grid>
+                            <Grid size={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Site URL"
+                                    {...register('site_url')}
+                                    disabled={!isNew}
+                                    error={!!errors.site_url}
+                                    helperText={errors.site_url?.message}
+                                />
+                            </Grid>
 
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                label="Site URL"
-                                name="site_url"
-                                value={
-                                    isEditing
-                                        ? tempProject.site_url
-                                        : project?.site_url || ''
-                                }
-                                onChange={handleChange}
-                                disabled={!isNew}
-                            />
+                            <Grid size={12}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={15}
+                                    label="Description"
+                                    {...register('description')}
+                                    disabled={!isEditing && !isNew}
+                                    error={!!errors.description}
+                                    helperText={errors.description?.message}
+                                />
+                            </Grid>
                         </Grid>
-
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                multiline
-                                rows={15}
-                                label="Description"
-                                name="description"
-                                value={
-                                    isEditing
-                                        ? tempProject.description
-                                        : project?.description || ''
-                                }
-                                onChange={handleChange}
-                                disabled={isInputDisabled}
-                            />
-                        </Grid>
-                    </Grid>
+                    </Box>
                 </Container>
             </Box>
-
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}
                 onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-                <Alert
-                    onClose={() => setSnackbarOpen(false)}
-                    severity="error"
-                    variant="filled"
-                    sx={{ width: '100%', boxShadow: 3 }}
-                >
-                    <AlertTitle>Validation Failed</AlertTitle>
-                    <Box component="ul" sx={{ m: 0, pl: 2 }}>
-                        {errorMessages.map((msg, index) => (
-                            <li key={index}>
-                                <Typography variant="caption">{msg}</Typography>
-                            </li>
-                        ))}
-                    </Box>
+                <Alert onClose={() => setSnackbarOpen(false)} severity="error">
+                    {errorMessages.map((msg, index) => (
+                        <li key={index}>
+                            <Typography variant="caption">{msg}</Typography>
+                        </li>
+                    ))}
                 </Alert>
             </Snackbar>
-        </Box>
+        </Stack>
     );
 };

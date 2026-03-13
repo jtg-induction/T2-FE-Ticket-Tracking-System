@@ -103,12 +103,7 @@ const baseQueryWithReauth: BaseQueryFn<
             | EntityResponse<unknown>;
 
         if ('meta' in raw && Array.isArray(raw.data)) {
-            return {
-                data: {
-                    results: raw.data,
-                    meta: raw.meta,
-                },
-            };
+            return { data: raw };
         }
         return { data: raw.data };
     }

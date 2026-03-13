@@ -1,1 +1,1 @@
-export { Sidebar } from './Sidebar.contaier';
+export { Sidebar } from './Sidebar';

@@ -1,1 +1,7 @@
-export { projectApi } from './projectService';
+export {
+    projectApi,
+    useCreateProjectMutation,
+    useGetProjectByIdQuery,
+    useGetProjectsQuery,
+    useUpdateProjectMutation,
+} from './projectService';

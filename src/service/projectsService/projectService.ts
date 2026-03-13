@@ -1,31 +1,29 @@
-import { ApiResponse } from 'type/standard.type';
-
-import { API_CONSTANTS } from '@constant';
-import { baseApi } from '@store';
-import { Project, ProjectRequest } from '@type';
+import { API_CONSTANTS, PAGE_SIZE } from '@constant';
+import { baseApi } from '@service';
+import { PaginatedResponse, Project } from '@type';
 
 export const projectApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getProjectById: builder.query<ApiResponse<Project>, string>({
+        getProjectById: builder.query<Project, string>({
             query: (id) => `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
             providesTags: (_result, _error, id) => [
                 { type: 'Project' as const, id },
             ],
         }),
-        updateProject: builder.mutation<
-            ApiResponse<Project>,
-            { id: string; body: Partial<ProjectRequest> }
-        >({
-            query: ({ id, body }) => ({
-                url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
-                method: 'PATCH',
-                body,
-            }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'Project' as const, id },
-            ],
-        }),
-        createProject: builder.mutation<ApiResponse<Project>, ProjectRequest>({
+        updateProject: builder.mutation<Project, { id: string; body: Project }>(
+            {
+                query: ({ id, body }) => ({
+                    url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
+                    method: 'PATCH',
+                    body,
+                }),
+                invalidatesTags: (_result, _error, { id }) => [
+                    { type: 'Project' as const, id },
+                    { type: 'Project' as const, id: 'LIST' },
+                ],
+            },
+        ),
+        createProject: builder.mutation<Project, Project>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
                 method: 'POST',
@@ -35,34 +33,30 @@ export const projectApi = baseApi.injectEndpoints({
         }),
 
         getProjects: builder.query<
-            ApiResponse<Project>,
+            PaginatedResponse<Project>,
             { page: number; archived: boolean }
         >({
             query: ({ page, archived }) => ({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
-                params: {
-                    page,
-                    archived,
-                    page_size: 5,
-                },
+                params: { page, archived, page_size: PAGE_SIZE },
             }),
-            providesTags: (result) => {
-                if (
-                    result &&
-                    'success' in result &&
-                    'data' in result &&
-                    Array.isArray(result.data)
-                ) {
-                    return [
-                        ...result.data.map((p) => ({
-                            type: 'Project' as const,
-                            id: p.id,
-                        })),
-                        { type: 'Project', id: 'LIST' },
-                    ];
-                }
-                return [{ type: 'Project', id: 'LIST' }];
-            },
+            providesTags: (result) =>
+                result?.data
+                    ? [
+                          ...result.data.map(({ id }) => ({
+                              type: 'Project' as const,
+                              id,
+                          })),
+                          { type: 'Project', id: 'LIST' },
+                      ]
+                    : [{ type: 'Project', id: 'LIST' }],
         }),
     }),
 });
+
+export const {
+    useCreateProjectMutation,
+    useGetProjectByIdQuery,
+    useGetProjectsQuery,
+    useUpdateProjectMutation,
+} = projectApi;

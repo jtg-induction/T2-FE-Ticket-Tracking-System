@@ -9,7 +9,7 @@ export type {
     SignupFormValues,
 } from './auth.types';
 
-export type { ProjectRequest, Project } from './project.type';
+export type { Project } from './project.type';
 
 export type {
     EntityResponse,

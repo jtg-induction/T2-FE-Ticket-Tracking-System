@@ -24,30 +24,26 @@ export const router = createBrowserRouter([
             },
             {
                 element: <AuthPage />,
-                handle: { hideNavigation: true },
 
                 children: [
                     {
                         path: PATHS.LOGIN,
                         element: <LoginForm />,
-                        handle: { hideNavigation: true },
                     },
                     {
                         path: PATHS.SIGNUP,
                         element: <SignupForm />,
-                        handle: { hideNavigation: true },
                     },
                     {
                         path: PATHS.REGISTER,
                         element: <RegisterForm />,
-                        handle: { hideNavigation: true },
                     },
                 ],
             },
             { path: PATHS.PROJECTS, element: <ProjectPage /> },
             { path: PATHS.TASKS, element: <TasksPage /> },
             { path: PATHS.PROFILE, element: <ProfilePage /> },
-            { path: PATHS.PROFILE + '/:id', element: <ProfilePage /> },
+            { path: `${PATHS.PROFILE}/:id`, element: <ProfilePage /> },
             { path: `${PATHS.PROJECTS}/:id`, element: <ProjectDetailPage /> },
         ],
     },

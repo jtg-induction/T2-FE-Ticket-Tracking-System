@@ -17,9 +17,6 @@ import { DIMENSIONS } from '@constant';
 import { SIDEBAR_CONFIG } from './Sidebar.config';
 import type { SidebarProps } from './Sidebar.types';
 
-/**
- * Sidebar container
- */
 export const Sidebar = (props: SidebarProps) => {
     const { open, onClose } = props;
     const {
@@ -39,7 +36,9 @@ export const Sidebar = (props: SidebarProps) => {
         <List>
             {SIDEBAR_CONFIG.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.route;
+                const isActive =
+                    location.pathname === item.route ||
+                    location.pathname.startsWith(item.route + '/');
 
                 return (
                     <ListItem key={item.id} disablePadding>

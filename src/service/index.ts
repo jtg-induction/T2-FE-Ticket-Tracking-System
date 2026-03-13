@@ -9,4 +9,9 @@ export {
 } from './authService';
 
 export { useGetUserByIdQuery, useUpdateUserMutation } from './userService';
-export { projectApi } from './projectsService';
+export {
+    useCreateProjectMutation,
+    useGetProjectByIdQuery,
+    useGetProjectsQuery,
+    useUpdateProjectMutation,
+} from './projectsService';
