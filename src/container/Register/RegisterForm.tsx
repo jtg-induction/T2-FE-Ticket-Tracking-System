@@ -4,7 +4,10 @@ import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
 
 import { useRegisterForm } from '@hook';
 
-import { RegisterContainer, RegisterInner } from './RegisterForm.style';
+import {
+    StyledRegisterContainer,
+    StyledRegistrationForm,
+} from './RegisterForm.style';
 
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();
@@ -17,8 +20,8 @@ export const RegisterForm = () => {
     }
 
     return (
-        <RegisterContainer>
-            <RegisterInner
+        <StyledRegisterContainer>
+            <StyledRegistrationForm
                 component="form"
                 onSubmit={(e) => {
                     void handleSubmit(e);
@@ -31,7 +34,7 @@ export const RegisterForm = () => {
 
                 {formError && <Alert severity="error">{formError}</Alert>}
 
-                <Stack spacing="20px">
+                <Stack spacing={4}>
                     <TextField
                         label="First Name"
                         {...register('first_name')}
@@ -87,7 +90,7 @@ export const RegisterForm = () => {
                 >
                     {isLoading ? 'Processing...' : 'Complete Registration'}
                 </Button>
-            </RegisterInner>
-        </RegisterContainer>
+            </StyledRegistrationForm>
+        </StyledRegisterContainer>
     );
 };

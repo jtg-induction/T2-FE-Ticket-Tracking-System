@@ -1,4 +1,4 @@
-export const ROLES = [
+export const USER_ROLE_OPTIONS = [
     { value: 'SD', label: 'Software Developer' },
     { value: 'SSD', label: 'Senior Software Developer' },
     { value: 'QA', label: 'Quality Analyst' },

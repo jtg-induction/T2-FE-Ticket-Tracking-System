@@ -6,7 +6,7 @@ import { Header } from '@component';
 import { PATHS, PUBLICPATHS } from '@constant';
 import { useAppSelector } from '@hook';
 
-import { InnerContainer, RootContainer } from './RootLayout.style';
+import { StyledLayoutRoot, StyledMainContent } from './RootLayout.style';
 
 export const RootLayout = () => {
     const { accessToken, isLoading } = useAppSelector((state) => state.auth);
@@ -38,12 +38,12 @@ export const RootLayout = () => {
     }
 
     return (
-        <RootContainer>
+        <StyledLayoutRoot maxWidth="xl" disableGutters>
             {/* TODO: Add logic to hide header when we are on Auth page */}
             <Header userInitial="U" onSidebarToggle={() => {}} />
-            <InnerContainer>
+            <StyledMainContent component="main">
                 <Outlet />
-            </InnerContainer>
-        </RootContainer>
+            </StyledMainContent>
+        </StyledLayoutRoot>
     );
 };

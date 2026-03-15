@@ -1,6 +1,8 @@
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import {
+    Close as CloseIcon,
+    Edit as EditIcon,
+    Save as SaveIcon,
+} from '@mui/icons-material';
 import {
     Alert,
     Box,
@@ -16,16 +18,16 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { FORM, ROLES } from '@constant';
+import { FORM, USER_ROLE_OPTIONS } from '@constant';
 import { useProfileForm } from '@hook';
 import { convertIsoToDateYear } from '@util';
 
 import {
-    FormGrid,
-    FullWidthItem,
     getTextFieldStyle,
-    HeadingBox,
-    StyledContainer,
+    StyledFormGrid,
+    StyledFullWidthItem,
+    StyledHeaderBox,
+    StyledProfileRoot,
 } from './ProfilePage.style';
 
 export const ProfilePage = () => {
@@ -49,8 +51,13 @@ export const ProfilePage = () => {
     if (fetchError || !profile)
         return <Typography color="error">Error loading profile</Typography>;
 
+    const fullName = `${profile.first_name} ${profile.last_name}`;
+    const roleLabel =
+        USER_ROLE_OPTIONS.find((r) => r.value === profile.role)?.label ||
+        profile.role;
+
     return (
-        <StyledContainer
+        <StyledProfileRoot
             component="form"
             onSubmit={(e) => {
                 void handleSave(e);
@@ -58,14 +65,13 @@ export const ProfilePage = () => {
             noValidate
             gap={4}
         >
-            <HeadingBox>
+            <StyledHeaderBox>
                 <Box>
                     <Typography variant="h3" fontWeight={700}>
-                        {profile.first_name} {profile.last_name}
+                        {fullName}
                     </Typography>
                     <Typography variant="h4" color="textDisabled">
-                        {ROLES.find((r) => r.value === profile.role)?.label ||
-                            profile.role}
+                        {roleLabel}
                     </Typography>
                 </Box>
                 {canUserEdit && (
@@ -102,9 +108,9 @@ export const ProfilePage = () => {
                         )}
                     </Stack>
                 )}
-            </HeadingBox>
+            </StyledHeaderBox>
             <Divider />
-            <FormGrid>
+            <StyledFormGrid>
                 <TextField
                     label="First Name"
                     {...register('first_name')}
@@ -149,15 +155,10 @@ export const ProfilePage = () => {
                     disabled={!isEditing}
                     variant={isEditing ? 'outlined' : 'filled'}
                     sx={getTextFieldStyle(theme)}
-                    value={
-                        !isEditing
-                            ? ROLES.find((r) => r.value === profile.role)
-                                  ?.label || profile.role
-                            : formValues.role || ''
-                    }
+                    value={!isEditing ? roleLabel : formValues.role || ''}
                 >
                     {isEditing
-                        ? ROLES.map((role) => (
+                        ? USER_ROLE_OPTIONS.map((role) => (
                               <MenuItem key={role.value} value={role.value}>
                                   {role.label}
                               </MenuItem>
@@ -182,7 +183,7 @@ export const ProfilePage = () => {
                 />
 
                 {isEditing && (
-                    <FullWidthItem>
+                    <StyledFullWidthItem>
                         <TextField
                             label="Jira API Token"
                             {...register('jira_api_token')}
@@ -194,10 +195,10 @@ export const ProfilePage = () => {
                             placeholder={FORM.MASK_PLACEHOLDER}
                             slotProps={{ inputLabel: { shrink: true } }}
                         />
-                    </FullWidthItem>
+                    </StyledFullWidthItem>
                 )}
 
-                <FullWidthItem>
+                <StyledFullWidthItem>
                     <TextField
                         label="About"
                         {...register('about')}
@@ -210,11 +211,11 @@ export const ProfilePage = () => {
                         variant={isEditing ? 'outlined' : 'filled'}
                         sx={getTextFieldStyle(theme)}
                     />
-                </FullWidthItem>
-            </FormGrid>
+                </StyledFullWidthItem>
+            </StyledFormGrid>
             <Snackbar open={!!saveError}>
                 <Alert severity="error">{saveError}</Alert>
             </Snackbar>
-        </StyledContainer>
+        </StyledProfileRoot>
     );
 };

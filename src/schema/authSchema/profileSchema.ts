@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ROLES } from '@constant';
+import { USER_ROLE_OPTIONS } from '@constant';
 
 export const profileSchema = z.object({
     first_name: z
@@ -13,8 +13,8 @@ export const profileSchema = z.object({
         .trim()
         .nonempty('Last name is required')
         .max(50, 'First name can not be more than 50 characters long'),
-    role: z.enum(ROLES.map((r) => r.value)),
-    dob: z.string().nullable().optional(),
+    role: z.enum(USER_ROLE_OPTIONS.map((r) => r.value)),
+    dob: z.string().nullish(),
     about: z
         .string()
         .trim()

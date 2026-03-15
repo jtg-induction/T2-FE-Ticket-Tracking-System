@@ -13,7 +13,7 @@ import {
 import { PATHS } from '@constant';
 import { useSignupForm } from '@hook';
 
-import { SignupInner, SignupRoot } from './SignupForm.style';
+import { StyledSignupContainer,StyledSignupForm } from './SignupForm.style';
 
 export const SignupForm = () => {
     const {
@@ -27,8 +27,8 @@ export const SignupForm = () => {
     } = useSignupForm();
 
     return (
-        <SignupRoot>
-            <SignupInner
+        <StyledSignupContainer>
+            <StyledSignupForm
                 component="form"
                 onSubmit={(e) => {
                     void handleSubmit(e);
@@ -70,7 +70,7 @@ export const SignupForm = () => {
                           : 'Send Verification Email'}
                 </Button>
 
-                <Typography textAlign={'center'}>
+                <Typography textAlign="center">
                     Already have an account?{' '}
                     <Link
                         component={ReactLink}
@@ -80,7 +80,7 @@ export const SignupForm = () => {
                         Sign in
                     </Link>
                 </Typography>
-            </SignupInner>
-        </SignupRoot>
+            </StyledSignupForm>
+        </StyledSignupContainer>
     );
 };

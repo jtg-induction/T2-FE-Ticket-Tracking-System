@@ -7,25 +7,25 @@ import {
 } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
-export const getTextFieldStyle = ({ palette, spacing }: Theme) => ({
-    [`&& .${inputBaseClasses.root}`]: {
+export const getTextFieldStyle = ({ palette }: Theme) => ({
+    [`& .${inputBaseClasses.root}`]: {
         color: palette.common.black,
         borderRadius: 2,
     },
-    [`&& .${filledInputClasses.root}`]: {
+    [`& .${filledInputClasses.root}`]: {
         backgroundColor: palette.grey[200],
     },
-    [`&& .${inputBaseClasses.input}`]: {
-        minHeight: spacing(10),
+    [`& .${inputBaseClasses.input}`]: {
+        minHeight: 40,
         WebkitTextFillColor: palette.text.primary,
     },
-    [`&& .${inputBaseClasses.disabled}:before`]: {
+    [`& .${inputBaseClasses.disabled}:before`]: {
         borderBottomStyle: 'none',
         borderRadius: 2,
     },
 });
 
-export const StyledContainer = styled(Stack)<StackProps<'form'>>(
+export const StyledProfileRoot = styled(Stack)<StackProps<'form'>>(
     ({ theme: { palette, breakpoints, spacing } }) => ({
         height: '100%',
         width: '100%',
@@ -41,21 +41,23 @@ export const StyledContainer = styled(Stack)<StackProps<'form'>>(
     }),
 );
 
-export const FormGrid = styled(Box)(({ theme: { spacing, breakpoints } }) => ({
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: spacing(2),
-    marginTop: spacing(2),
-    [breakpoints.down('sm')]: {
-        gridTemplateColumns: '1fr',
-    },
-}));
+export const StyledFormGrid = styled(Box)(
+    ({ theme: { spacing, breakpoints } }) => ({
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: spacing(2),
+        marginTop: spacing(2),
+        [breakpoints.down('sm')]: {
+            gridTemplateColumns: '1fr',
+        },
+    }),
+);
 
-export const FullWidthItem = styled(Box)(() => ({
+export const StyledFullWidthItem = styled(Box)(() => ({
     gridColumn: '1 / -1',
 }));
 
-export const HeadingBox = styled(Box)(({ theme: { spacing } }) => ({
+export const StyledHeaderBox = styled(Box)(({ theme: { spacing } }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',

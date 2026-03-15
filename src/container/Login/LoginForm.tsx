@@ -13,15 +13,15 @@ import {
 import { PATHS } from '@constant';
 import { useLoginForm } from '@hook';
 
-import { LoginInner, LoginRoot } from './LoginForm.style';
+import { StyledFormWrapper,StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formError, errors, isLoading } =
         useLoginForm();
 
     return (
-        <LoginRoot>
-            <LoginInner
+        <StyledLoginContainer>
+            <StyledFormWrapper
                 component="form"
                 onSubmit={(e) => {
                     void handleSubmit(e);
@@ -68,7 +68,7 @@ export const LoginForm = () => {
                 >
                     {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Typography textAlign={'center'}>
+                <Typography textAlign="center">
                     Don&apos;t have an account?{' '}
                     <Link
                         component={ReactLink}
@@ -78,7 +78,7 @@ export const LoginForm = () => {
                         Sign up
                     </Link>
                 </Typography>
-            </LoginInner>
-        </LoginRoot>
+            </StyledFormWrapper>
+        </StyledLoginContainer>
     );
 };

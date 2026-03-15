@@ -1,6 +1,6 @@
-import { Box, BoxProps, Stack, styled } from '@mui/material';
+import { Box, BoxProps, Stack, StackProps, styled } from '@mui/material';
 
-export const SidePanelRoot = styled(Stack)(
+export const StyledBrandingSection = styled(Stack)<StackProps>(
     ({ theme: { palette, breakpoints, spacing } }) => ({
         height: '100%',
         flex: 3,
@@ -16,16 +16,14 @@ export const SidePanelRoot = styled(Stack)(
     }),
 );
 
-export const Illustration = styled(Box)<BoxProps<'img'>>(
-    ({ theme: { spacing } }) => ({
-        aspectRatio: 'auto',
-        width: '70%',
-        maxWidth: spacing(125),
-        transform: 'translateX(10%)',
-    }),
-);
+export const StyledIllustration = styled(Box)<BoxProps<'img'>>(() => ({
+    aspectRatio: 'auto',
+    width: '70%',
+    maxWidth: 500,
+    transform: 'translateX(10%)',
+}));
 
-export const Logo = styled(Box)<BoxProps<'img'>>(({ theme: { spacing } }) => ({
+export const StyledLogo = styled(Box)<BoxProps<'img'>>(() => ({
     width: '40%',
-    maxWidth: spacing(75),
+    maxWidth: 300,
 }));
