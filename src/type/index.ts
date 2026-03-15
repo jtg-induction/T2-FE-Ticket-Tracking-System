@@ -1,4 +1,4 @@
-export type { UserRole, EditProfileRequest, UserResponse } from './user.type';
+export type { UserRole, EditProfileRequest, UserResponse } from './user.types';
 export type {
     LoginRequest,
     LoginResponse,
@@ -7,11 +7,11 @@ export type {
     SignupResponse,
     RegisterFormValues,
     SignupFormValues,
-} from './auth.type';
+} from './auth.types';
 
 export type {
     EntityResponse,
     PaginationMetadata,
     PaginatedResponse,
     ErrorResponse,
-} from './standard.type';
+} from './standard.types';

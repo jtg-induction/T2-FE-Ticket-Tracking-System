@@ -4,7 +4,7 @@ import { Avatar, Box, IconButton } from '@mui/material';
 import logo from '@assets/logo/logo-light.webp';
 
 import { HeaderLeft, HeaderRoot } from './Header.style';
-import { HeaderProps } from './Header.type';
+import { HeaderProps } from './Header.types';
 
 export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => (
     <HeaderRoot>
