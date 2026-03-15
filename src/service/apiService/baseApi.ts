@@ -70,20 +70,16 @@ const baseQueryWithReauth: BaseQueryFn<
                     const headers = new Headers();
 
                     if (retryArgs.headers) {
-                        const existingHeaders = retryArgs.headers as Record<
-                            string,
-                            string
-                        >;
-                        Object.entries(existingHeaders).forEach(
-                            ([key, value]) => {
-                                if (value) headers.set(key, value);
-                            },
+                        const tempHeaders = new Headers(
+                            retryArgs.headers as HeadersInit,
                         );
+                        tempHeaders.forEach((value, key) => {
+                            headers.set(key, value);
+                        });
                     }
 
                     headers.set('authorization', `Bearer ${newToken}`);
                     retryArgs.headers = headers;
-
                     result = await baseQuery(retryArgs, api, extraOptions);
                 } else {
                     api.dispatch(logOut());
@@ -105,7 +101,7 @@ const baseQueryWithReauth: BaseQueryFn<
         if ('meta' in raw && Array.isArray(raw.data)) {
             return { data: raw };
         }
-        return { data: raw.data };
+        return { data: raw };
     }
 
     if (result.error) {

@@ -1,2 +1,2 @@
-export { UserCard } from './UserCard.component';
+export { UserCard } from './UserCard';
 export type { UserRole } from './UserCard.types';

@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { profileSchema } from '@schema';
 
+import { ProjectRole } from './project.types';
+
 /**
  * Valid string values for user roles.
  */
@@ -32,11 +34,6 @@ export interface UserResponse {
  * Inferred directly from the {@link profileSchema} validation.
  */
 export type EditProfileRequest = z.infer<typeof profileSchema>;
-
-/**
- * Specific access levels or permissions assigned within the context of a project.
- */
-export type ProjectRole = 'admin' | 'role' | 'member';
 
 /**
  * Represents a user in the context of a specific project, extending base user.

@@ -23,4 +23,4 @@ export {
     useRemoveMemberMutation,
     useAcceptInviteMutation,
     useRejectInviteMutation,
-} from './ProjectMemberService';
+} from './projectMemberService';

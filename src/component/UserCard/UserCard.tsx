@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 
-import { generatePath, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import {
     AdminPanelSettings as AdminPanelSettingsIcon,
@@ -17,11 +17,11 @@ import {
     Menu,
     MenuItem,
     Typography,
-    useTheme,
 } from '@mui/material';
 
 import { PATHS } from '@constant';
 
+import { StyledUserCardItem, StyledUserInfo } from './UserCard.style';
 import { ROLE_HIERARCHY, UserCardProps } from './UserCard.types';
 
 export const UserCard = ({
@@ -33,7 +33,6 @@ export const UserCard = ({
     onAction,
 }: UserCardProps) => {
     const navigate = useNavigate();
-    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -49,22 +48,22 @@ export const UserCard = ({
         `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
 
     const handleCardClick = () => {
-        void navigate(generatePath(PATHS.PROFILE + '/' + userId));
+        void navigate(`${PATHS.PROFILE}/${userId}`);
     };
 
-    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation();
         setAnchorEl(event.currentTarget);
     };
 
-    const handleMenuClose = (event: React.MouseEvent<HTMLElement>) => {
+    const handleMenuClose = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation();
         setAnchorEl(null);
     };
 
     const handleActionClick = (
         action: string,
-        event: React.MouseEvent<HTMLElement>,
+        event: MouseEvent<HTMLElement>,
     ) => {
         event.stopPropagation();
         setAnchorEl(null);
@@ -72,55 +71,21 @@ export const UserCard = ({
     };
 
     return (
-        <Box
-            onClick={handleCardClick}
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                p: 1.5,
-                borderRadius: 1,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
-                '&:hover': {
-                    bgcolor: 'action.hover',
-                },
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                '&:last-child': {
-                    borderBottom: 'none',
-                },
-            }}
-        >
-            <Avatar
-                sx={{
-                    bgcolor: 'primary.light',
-                    color: 'primary.dark',
-                    width: 32,
-                    height: 32,
-                    fontSize: '1.5rem',
-                    fontWeight: 'bold',
-                    mr: 2,
-                    ml: 2,
-                }}
-            >
-                {initials}
-            </Avatar>
+        <StyledUserCardItem onClick={handleCardClick}>
+            <Avatar>{initials}</Avatar>
 
-            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+            <StyledUserInfo spacing={-1}>
                 <Typography variant="subtitle2" noWrap fontWeight="600">
                     {firstName} {lastName}
                 </Typography>
                 <Typography
                     variant="caption"
-                    sx={{
-                        color: 'text.secondary',
-                        textTransform: 'capitalize',
-                        display: 'block',
-                        lineHeight: 1,
-                    }}
+                    color="text.secondary"
+                    sx={{ textTransform: 'capitalize' }}
                 >
                     {role}
                 </Typography>
-            </Box>
+            </StyledUserInfo>
 
             {showMenu && (
                 <Box>
@@ -179,7 +144,7 @@ export const UserCard = ({
                         {normalizedMyRole === 'owner' &&
                             normalizedRole === 'admin' && (
                                 <MenuItem
-                                    sx={{ color: 'error.main' }}
+                                    color="error"
                                     onClick={(e) =>
                                         handleActionClick('revoke_admin', e)
                                     }
@@ -195,8 +160,8 @@ export const UserCard = ({
                             )}
 
                         <MenuItem
+                            color="error"
                             onClick={(e) => handleActionClick('remove_user', e)}
-                            sx={{ color: 'error.main' }}
                         >
                             <ListItemIcon>
                                 <PersonRemoveIcon
@@ -209,6 +174,6 @@ export const UserCard = ({
                     </Menu>
                 </Box>
             )}
-        </Box>
+        </StyledUserCardItem>
     );
 };

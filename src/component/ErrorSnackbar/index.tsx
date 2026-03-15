@@ -1,1 +1,1 @@
-export { ErrorSnackbar } from './ErrorSnackbar.component';
+export { ErrorSnackbar } from './ErrorSnackbar';

@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, Snackbar, Typography } from '@mui/material';
 
 import type { ErrorSnackbarProps } from './ErrorSnackbar.types';
 
@@ -11,17 +11,11 @@ export const ErrorSnackbar = ({
         open={Boolean(error)}
         autoHideDuration={autoHideDuration}
         onClose={onClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
-        <Alert
-            severity="error"
-            variant="filled"
-            onClose={onClose}
-            sx={{ width: '100%', textAlign: 'left' }}
-        >
-            <AlertTitle>Action Failed</AlertTitle>
+        <Alert severity="error" onClose={onClose}>
             <Box>
-                <Typography variant="body2" fontWeight="bold">
+                <Typography variant="body2" fontWeight={600}>
                     {error?.message || 'An unexpected error occurred.'}
                 </Typography>
 

@@ -51,6 +51,18 @@ export const components: Components<Theme> = {
             },
         ],
     },
+    MuiAvatar: {
+        styleOverrides: {
+            root: ({ theme: { palette } }) => ({
+                width: 32,
+                height: 32,
+                margin: 4,
+                fontSize: '1.5rem',
+                backgroundColor: palette.primary.main,
+                color: palette.primary.contrastText,
+            }),
+        },
+    },
     MuiCssBaseline: {
         styleOverrides: globalCss,
     },

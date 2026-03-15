@@ -1,1 +1,1 @@
-export { AcceptInviteContainer } from './AcceptInvite.container';
+export { AcceptInviteContainer } from './AcceptInvite';

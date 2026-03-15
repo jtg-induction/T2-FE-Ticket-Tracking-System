@@ -30,7 +30,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ id, email }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/invite/`,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 body: { email },
             }),
             invalidatesTags: (_res, _err, { id }) => [
@@ -41,7 +41,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         acceptInvite: builder.mutation<EntityResponse<null>, string>({
             query: (token) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}accept-invite/${token}/`,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
             }),
             invalidatesTags: () => [{ type: 'ProjectMember' }],
         }),
@@ -49,8 +49,9 @@ export const projectUserApi = baseApi.injectEndpoints({
         rejectInvite: builder.mutation<EntityResponse<null>, string>({
             query: (token) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}reject-invite/${token}/`,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
             }),
+            // Broad invalidation is intentional as API doesn't return project ID.
             invalidatesTags: () => [{ type: 'ProjectMember' }],
         }),
 
@@ -60,7 +61,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ projectId, userId, projectRole }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/${userId}/role/`,
-                method: 'PATCH',
+                method: API_CONSTANTS.METHODS.POST,
                 body: { projectRole },
             }),
             invalidatesTags: (_res, _err, { projectId }) => [
@@ -74,7 +75,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ projectId, userId }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/${userId}/`,
-                method: 'DELETE',
+                method: API_CONSTANTS.METHODS.POST,
             }),
             invalidatesTags: (_res, _err, { projectId }) => [
                 { type: 'ProjectMember', id: `LIST-${projectId}` },

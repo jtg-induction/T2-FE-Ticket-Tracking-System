@@ -17,21 +17,27 @@ import {
     TextField,
     Tooltip,
     Typography,
+    useTheme,
 } from '@mui/material';
 
-import { ErrorSnackbar, UserCard, UserRole } from '@component';
+import { ErrorSnackbar, UserCard } from '@component';
 import {
     useGetProjectMembersQuery,
+    useInviteMemberMutation,
     useRemoveMemberMutation,
     useUpdateMemberRoleMutation,
-    useInviteMemberMutation,
 } from '@service';
 import { ErrorResponse, ProjectMember } from '@type';
 
 const PAGE_SIZE = 5;
 
-export const ProjectUsersContainer = () => {
+export const ProjectUsers = () => {
+    const { spacing } = useTheme();
     const { projectId } = useParams<{ projectId: string }>();
+
+    if (!projectId || projectId === 'new') {
+        return null;
+    }
     const [page, setPage] = useState(1);
     const [inviteEmail, setInviteEmail] = useState('');
     const [activeError, setActiveError] = useState<ErrorResponse | null>(null);
@@ -42,10 +48,7 @@ export const ProjectUsersContainer = () => {
         isLoading,
         isFetching,
         error: fetchError,
-    } = useGetProjectMembersQuery(
-        { id: projectId!, page },
-        { skip: !projectId },
-    );
+    } = useGetProjectMembersQuery({ id: projectId, page });
 
     const [removeMember] = useRemoveMemberMutation();
     const [updateRole] = useUpdateMemberRoleMutation();
@@ -57,8 +60,7 @@ export const ProjectUsersContainer = () => {
         }
     }, [fetchError]);
 
-    const members =
-        response && response.success ? (response.data as ProjectMember[]) : [];
+    const members = response && response.success ? response.data : [];
     const meta = response && 'meta' in response ? response.meta : null;
 
     const totalPages = useMemo(
@@ -113,7 +115,6 @@ export const ProjectUsersContainer = () => {
                 id: projectId,
                 email: inviteEmail,
             }).unwrap();
-            setInviteEmail('');
             setSuccessMessage(
                 inviteResponse.message || `Invitation sent to ${inviteEmail}`,
             );
@@ -125,61 +126,45 @@ export const ProjectUsersContainer = () => {
     };
 
     return (
-        <Paper
-            variant="outlined"
-            sx={{
-                p: 0,
-                pb: 2,
-                position: 'sticky',
-                top: 20,
-                bgcolor: 'background.default',
-                borderRadius: 2,
-                minHeight: 400,
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
-            <Box sx={{ p: 2 }}>
-                <Box
-                    display={'flex'}
-                    flexDirection={'row'}
-                    justifyContent={'space-between'}
-                    alignItems={'center'}
+        <Paper variant="outlined" sx={{ minHeight: spacing(100) }}>
+            <Box p={spacing(4)}>
+                <Stack
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    alignItems="center"
                 >
-                    <Box>
-                        <Typography variant="subtitle1" fontWeight="bold">
+                    <Stack>
+                        <Typography variant="body1" fontWeight="bold">
                             Project Members
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="textSecondary">
                             {isLoading
                                 ? 'Loading...'
                                 : `${meta?.count || 0} members total`}
                         </Typography>
-                    </Box>
+                    </Stack>
 
-                    <Box>
-                        <Tooltip title="Leave Project">
-                            <IconButton
-                                sx={{ color: 'error.main' }}
-                                onClick={() =>
-                                    me?.user_id &&
-                                    void handleAction('remove_user', me.user_id)
-                                }
-                            >
-                                <LogoutIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                </Box>
+                    <Tooltip title="Leave Project">
+                        <IconButton
+                            color="error"
+                            onClick={() =>
+                                me?.user_id &&
+                                void handleAction('remove_user', me.user_id)
+                            }
+                        >
+                            <LogoutIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
 
-                <Box sx={{ mt: 2 }}>
+                <Box>
                     <TextField
                         fullWidth
                         size="small"
                         placeholder="Invite by email..."
                         value={inviteEmail}
                         onChange={(e) => {
-                            void setInviteEmail(e.target.value);
+                            setInviteEmail(e.target.value);
                         }}
                         disabled={isInviting}
                         slotProps={{
@@ -210,23 +195,14 @@ export const ProjectUsersContainer = () => {
             <Divider />
 
             <Box sx={{ flexGrow: 1, position: 'relative' }}>
-                {isFetching && !isLoading && (
+                {isFetching && !isLoading ? (
                     <Box
                         sx={{
-                            position: 'absolute',
-                            inset: 0,
                             zIndex: 1,
                             display: 'flex',
                             justifyContent: 'center',
-                            pt: 4,
                         }}
                     >
-                        <CircularProgress size={24} />
-                    </Box>
-                )}
-
-                {isLoading ? (
-                    <Box sx={{ py: 4, textAlign: 'center' }}>
                         <CircularProgress size={24} />
                     </Box>
                 ) : (
@@ -237,10 +213,8 @@ export const ProjectUsersContainer = () => {
                                 userId={user.user_id}
                                 firstName={user.first_name}
                                 lastName={user.last_name}
-                                role={user.projectRole as UserRole}
-                                myRole={
-                                    (me?.projectRole as UserRole) ?? 'member'
-                                }
+                                role={user.projectRole}
+                                myRole={me?.projectRole ?? 'member'}
                                 onAction={(action, targetUserId) =>
                                     void handleAction(action, targetUserId)
                                 }

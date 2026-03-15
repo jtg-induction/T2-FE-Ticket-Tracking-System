@@ -1,10 +1,10 @@
-export type UserRole = 'owner' | 'admin' | 'member';
+import { ProjectRole } from '@type/project.types';
 
 export type UserCardProps = {
     userId: string;
     firstName: string;
     lastName: string;
-    role: UserRole;
+    role: ProjectRole;
     myRole: string;
     onAction: (action: string, userId: string) => void;
 };

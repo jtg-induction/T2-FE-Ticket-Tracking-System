@@ -1,8 +1,8 @@
-import { Stack, Grid2 as Grid, Container } from '@mui/material';
-
-import { ProjectDetail } from '@container';
 import { useParams } from 'react-router';
-import { ProjectUsersContainer } from './ProjectUsers';
+
+import { Container,Grid2 as Grid, Stack } from '@mui/material';
+
+import { ProjectDetail, ProjectUsers } from '@container';
 
 export const ProjectDetailPage = () => {
     const { projectId } = useParams<{ projectId: string }>();
@@ -16,7 +16,7 @@ export const ProjectDetailPage = () => {
 
                     {projectId && projectId !== 'new' && (
                         <Grid size={{ xs: 12, md: 4 }}>
-                            <ProjectUsersContainer />
+                            <ProjectUsers />
                         </Grid>
                     )}
                 </Grid>
