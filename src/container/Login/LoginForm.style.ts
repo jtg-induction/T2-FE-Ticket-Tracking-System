@@ -9,11 +9,11 @@ export const StyledLoginContainer = styled(Container)(
 );
 
 export const StyledFormWrapper = styled(Stack)<StackProps<'form'>>(
-    ({ theme: { spacing } }) => ({
+    ({ theme: { spacing, typography } }) => ({
         padding: spacing(8),
         marginInline: 'auto',
         minHeight: '100%',
-        maxWidth: 500,
+        maxWidth: typography.pxToRem(500),
         justifyContent: 'center',
         gap: spacing(2),
     }),

@@ -11,8 +11,8 @@ export const StyledRegisterContainer = styled(Container)(
 );
 
 export const StyledRegistrationForm = styled(Stack)<StackProps<'form'>>(
-    ({ theme: { spacing } }) => ({
-        maxWidth: 500,
+    ({ theme: { spacing, typography } }) => ({
+        maxWidth: typography.pxToRem(500),
         marginInline: 'auto',
         minHeight: '100%',
         gap: spacing(2),

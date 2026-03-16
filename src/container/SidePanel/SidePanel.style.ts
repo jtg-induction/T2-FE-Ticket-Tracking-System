@@ -16,12 +16,14 @@ export const StyledBrandingSection = styled(Stack)<StackProps>(
     }),
 );
 
-export const StyledIllustration = styled(Box)<BoxProps<'img'>>(() => ({
-    aspectRatio: 'auto',
-    width: '70%',
-    maxWidth: 500,
-    transform: 'translateX(10%)',
-}));
+export const StyledIllustration = styled(Box)<BoxProps<'img'>>(
+    ({ theme: { typography } }) => ({
+        aspectRatio: 'auto',
+        width: '70%',
+        maxWidth: typography.pxToRem(500),
+        transform: 'translateX(10%)',
+    }),
+);
 
 export const StyledLogo = styled(Box)<BoxProps<'img'>>(() => ({
     width: '40%',

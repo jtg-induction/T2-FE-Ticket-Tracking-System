@@ -13,7 +13,7 @@ import {
 import { PATHS } from '@constant';
 import { useSignupForm } from '@hook';
 
-import { StyledSignupContainer,StyledSignupForm } from './SignupForm.style';
+import { StyledSignupContainer, StyledSignupForm } from './SignupForm.style';
 
 export const SignupForm = () => {
     const {

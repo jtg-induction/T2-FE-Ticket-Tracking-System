@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
-export const getTextFieldStyle = ({ palette }: Theme) => ({
+export const getTextFieldStyle = ({ palette, typography }: Theme) => ({
     [`& .${inputBaseClasses.root}`]: {
         color: palette.common.black,
         borderRadius: 2,
@@ -16,7 +16,7 @@ export const getTextFieldStyle = ({ palette }: Theme) => ({
         backgroundColor: palette.grey[200],
     },
     [`& .${inputBaseClasses.input}`]: {
-        minHeight: 40,
+        minHeight: typography.pxToRem(40),
         WebkitTextFillColor: palette.text.primary,
     },
     [`& .${inputBaseClasses.disabled}:before`]: {

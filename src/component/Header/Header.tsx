@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 
-import MenuIcon from '@mui/icons-material/Menu';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { Avatar, Box, IconButton } from '@mui/material';
 
 import Logo from '@assets/logo/logo-light.webp';
@@ -14,7 +14,7 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
     return (
         <StyledAppBar>
             <StyledToolbar>
-                <Box display={'flex'} alignItems={'center'}>
+                <Box display="flex" alignItems="center">
                     <IconButton
                         aria-label="Toggle sidebar"
                         onClick={onSidebarToggle}
@@ -22,7 +22,7 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
                         <MenuIcon />
                     </IconButton>
                     <StyledLogo
-                        component={'img'}
+                        component="img"
                         paddingX={4}
                         src={Logo}
                         alt="Logo"

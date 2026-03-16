@@ -9,11 +9,11 @@ export const StyledSignupContainer = styled(Container)(
 );
 
 export const StyledSignupForm = styled(Stack)<StackProps<'form'>>(
-    ({ theme: { spacing } }) => ({
+    ({ theme: { spacing, typography } }) => ({
         padding: spacing(8),
         marginInline: 'auto',
         minHeight: '100%',
-        maxWidth: 500,
+        maxWidth: typography.pxToRem(500),
         justifyContent: 'center',
         gap: spacing(2),
     }),

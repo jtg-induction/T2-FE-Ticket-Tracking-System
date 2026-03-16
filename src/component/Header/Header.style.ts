@@ -20,13 +20,15 @@ export const StyledToolbar = styled(Toolbar)(({ theme: { typography } }) => ({
     alignItems: 'center',
 }));
 
-export const StyledLogo = styled(Box)<BoxProps<'img'>>(() => ({
-    height: 32,
-    width: 'auto',
-}));
+export const StyledLogo = styled(Box)<BoxProps<'img'>>(
+    ({ theme: { typography } }) => ({
+        height: typography.pxToRem(32),
+        width: 'auto',
+    }),
+);
 
-export const StyledAvatar = styled(Avatar)(() => ({
-    width: 40,
-    height: 40,
+export const StyledAvatar = styled(Avatar)(({ theme: { typography } }) => ({
+    width: typography.pxToRem(40),
+    height: typography.pxToRem(40),
     fontSize: '2rem',
 }));

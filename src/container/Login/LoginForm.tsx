@@ -13,7 +13,7 @@ import {
 import { PATHS } from '@constant';
 import { useLoginForm } from '@hook';
 
-import { StyledFormWrapper,StyledLoginContainer } from './LoginForm.style';
+import { StyledFormWrapper, StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formError, errors, isLoading } =
