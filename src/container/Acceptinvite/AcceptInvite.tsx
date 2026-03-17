@@ -22,7 +22,7 @@ import {
     StyledInviteRoot,
 } from './AcceptInvite.style';
 
-export const AcceptInviteContainer = () => {
+export const AcceptInvite = () => {
     const { token } = useParams<{ token: string }>();
     const navigate = useNavigate();
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -35,9 +35,12 @@ export const AcceptInviteContainer = () => {
     const [rejectInvite, { isLoading: isLoadingReject }] =
         useRejectInviteMutation();
 
-    useEffect(() => () => {
+    useEffect(
+        () => () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        }, []);
+        },
+        [],
+    );
 
     const handleError = (err: unknown) => {
         const errorObj = err as { data: ErrorResponse };

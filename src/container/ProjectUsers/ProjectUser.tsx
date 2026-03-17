@@ -126,7 +126,7 @@ export const ProjectUsers = () => {
     };
 
     return (
-        <Paper variant="outlined" sx={{ minHeight: spacing(100) }}>
+        <Paper sx={{ minHeight: 400 }}>
             <Box p={spacing(4)}>
                 <Stack
                     flexDirection="row"
@@ -194,15 +194,9 @@ export const ProjectUsers = () => {
 
             <Divider />
 
-            <Box sx={{ flexGrow: 1, position: 'relative' }}>
+            <Box flexGrow={1} position="relative">
                 {isFetching && !isLoading ? (
-                    <Box
-                        sx={{
-                            zIndex: 1,
-                            display: 'flex',
-                            justifyContent: 'center',
-                        }}
-                    >
+                    <Box display="flex" justifyContent="center" zIndex={1}>
                         <CircularProgress size={24} />
                     </Box>
                 ) : (
@@ -227,9 +221,7 @@ export const ProjectUsers = () => {
             {totalPages > 1 && (
                 <>
                     <Divider />
-                    <Box
-                        sx={{ p: 2, display: 'flex', justifyContent: 'center' }}
-                    >
+                    <Box display="flex" p={2} justifyContent="center">
                         <Pagination
                             count={totalPages}
                             page={page}

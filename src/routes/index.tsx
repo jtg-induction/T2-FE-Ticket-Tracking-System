@@ -4,7 +4,7 @@ import { PATHS } from '@constant';
 import { LoginForm, RegisterForm, SignupForm } from '@container';
 import { RootLayout } from '@layout';
 import {
-    AcceptInviteContainer,
+    AcceptInvitePage,
     AuthPage,
     ErrorPage,
     ProfilePage,
@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: PATHS.ACCEPT_INVITE,
-                element: <AcceptInviteContainer />,
+                element: <AcceptInvitePage />,
             },
         ],
     },

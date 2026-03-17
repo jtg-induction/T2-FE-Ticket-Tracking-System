@@ -51,6 +51,17 @@ export const components: Components<Theme> = {
             },
         ],
     },
+    MuiPaper: {
+        defaultProps: {
+            elevation: 3,
+        },
+        styleOverrides: {
+            root: {
+                borderRadius: '8px',
+                overflow: 'hidden',
+            },
+        },
+    },
     MuiAvatar: {
         styleOverrides: {
             root: ({ theme: { palette } }) => ({

@@ -1,1 +1,0 @@
-export { AcceptInviteContainer } from './AcceptInvite';
