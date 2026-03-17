@@ -47,7 +47,10 @@ export const RootLayout = () => {
         <StyledLayoutRoot maxWidth="xl" disableGutters>
             {!isPublicPath && (
                 <>
-                    <Header userInitial="U" onSidebarToggle={() => {}} />
+                    <Header
+                        userInitial="U"
+                        onSidebarToggle={handleDrawerToggle}
+                    />
                     <Sidebar onClose={handleDrawerToggle} open={sidebarOpen} />
                 </>
             )}

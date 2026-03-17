@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { PATHS } from '@constant';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,8 +13,7 @@ import {
 } from '@service';
 import { ErrorResponse, Project } from '@type';
 
-export const useProjectForm = () => {
-    const { id } = useParams<{ id: string }>();
+export const useProjectForm = (id: string) => {
     const navigate = useNavigate();
     const isNew = id === 'new';
 
@@ -23,7 +22,7 @@ export const useProjectForm = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     const { data: project, isLoading: isFetching } = useGetProjectByIdQuery(
-        id!,
+        id,
         { skip: isNew },
     );
 
@@ -72,14 +71,12 @@ export const useProjectForm = () => {
 
                 const payload: Partial<Project> = {};
                 keys.forEach((key) => {
-                    (payload as Record<keyof Project, Project[keyof Project]>)[
-                        key
-                    ] = data[key];
+                    Object.assign(payload, { [key]: data[key] });
                 });
 
                 await updateProject({
-                    id: id!,
-                    body: payload as Project,
+                    id,
+                    body: payload,
                 }).unwrap();
                 setIsEditing(false);
             }
@@ -118,8 +115,8 @@ export const useProjectForm = () => {
         handleUnarchive: async () => {
             try {
                 await updateProject({
-                    id: id!,
-                    body: { is_archived: false } as Project,
+                    id: id,
+                    body: { is_archived: false },
                 }).unwrap();
             } catch {
                 setSnackbarOpen(true);

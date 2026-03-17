@@ -7,4 +7,11 @@ export const API_CONSTANTS = {
         USER: '/api/user/',
         PROJECT: '/api/project/',
     },
+    METHODS: {
+        GET: 'GET',
+        POST: 'POST',
+        PUT: 'PUT',
+        PATCH: 'PATCH',
+        DELETE: 'DELETE',
+    },
 } as const;

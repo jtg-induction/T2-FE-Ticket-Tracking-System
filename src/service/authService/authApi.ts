@@ -13,7 +13,7 @@ export const authApi = baseApi.injectEndpoints({
         login: builder.mutation<LoginResponse, LoginRequest>({
             query: (credentials) => ({
                 url: API_CONSTANTS.ENDPOINTS.LOGIN,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 body: credentials,
                 credentials: 'include',
             }),
@@ -22,15 +22,15 @@ export const authApi = baseApi.injectEndpoints({
         signup: builder.mutation<SignupResponse, { email: string }>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.SIGNUP,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 body,
             }),
         }),
 
-        register: builder.mutation<LoginResponse, RegisterRequest>({
+        register: builder.mutation<LoginResponse, Partial<RegisterRequest>>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.USER,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 body,
             }),
         }),
@@ -38,7 +38,7 @@ export const authApi = baseApi.injectEndpoints({
         logout: builder.mutation<void, void>({
             query: () => ({
                 url: API_CONSTANTS.ENDPOINTS.LOGOUT,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 credentials: 'include',
             }),
         }),
@@ -46,7 +46,7 @@ export const authApi = baseApi.injectEndpoints({
         refresh: builder.mutation<RefreshResponse, void>({
             query: () => ({
                 url: API_CONSTANTS.ENDPOINTS.REFRESH,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 credentials: 'include',
             }),
         }),

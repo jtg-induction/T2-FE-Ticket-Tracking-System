@@ -52,7 +52,7 @@ const baseQueryWithReauth: BaseQueryFn<
                 const refreshResult = await baseQuery(
                     {
                         url: API_CONSTANTS.ENDPOINTS.REFRESH,
-                        method: 'POST',
+                        method: API_CONSTANTS.METHODS.POST,
                         credentials: 'include',
                     },
                     api,

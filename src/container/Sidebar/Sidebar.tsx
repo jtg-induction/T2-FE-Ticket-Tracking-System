@@ -1,31 +1,21 @@
 import { useLocation, useNavigate } from 'react-router';
 
 import {
-    Drawer,
-    drawerClasses,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
 
-import { DIMENSIONS } from '@constant';
-
 import { SIDEBAR_CONFIG } from './Sidebar.config';
+import { StyledDrawer } from './Sidebar.style';
 import type { SidebarProps } from './Sidebar.types';
 
 export const Sidebar = (props: SidebarProps) => {
     const { open, onClose } = props;
-    const {
-        typography: { pxToRem },
-        breakpoints,
-    } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const isDesktop = useMediaQuery(breakpoints.up('md'));
 
     const handleNavigation = (route: string) => {
         void navigate(route);
@@ -60,24 +50,15 @@ export const Sidebar = (props: SidebarProps) => {
     );
 
     return (
-        <Drawer
+        <StyledDrawer
             variant="temporary"
             open={open}
             onClose={onClose}
             ModalProps={{
                 keepMounted: true,
             }}
-            sx={{
-                [`& .${drawerClasses.paper}`]: {
-                    width: isDesktop
-                        ? pxToRem(DIMENSIONS.DRAWER_WIDTH.DESKTOP)
-                        : pxToRem(DIMENSIONS.DRAWER_WIDTH.MOBILE),
-                    boxSizing: 'border-box',
-                    marginTop: pxToRem(DIMENSIONS.HEADER_HEIGHT),
-                },
-            }}
         >
             {drawerContent}
-        </Drawer>
+        </StyledDrawer>
     );
 };

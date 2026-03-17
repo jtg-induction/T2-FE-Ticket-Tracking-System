@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router';
+
 import {
     Close as CloseIcon,
     Edit as EditIcon,
@@ -32,6 +34,9 @@ import {
 
 export const ProfileDetail = () => {
     const theme = useTheme();
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get('id') || '';
+
     const {
         profile,
         isEditing,
@@ -45,7 +50,7 @@ export const ProfileDetail = () => {
         errors,
         formValues,
         isDirty,
-    } = useProfileForm();
+    } = useProfileForm(id);
 
     if (loading && !profile) return <Typography>Loading Profile...</Typography>;
     if (fetchError || !profile)

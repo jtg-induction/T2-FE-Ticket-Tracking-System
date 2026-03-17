@@ -10,23 +10,24 @@ export const projectApi = baseApi.injectEndpoints({
                 { type: 'Project' as const, id },
             ],
         }),
-        updateProject: builder.mutation<Project, { id: string; body: Project }>(
-            {
-                query: ({ id, body }) => ({
-                    url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
-                    method: 'PATCH',
-                    body,
-                }),
-                invalidatesTags: (_result, _error, { id }) => [
-                    { type: 'Project' as const, id },
-                    { type: 'Project' as const, id: 'LIST' },
-                ],
-            },
-        ),
+        updateProject: builder.mutation<
+            Project,
+            { id: string; body: Partial<Project> }
+        >({
+            query: ({ id, body }) => ({
+                url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
+                method: API_CONSTANTS.METHODS.PATCH,
+                body,
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: 'Project' as const, id },
+                { type: 'Project' as const, id: 'LIST' },
+            ],
+        }),
         createProject: builder.mutation<Project, Project>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
-                method: 'POST',
+                method: API_CONSTANTS.METHODS.POST,
                 body,
             }),
             invalidatesTags: [{ type: 'Project' as const }],
