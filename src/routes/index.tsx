@@ -7,10 +7,12 @@ import {
     AcceptInvitePage,
     AuthPage,
     ErrorPage,
+    MyTicketsPage,
     ProfilePage,
+    ProjectDashboardPage,
     ProjectDetailPage,
     ProjectPage,
-    TasksPage,
+    TicketDetailPage,
 } from '@page';
 
 export const router = createBrowserRouter([
@@ -42,12 +44,20 @@ export const router = createBrowserRouter([
                 ],
             },
             { path: PATHS.PROJECTS, element: <ProjectPage /> },
-            { path: PATHS.TASKS, element: <TasksPage /> },
+            { path: PATHS.TICKET, element: <MyTicketsPage /> },
             { path: PATHS.PROFILE, element: <ProfilePage /> },
             { path: `${PATHS.PROFILE}/:id`, element: <ProfilePage /> },
             {
                 path: `${PATHS.PROJECTS}/:projectId`,
+                element: <ProjectDashboardPage />,
+            },
+            {
+                path: `${PATHS.PROJECTS}/:projectId/detail`,
                 element: <ProjectDetailPage />,
+            },
+            {
+                path: `${PATHS.PROJECTS}/:projectId${PATHS.TICKET}/:ticketId`,
+                element: <TicketDetailPage />,
             },
             {
                 path: PATHS.ACCEPT_INVITE,

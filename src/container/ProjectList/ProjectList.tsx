@@ -96,7 +96,9 @@ export const ProjectList = () => {
 
                 <Tooltip title="Create Project">
                     <CustomIconButton
-                        onClick={() => void navigate(PATHS.PROJECTS + '/new')}
+                        onClick={() =>
+                            void navigate(PATHS.PROJECTS + '/new/detail')
+                        }
                     >
                         <AddIcon />
                     </CustomIconButton>

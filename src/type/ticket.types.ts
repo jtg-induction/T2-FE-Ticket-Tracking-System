@@ -1,0 +1,61 @@
+import { z } from 'zod';
+
+import { CreateTicketSchema, TicketBaseSchema } from '@schema';
+
+import { UserResponse } from './user.types';
+
+/**
+ * Priority levels for sorting and categorizing ticket urgency.
+ */
+export enum TicketPriority {
+    Highest = 'Highest',
+    High = 'High',
+    Medium = 'Medium',
+    Low = 'Low',
+    Lowest = 'Lowest',
+}
+
+/**
+ * Current workflow state of a ticket.
+ */
+export enum TicketStatus {
+    ToDo = 'To Do',
+    InProgress = 'In Progress',
+    Done = 'Done',
+    Closed = 'Closed',
+}
+
+/**
+ * Functional department or area the ticket belongs to.
+ */
+export type TicketCategory = 'Development' | 'Design' | 'QA' | 'Research';
+
+/**
+ * User permissions/relationship relative to a specific ticket.
+ */
+export type TicketRole = 'reporter' | 'admin' | 'assignee' | 'member';
+
+/**
+ * Input type for creating a new ticket, inferred from Zod schema.
+ */
+export type CreateTicketInput = z.infer<typeof CreateTicketSchema>;
+
+/**
+ * Complete Ticket data structure including metadata and relations.
+ */
+export interface Ticket extends z.infer<typeof TicketBaseSchema> {
+    id: string;
+    jira_id: string;
+    status: TicketStatus;
+    category: TicketCategory;
+    created_at?: string;
+    updated_at?: string;
+    ticket_role?: TicketRole;
+    status_updated_at?: string | null;
+    status_updated_from?: TicketStatus | null;
+    completed_at?: string | null;
+    updated_by?: string | null;
+    reporter: UserResponse;
+    assignee?: UserResponse | null;
+    project: string;
+}

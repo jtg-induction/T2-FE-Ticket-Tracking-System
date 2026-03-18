@@ -6,11 +6,11 @@ export const projectUserApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getProjectMembers: builder.query<
             PaginatedResponse<ProjectMember>,
-            { id: string; page: number }
+            { id: string; page: number; search?: string }
         >({
-            query: ({ id, page }) => ({
+            query: ({ id, page, search }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/members/`,
-                params: { page, page_size: 5 },
+                params: { page, page_size: 5, search: search || undefined },
             }),
             providesTags: (result, _error, { id }) =>
                 result && 'data' in result && Array.isArray(result.data)

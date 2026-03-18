@@ -1,3 +1,5 @@
+import { Link } from 'react-router';
+
 import { AppBar, Avatar, Box, BoxProps, styled, Toolbar } from '@mui/material';
 
 import { DIMENSIONS } from '@constant';
@@ -32,3 +34,8 @@ export const StyledAvatar = styled(Avatar)(({ theme: { typography } }) => ({
     height: typography.pxToRem(40),
     fontSize: '2rem',
 }));
+
+export const StyledMenuLink = styled(Link)({
+    display: 'flex',
+    alignItems: 'center',
+});

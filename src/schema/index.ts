@@ -6,3 +6,5 @@ export {
 } from './authSchema';
 
 export { projectSchema } from './projectSchema';
+
+export { TicketBaseSchema, CreateTicketSchema } from './ticketSchema';

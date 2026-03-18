@@ -4,7 +4,7 @@ export const PATHS = {
     REGISTER: '/register',
     PROJECTS: '/projects',
     PROFILE: '/profile',
-    TASKS: '/tasks',
+    TICKET: '/tickets',
     ACCEPT_INVITE: '/accept-invite/:token',
 } as const;
 

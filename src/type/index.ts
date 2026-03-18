@@ -24,3 +24,12 @@ export type {
     PaginatedResponse,
     ErrorResponse,
 } from './standard.types';
+
+export type {
+    Ticket,
+    TicketCategory,
+    TicketRole,
+    CreateTicketInput,
+} from './ticket.types';
+
+export { TicketStatus, TicketPriority } from './ticket.types';

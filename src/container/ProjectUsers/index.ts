@@ -1,1 +1,1 @@
-export { ProjectUsers } from './ProjectUser';
+export { ProjectUsers } from './ProjectUsers';

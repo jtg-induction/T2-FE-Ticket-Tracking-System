@@ -98,9 +98,16 @@ const baseQueryWithReauth: BaseQueryFn<
             | PaginatedResponse<unknown>
             | EntityResponse<unknown>;
 
-        if ('meta' in raw && Array.isArray(raw.data)) {
-            return { data: raw };
+        const isDoubleWrapped =
+            'success' in raw &&
+            raw.data !== null &&
+            typeof raw.data === 'object' &&
+            'success' in (raw.data as Record<string, unknown>);
+
+        if (isDoubleWrapped) {
+            return { data: raw.data };
         }
+
         return { data: raw };
     }
 
@@ -122,6 +129,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User', 'Project', 'ProjectMember'],
+    tagTypes: ['User', 'Project', 'ProjectMember', 'Ticket'],
     endpoints: () => ({}),
 });

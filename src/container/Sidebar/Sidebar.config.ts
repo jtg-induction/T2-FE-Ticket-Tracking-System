@@ -10,9 +10,9 @@ export const SIDEBAR_CONFIG = [
         icon: FolderOpenOutlined,
     },
     {
-        id: 'tasks',
-        title: 'Tasks',
-        route: PATHS.TASKS,
+        id: 'mytickets',
+        title: 'My Tickets',
+        route: PATHS.TICKET,
         icon: AssignmentOutlined,
     },
 ];

@@ -78,7 +78,7 @@ export const ProjectUsers = () => {
     const [updateRole] = useUpdateMemberRoleMutation();
     const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
 
-    const members = response && response.success ? response.data : [];
+    const members: ProjectMember[] = response?.data || [];
     const meta = response?.meta ?? null;
 
     useEffect(() => {
