@@ -18,6 +18,16 @@ const globalCss = `
     `;
 
 export const components: Components = {
+    MuiTypography: {
+        styleOverrides: {
+            root: {
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block',
+            },
+        },
+    },
     MuiFormControl: {
         styleOverrides: {
             root: {

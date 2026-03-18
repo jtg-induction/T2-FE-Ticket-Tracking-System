@@ -7,6 +7,7 @@ import {
     Alert,
     Box,
     Button,
+    Container,
     Divider,
     Fab,
     MenuItem,
@@ -27,7 +28,6 @@ import {
     StyledFormGrid,
     StyledFullWidthItem,
     StyledHeaderBox,
-    StyledProfileRoot,
 } from './ProfileDetail.style';
 
 export const ProfileDetail = () => {
@@ -57,16 +57,16 @@ export const ProfileDetail = () => {
         profile.role;
 
     return (
-        <StyledProfileRoot
+        <Container
             component="form"
             onSubmit={(e) => {
                 void handleSave(e);
             }}
             noValidate
-            gap={4}
+            sx={{ padding: 4 }}
         >
             <StyledHeaderBox>
-                <Box>
+                <Box overflow="hidden">
                     <Typography variant="h3" fontWeight={700}>
                         {fullName}
                     </Typography>
@@ -109,7 +109,7 @@ export const ProfileDetail = () => {
                     </Stack>
                 )}
             </StyledHeaderBox>
-            <Divider />
+            <Divider sx={{ my: 4 }} />
             <StyledFormGrid>
                 <TextField
                     label="First Name"
@@ -216,6 +216,6 @@ export const ProfileDetail = () => {
             <Snackbar open={!!saveError}>
                 <Alert severity="error">{saveError}</Alert>
             </Snackbar>
-        </StyledProfileRoot>
+        </Container>
     );
 };
