@@ -16,7 +16,6 @@ export const CustomIconButton = styled(IconButton, {
     }),
     ...(variant === 'standard' && {
         backgroundColor: 'transparent',
-        color: palette.text.secondary,
         '&:hover': {
             backgroundColor: palette.action.hover,
             color: palette.primary.main,

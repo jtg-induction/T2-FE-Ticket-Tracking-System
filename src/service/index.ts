@@ -35,3 +35,10 @@ export {
     useSearchTicketsJqlQuery,
     useImportJiraTicketMutation,
 } from './ticketService';
+
+export {
+    useCreateCommentMutation,
+    useDeleteCommentMutation,
+    useGetTicketCommentsQuery,
+    useUpdateCommentMutation,
+} from './commentService';

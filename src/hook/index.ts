@@ -13,5 +13,6 @@ export {
     useMyTicketsPage,
     useProjectDashboard,
     useTicketDetail,
+    useTicketComments,
 } from './page';
 export { useDebounce } from './useDebounce';

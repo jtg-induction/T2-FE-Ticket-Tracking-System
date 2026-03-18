@@ -32,3 +32,5 @@ export type {
     CreateTicketInput,
     JQLSearchInput,
 } from './ticket.types';
+
+export type { Comment, CommentInput } from './comment.types';

@@ -15,3 +15,9 @@ export const FONT_SIZE = 16;
  * @constant
  */
 export const SCALING_FACTOR = 4;
+
+/**
+ * Primary color of the website.
+ * @constant
+ */
+export const PRIMARY = '#0069FE';

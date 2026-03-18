@@ -1,15 +1,15 @@
 import { Stack } from '@mui/material';
 
-import { TicketDetail } from '@container';
+import { TicketComments, TicketDetail } from '@container';
 
 export const TicketDetailPage = () => (
     <Stack
-        height="100%"
-        direction="row"
+        justifyItems="center"
+        direction={{ xs: 'column', md: 'row' }}
         padding={4}
         gap={4}
-        justifyContent="center"
     >
         <TicketDetail />
+        <TicketComments />
     </Stack>
 );
