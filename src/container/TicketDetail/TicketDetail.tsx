@@ -28,7 +28,7 @@ import { LoadingPage } from '@page';
 import { TicketPriority, TicketStatus } from '@type/ticket.types';
 
 import {
-    StyledDescriptonContainer,
+    StyledDescriptionContainer,
     StyledDetailView,
 } from './TicketDetail.style';
 
@@ -134,7 +134,7 @@ export const TicketDetail = () => {
                     )}
                 </Box>
 
-                <StyledDescriptonContainer elevation={0}>
+                <StyledDescriptionContainer elevation={0}>
                     <Typography variant="subtitle1" fontWeight={700}>
                         Description
                     </Typography>
@@ -156,7 +156,7 @@ export const TicketDetail = () => {
                             {ticket.description || 'No description provided.'}
                         </Typography>
                     )}
-                </StyledDescriptonContainer>
+                </StyledDescriptionContainer>
             </Stack>
 
             <StyledDetailView elevation={0}>

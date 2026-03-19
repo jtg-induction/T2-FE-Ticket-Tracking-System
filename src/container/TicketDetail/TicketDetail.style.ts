@@ -1,6 +1,6 @@
 import { Paper, styled } from '@mui/material';
 
-export const StyledDescriptonContainer = styled(Paper)(
+export const StyledDescriptionContainer = styled(Paper)(
     ({ theme: { spacing, palette, shape } }) => ({
         maxHeight: 320,
         padding: spacing(4),

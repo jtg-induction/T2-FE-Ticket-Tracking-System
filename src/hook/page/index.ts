@@ -2,4 +2,4 @@ export { useProjectList } from './useProjectList';
 export { useMyTicketsPage } from './useMyTickets';
 export { useTicketDetail } from './useTicketDetail';
 export { useJQLSearch } from './useJQLSearch';
-export { useProjectDashboard } from './useProjectDashBoard';
+export { useProjectDashboard } from './useProjectDashboard';
