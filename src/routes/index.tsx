@@ -12,6 +12,7 @@ import {
     ProjectDashboardPage,
     ProjectDetailPage,
     ProjectPage,
+    ReportsPage,
     TicketDetailPage,
 } from '@page';
 
@@ -62,6 +63,19 @@ export const router = createBrowserRouter([
             {
                 path: PATHS.ACCEPT_INVITE,
                 element: <AcceptInvitePage />,
+            },
+
+            {
+                path: `${PATHS.PROJECTS}/:projectId/insights`,
+                element: <ReportsPage />,
+            },
+            {
+                path: `${PATHS.PROFILE}/insights`,
+                element: <ReportsPage />,
+            },
+            {
+                path: `${PATHS.PROFILE}/:userId/insights`,
+                element: <ReportsPage />,
             },
         ],
     },

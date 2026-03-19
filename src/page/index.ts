@@ -8,3 +8,4 @@ export { ProjectDetailPage } from './ProjectDetailPage';
 export { AcceptInvitePage } from './AcceptInvitePage';
 export { ProjectDashboardPage } from './ProjectDashboardPage';
 export { TicketDetailPage } from './TicketDetailPage';
+export { ReportsPage } from './ReportsPage';

@@ -13,3 +13,5 @@ export { CreateTicketModal } from './CreateTicketModal';
 export { TicketBoard } from './TicketBoard';
 export { MyTickets } from './MyTickets';
 export { TicketComments } from './TicketComments';
+export { Reports } from './Reports';
+export type { TicketStatsData } from './Reports';

@@ -12,3 +12,7 @@ export { CommentInput } from './CommentInput';
 export type { CommentInputProps } from './CommentInput';
 export { CommentItem } from './CommentItem';
 export type { CommentItemProps } from './CommentItem';
+export { DonutCard } from './DonutCard';
+export type { DonutChartDataItem } from './DonutCard';
+export { StackedBarCard } from './StackedBarCard';
+export type { StackedBarDataItem } from './StackedBarCard';

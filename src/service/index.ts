@@ -42,3 +42,5 @@ export {
     useGetTicketCommentsQuery,
     useUpdateCommentMutation,
 } from './commentService';
+
+export { useGetTicketReportsQuery } from './reportsService';

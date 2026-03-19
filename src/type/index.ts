@@ -34,3 +34,5 @@ export type {
 } from './ticket.types';
 
 export type { Comment, CommentInput } from './comment.types';
+
+export type { TicketStatsResponseData, StackedItem } from './report.types';
