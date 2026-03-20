@@ -1,7 +1,3 @@
-import { MouseEvent, useState } from 'react';
-
-import { useNavigate } from 'react-router';
-
 import {
     AdminPanelSettings as AdminPanelSettingsIcon,
     MoreVert as MoreVertIcon,
@@ -19,8 +15,6 @@ import {
     Typography,
 } from '@mui/material';
 
-import { PATHS } from '@constant';
-
 import { StyledUserCardItem, StyledUserInfo } from './UserCard.style';
 import { UserAction, UserCardProps } from './UserCard.types';
 
@@ -33,40 +27,19 @@ export const UserCard = ({
     canMakeOwner,
     canMakeAdmin,
     canRevokeAdmin,
-    onAction,
+    anchorEl,
+    onCardClick,
+    onMenuOpen,
+    onMenuClose,
+    onActionClick,
 }: UserCardProps) => {
-    const navigate = useNavigate();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
     const initials =
         `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
 
-    const handleCardClick = () => {
-        void navigate(`${PATHS.PROFILE}/${userId}`);
-    };
-
-    const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = (event: MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setAnchorEl(null);
-    };
-
-    const handleActionClick = (
-        action: UserAction,
-        event: MouseEvent<HTMLElement>,
-    ) => {
-        event.stopPropagation();
-        setAnchorEl(null);
-        onAction(action, userId);
-    };
-
     return (
-        <StyledUserCardItem onClick={handleCardClick}>
+        <StyledUserCardItem onClick={onCardClick}>
             <Avatar>{initials}</Avatar>
 
             <StyledUserInfo spacing={-1}>
@@ -86,7 +59,7 @@ export const UserCard = ({
                 <Box>
                     <IconButton
                         size="small"
-                        onClick={handleMenuOpen}
+                        onClick={onMenuOpen}
                         aria-label="settings"
                         sx={{ ml: 1 }}
                     >
@@ -96,7 +69,7 @@ export const UserCard = ({
                     <Menu
                         anchorEl={anchorEl}
                         open={open}
-                        onClose={handleMenuClose}
+                        onClose={onMenuClose}
                         onClick={(e) => e.stopPropagation()}
                         transformOrigin={{
                             horizontal: 'right',
@@ -109,9 +82,10 @@ export const UserCard = ({
                     >
                         {canMakeOwner && (
                             <MenuItem
-                                onClick={(e) =>
-                                    handleActionClick(UserAction.MakeOwner, e)
-                                }
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onActionClick(UserAction.MakeOwner, userId);
+                                }}
                             >
                                 <ListItemIcon>
                                     <VerifiedUserIcon fontSize="small" />
@@ -122,9 +96,10 @@ export const UserCard = ({
 
                         {canMakeAdmin && (
                             <MenuItem
-                                onClick={(e) =>
-                                    handleActionClick(UserAction.MakeAdmin, e)
-                                }
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onActionClick(UserAction.MakeAdmin, userId);
+                                }}
                             >
                                 <ListItemIcon>
                                     <AdminPanelSettingsIcon fontSize="small" />
@@ -135,9 +110,13 @@ export const UserCard = ({
 
                         {canRevokeAdmin && (
                             <MenuItem
-                                onClick={(e) =>
-                                    handleActionClick(UserAction.RevokeAdmin, e)
-                                }
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onActionClick(
+                                        UserAction.RevokeAdmin,
+                                        userId,
+                                    );
+                                }}
                             >
                                 <ListItemIcon>
                                     <AdminPanelSettingsIcon
@@ -150,9 +129,10 @@ export const UserCard = ({
                         )}
 
                         <MenuItem
-                            onClick={(e) =>
-                                handleActionClick(UserAction.RemoveUser, e)
-                            }
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onActionClick(UserAction.RemoveUser, userId);
+                            }}
                         >
                             <ListItemIcon>
                                 <PersonRemoveIcon

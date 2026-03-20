@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { Add as AddIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import {
@@ -26,7 +26,7 @@ import {
     UserAction,
     UserCard,
 } from '@component';
-import { PAGE_SIZE } from '@constant';
+import { PAGE_SIZE, PATHS } from '@constant';
 import {
     useGetProjectMembersQuery,
     useInviteMemberMutation,
@@ -38,6 +38,26 @@ import { ErrorResponse, ProjectRole } from '@type';
 export const ProjectUsers = () => {
     const { spacing } = useTheme();
     const { projectId } = useParams<{ projectId: string }>();
+
+    const navigate = useNavigate();
+    const [menuAnchorEl, setMenuAnchorEl] = useState<{
+        userId: string;
+        el: HTMLElement;
+    } | null>(null);
+
+    const handleCardClick = (userId: string) => {
+        void navigate(`${PATHS.PROFILE}/${userId}`);
+    };
+
+    const handleMenuOpen = (userId: string, event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        setMenuAnchorEl({ userId, el: event.currentTarget });
+    };
+
+    const handleMenuClose = (event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        setMenuAnchorEl(null);
+    };
 
     if (!projectId || projectId === 'new') {
         return null;
@@ -58,21 +78,24 @@ export const ProjectUsers = () => {
     const [updateRole] = useUpdateMemberRoleMutation();
     const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
 
+    const members = response && response.success ? response.data : [];
+    const meta = response?.meta ?? null;
+
     useEffect(() => {
         if (fetchError) {
             setActiveError(fetchError as ErrorResponse);
         }
     }, [fetchError]);
 
-    const members = response && response.success ? response.data : [];
-    const meta = response?.meta ?? null;
-
     const totalPages = useMemo(
         () => (meta ? Math.ceil(meta.count / PAGE_SIZE) : 0),
         [meta],
     );
 
-    const currentUser = useMemo(() => page === 1 ? members[0] : null, [members, page]);
+    const currentUser = useMemo(
+        () => (page === 1 ? members[0] : null),
+        [members, page],
+    );
 
     const handleAction = async (action: UserAction, targetUserId: string) => {
         if (!projectId) return;
@@ -210,12 +233,13 @@ export const ProjectUsers = () => {
                             const showMenu = myRoleValue > userRoleValue;
                             const canMakeOwner = myRole === ProjectRole.Owner;
                             const canMakeAdmin =
-                                (myRole === ProjectRole.Owner &&
+                                ((myRole === ProjectRole.Owner ||
+                                    myRole === ProjectRole.Admin) &&
                                     userRole !== ProjectRole.Admin) ||
                                 (myRole === ProjectRole.Admin &&
                                     userRole === ProjectRole.Member);
                             const canRevokeAdmin =
-                                myRole === ProjectRole.Member &&
+                                myRole === ProjectRole.Owner &&
                                 userRole === ProjectRole.Admin;
 
                             return (
@@ -224,12 +248,24 @@ export const ProjectUsers = () => {
                                     userId={user.user_id}
                                     firstName={user.first_name}
                                     lastName={user.last_name}
-                                    role={user.projectRole}
+                                    role={userRole}
                                     showMenu={showMenu}
                                     canMakeOwner={canMakeOwner}
                                     canMakeAdmin={canMakeAdmin}
                                     canRevokeAdmin={canRevokeAdmin}
-                                    onAction={(action, targetUserId) =>
+                                    anchorEl={
+                                        menuAnchorEl?.userId === user.user_id
+                                            ? menuAnchorEl.el
+                                            : null
+                                    }
+                                    onCardClick={() =>
+                                        handleCardClick(user.user_id)
+                                    }
+                                    onMenuOpen={(e) =>
+                                        handleMenuOpen(user.user_id, e)
+                                    }
+                                    onMenuClose={handleMenuClose}
+                                    onActionClick={(action, targetUserId) =>
                                         void handleAction(action, targetUserId)
                                     }
                                 />
