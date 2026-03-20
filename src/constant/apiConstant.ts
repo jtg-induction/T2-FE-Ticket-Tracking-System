@@ -5,5 +5,13 @@ export const API_CONSTANTS = {
         REFRESH: '/api/login/refresh/',
         LOGOUT: '/api/logout/',
         USER: '/api/user/',
+        PROJECT: '/api/project/',
+    },
+    METHODS: {
+        GET: 'GET',
+        POST: 'POST',
+        PUT: 'PUT',
+        PATCH: 'PATCH',
+        DELETE: 'DELETE',
     },
 } as const;

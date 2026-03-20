@@ -1,4 +1,4 @@
-import type { Components } from '@mui/material/styles';
+import type { Components, Theme } from '@mui/material/styles';
 
 import interVariableWoff from '@assets/fonts/inter/inter-variable.woff';
 import interVariableWoff2 from '@assets/fonts/inter/inter-variable.woff2';
@@ -17,7 +17,7 @@ const globalCss = `
       }
     `;
 
-export const components: Components = {
+export const components: Components<Theme> = {
     MuiTypography: {
         styleOverrides: {
             root: {
@@ -34,6 +34,22 @@ export const components: Components = {
                 gap: 8,
             },
         },
+    },
+    MuiCard: {
+        variants: [
+            {
+                props: { variant: 'outlined' },
+                style: ({ theme: { shadows } }) => ({
+                    marginBottom: 2,
+                    borderRadius: 8,
+                    boxShadow: shadows[2],
+                    cursor: 'pointer',
+                    '&:hover': {
+                        boxShadow: shadows[4],
+                    },
+                }),
+            },
+        ],
     },
     MuiCssBaseline: {
         styleOverrides: globalCss,

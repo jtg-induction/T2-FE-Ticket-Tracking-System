@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema } from '@schema';
 import { useGetUserByIdQuery, useUpdateUserMutation } from '@service';
 import { EditProfileRequest, ErrorResponse } from '@type';
 
-export const useProfileForm = () => {
-    const { id } = useParams<{ id: string }>();
+export const useProfileForm = (id: string) => {
     const [isEditing, setIsEditing] = useState(false);
     const [saveError, setSaveError] = useState('');
 
@@ -17,7 +15,7 @@ export const useProfileForm = () => {
         data: profile,
         isLoading,
         error: fetchError,
-    } = useGetUserByIdQuery(id ?? '', { skip: !id });
+    } = useGetUserByIdQuery(id);
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
     const {

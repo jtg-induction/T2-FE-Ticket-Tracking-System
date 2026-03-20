@@ -9,6 +9,8 @@ export type {
     SignupFormValues,
 } from './auth.types';
 
+export type { Project } from './project.types';
+
 export type {
     EntityResponse,
     PaginationMetadata,

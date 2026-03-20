@@ -5,9 +5,13 @@ import { EditProfileRequest, UserResponse } from '@type';
 export const userApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getUserById: builder.query<UserResponse, string>({
-            query: (id) => `${API_CONSTANTS.ENDPOINTS.USER}${id}/`,
+            query: (id) =>
+                id
+                    ? `${API_CONSTANTS.ENDPOINTS.USER}${id}/`
+                    : API_CONSTANTS.ENDPOINTS.USER,
+
             providesTags: (_result, _error, id) => [
-                { type: 'User' as const, id },
+                { type: 'User' as const, id: id || 'ME' },
             ],
         }),
 
@@ -16,8 +20,8 @@ export const userApi = baseApi.injectEndpoints({
             { body: EditProfileRequest }
         >({
             query: ({ body }) => ({
-                url: `${API_CONSTANTS.ENDPOINTS.USER}`,
-                method: 'PATCH',
+                url: API_CONSTANTS.ENDPOINTS.USER,
+                method: API_CONSTANTS.METHODS.PATCH,
                 body,
             }),
             invalidatesTags: () => [{ type: 'User' as const }],

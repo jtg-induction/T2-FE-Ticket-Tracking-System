@@ -1,12 +1,18 @@
 import { useNavigate } from 'react-router';
 
 import { Menu as MenuIcon } from '@mui/icons-material';
-import { Avatar, Box, IconButton } from '@mui/material';
+import { Box } from '@mui/material';
 
 import Logo from '@assets/logo/logo-light.webp';
+import { CustomIconButton } from '@component';
 import { PATHS } from '@constant';
 
-import { StyledAppBar, StyledLogo, StyledToolbar } from './Header.style';
+import {
+    StyledAppBar,
+    StyledAvatar,
+    StyledLogo,
+    StyledToolbar,
+} from './Header.style';
 import { HeaderProps } from './Header.types';
 
 export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
@@ -15,12 +21,13 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
         <StyledAppBar>
             <StyledToolbar>
                 <Box display="flex" alignItems="center">
-                    <IconButton
+                    <CustomIconButton
+                        variant="standard"
                         aria-label="Toggle sidebar"
                         onClick={onSidebarToggle}
                     >
                         <MenuIcon />
-                    </IconButton>
+                    </CustomIconButton>
                     <StyledLogo
                         component="img"
                         paddingX={4}
@@ -28,12 +35,15 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
                         alt="Logo"
                     />
                 </Box>
-                <IconButton
+                <CustomIconButton
+                    variant="standard"
                     onClick={() => void navigator(PATHS.PROFILE)}
                     aria-label="Go to profile"
                 >
-                    <Avatar aria-label="User avatar">{userInitial}</Avatar>
-                </IconButton>
+                    <StyledAvatar aria-label="User avatar">
+                        {userInitial}
+                    </StyledAvatar>
+                </CustomIconButton>
             </StyledToolbar>
         </StyledAppBar>
     );

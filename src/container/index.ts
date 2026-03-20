@@ -2,4 +2,7 @@ export { LoginForm } from './Login';
 export { RegisterForm } from './Register';
 export { SidePanel } from './SidePanel';
 export { SignupForm } from './Signup';
+export { Sidebar } from './Sidebar';
 export { ProfileDetail } from './ProfileDetail';
+export { ProjectList } from './ProjectList';
+export { ProjectDetail } from './ProjectDetail';
