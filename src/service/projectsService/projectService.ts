@@ -1,17 +1,17 @@
 import { API_CONSTANTS, PAGE_SIZE } from '@constant';
 import { baseApi } from '@service';
-import { PaginatedResponse, Project } from '@type';
+import { EntityResponse, PaginatedResponse, Project } from '@type';
 
 export const projectApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getProjectById: builder.query<Project, string>({
+        getProjectById: builder.query<EntityResponse<Project>, string>({
             query: (id) => `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/`,
             providesTags: (_result, _error, id) => [
                 { type: 'Project' as const, id },
             ],
         }),
         updateProject: builder.mutation<
-            Project,
+            EntityResponse<Project>,
             { id: string; body: Partial<Project> }
         >({
             query: ({ id, body }) => ({
@@ -24,7 +24,7 @@ export const projectApi = baseApi.injectEndpoints({
                 { type: 'Project' as const, id: 'LIST' },
             ],
         }),
-        createProject: builder.mutation<Project, Project>({
+        createProject: builder.mutation<EntityResponse<Project>, Project>({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
                 method: API_CONSTANTS.METHODS.POST,

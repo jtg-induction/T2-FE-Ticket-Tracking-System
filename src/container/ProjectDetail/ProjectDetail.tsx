@@ -12,8 +12,8 @@ import {
     Button,
     Checkbox,
     CircularProgress,
-    Container,
     Grid2 as Grid,
+    Paper,
     Snackbar,
     Stack,
     TextField,
@@ -25,7 +25,7 @@ import { CustomIconButton } from '@component';
 import { useProjectForm } from '@hook';
 
 export const ProjectDetail = () => {
-    const { id } = useParams<{ id: string }>();
+    const { projectId } = useParams<{ projectId: string }>();
     const {
         project,
         formValues,
@@ -41,7 +41,7 @@ export const ProjectDetail = () => {
         setSnackbarOpen,
         errorMessages,
         handleUnarchive,
-    } = useProjectForm(id ?? '');
+    } = useProjectForm(projectId ?? '');
 
     const pageTitle = isNew
         ? 'Create Project'
@@ -63,187 +63,168 @@ export const ProjectDetail = () => {
     }
 
     return (
-        <Stack maxWidth="md" marginInline="auto" paddingBlock={4} gap={4}>
-            <Box>
-                <Container>
-                    <Stack
-                        direction="row"
-                        alignItems={{ xs: 'flex-start', sm: 'center' }}
-                        justifyContent="space-between"
-                        spacing={2}
+        <Paper sx={{ p: 4 }}>
+            <Stack
+                direction="row"
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                justifyContent="space-between"
+                paddingBottom={4}
+            >
+                <Stack direction="row" alignItems="center">
+                    <CustomIconButton
+                        variant="standard"
+                        aria-label="Go back"
+                        onClick={() => void navigate(-1)}
+                        size="small"
+                        sx={{ flexShrink: 0 }}
                     >
-                        <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={1}
-                            sx={{ minWidth: 0 }}
-                        >
-                            <CustomIconButton
-                                variant="standard"
-                                aria-label="Go back"
-                                onClick={() => void navigate(-1)}
-                                size="small"
-                                sx={{ flexShrink: 0 }}
+                        <ArrowBackIcon />
+                    </CustomIconButton>
+
+                    <Typography variant="h5" fontWeight={600} noWrap>
+                        {pageTitle}
+                        {project?.is_archived && (
+                            <Typography
+                                component="span"
+                                color="error"
+                                marginLeft={2}
                             >
-                                <ArrowBackIcon />
-                            </CustomIconButton>
-
-                            <Typography variant="h5" fontWeight={600} noWrap>
-                                {pageTitle}
-                                {project?.is_archived && (
-                                    <Typography
-                                        component="span"
-                                        color="error"
-                                        marginLeft={2}
-                                    >
-                                        (Archived)
-                                    </Typography>
-                                )}
+                                (Archived)
                             </Typography>
-                        </Stack>
+                        )}
+                    </Typography>
+                </Stack>
 
-                        <Stack direction="row" spacing={1}>
-                            {!isNew && project?.is_archived && (
-                                <Tooltip title="Unarchive Project">
-                                    <CustomIconButton
-                                        variant="outlined"
-                                        aria-label="Unarchive project"
-                                        onClick={() => void handleUnarchive()}
-                                    >
-                                        <UnarchiveIcon fontSize="medium" />
-                                    </CustomIconButton>
-                                </Tooltip>
-                            )}
-                            {!isNew && !project?.is_archived && !isEditing && (
+                <Stack direction="row" spacing={1}>
+                    {!isNew && project?.is_archived && (
+                        <Tooltip title="Unarchive Project">
+                            <CustomIconButton
+                                variant="outlined"
+                                aria-label="Unarchive project"
+                                onClick={() => void handleUnarchive()}
+                            >
+                                <UnarchiveIcon fontSize="medium" />
+                            </CustomIconButton>
+                        </Tooltip>
+                    )}
+                    {!isNew && !project?.is_archived && !isEditing && (
+                        <Button
+                            variant="contained"
+                            startIcon={<EditIcon />}
+                            onClick={() => handleToggleEdit(true)}
+                        >
+                            Edit
+                        </Button>
+                    )}
+                    {isEditing && (
+                        <Stack direction="row" spacing={2}>
+                            {!isNew && (
                                 <Button
-                                    variant="contained"
-                                    startIcon={<EditIcon />}
-                                    onClick={() => handleToggleEdit(true)}
+                                    variant="outlined"
+                                    color="error"
+                                    size="medium"
+                                    onClick={() => handleToggleEdit(false)}
                                 >
-                                    Edit
+                                    Cancel
                                 </Button>
                             )}
-                            {isEditing && (
-                                <Stack direction="row" spacing={2}>
-                                    {!isNew && (
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            size="medium"
-                                            onClick={() =>
-                                                handleToggleEdit(false)
-                                            }
-                                        >
-                                            Cancel
-                                        </Button>
-                                    )}
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="medium"
-                                        startIcon={<SaveIcon />}
-                                        disabled={loading}
-                                        type="submit"
-                                        form="project-form"
-                                    >
-                                        {isNew ? 'Create' : 'Save'}
-                                    </Button>
-                                </Stack>
-                            )}
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="medium"
+                                startIcon={<SaveIcon />}
+                                disabled={loading}
+                                type="submit"
+                                form="project-form"
+                            >
+                                {isNew ? 'Create' : 'Save'}
+                            </Button>
                         </Stack>
-                    </Stack>
-                </Container>
-            </Box>
+                    )}
+                </Stack>
+            </Stack>
 
-            <Box>
-                <Container>
-                    <Box
-                        component="form"
-                        id="project-form"
-                        onSubmit={(e) => void handleSave(e)}
-                        noValidate
+            <Box
+                component="form"
+                id="project-form"
+                onSubmit={(e) => void handleSave(e)}
+                noValidate
+            >
+                {!isNew && isEditing && (
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={2}
+                        py={2}
                     >
-                        <Grid container spacing={3}>
-                            {!isNew && isEditing && (
-                                <Grid size={12}>
-                                    <Stack
-                                        direction="row"
-                                        alignItems="center"
-                                        spacing={2}
-                                    >
-                                        <Checkbox
-                                            {...register('is_archived')}
-                                            color="error"
-                                            size="small"
-                                        />
-                                        <Typography
-                                            variant="body2"
-                                            color={
-                                                formValues.is_archived
-                                                    ? 'error'
-                                                    : 'textPrimary'
-                                            }
-                                        >
-                                            {formValues.is_archived
-                                                ? 'This project will be archived on save'
-                                                : 'Archive this project'}
-                                        </Typography>
-                                    </Stack>
-                                </Grid>
-                            )}
+                        <Checkbox
+                            {...register('is_archived')}
+                            color="error"
+                            size="small"
+                        />
+                        <Typography
+                            variant="body2"
+                            color={
+                                formValues.is_archived ? 'error' : 'textPrimary'
+                            }
+                        >
+                            {formValues.is_archived
+                                ? 'This project will be archived on save'
+                                : 'Archive this project'}
+                        </Typography>
+                    </Stack>
+                )}
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="Project Title"
+                            {...register('title')}
+                            disabled={!isEditing && !isNew}
+                            error={!!errors.title}
+                            helperText={errors.title?.message}
+                        />
+                    </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Project Title"
-                                    {...register('title')}
-                                    disabled={!isEditing && !isNew}
-                                    error={!!errors.title}
-                                    helperText={errors.title?.message}
-                                />
-                            </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="Jira Project Key"
+                            {...register('jira_project_key')}
+                            disabled={!isNew}
+                            error={!!errors.jira_project_key}
+                            helperText={
+                                !isNew
+                                    ? 'The key is locked for this project.'
+                                    : errors.jira_project_key?.message
+                            }
+                        />
+                    </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Jira Project Key"
-                                    {...register('jira_project_key')}
-                                    disabled={!isNew}
-                                    error={!!errors.jira_project_key}
-                                    helperText={
-                                        !isNew
-                                            ? 'The key is locked for this project.'
-                                            : errors.jira_project_key?.message
-                                    }
-                                />
-                            </Grid>
+                    <Grid size={12}>
+                        <TextField
+                            fullWidth
+                            label="Site URL"
+                            {...register('site_url')}
+                            disabled={!isNew}
+                            error={!!errors.site_url}
+                            helperText={errors.site_url?.message}
+                        />
+                    </Grid>
 
-                            <Grid size={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Site URL"
-                                    {...register('site_url')}
-                                    disabled={!isNew}
-                                    error={!!errors.site_url}
-                                    helperText={errors.site_url?.message}
-                                />
-                            </Grid>
-
-                            <Grid size={12}>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={15}
-                                    label="Description"
-                                    {...register('description')}
-                                    disabled={!isEditing && !isNew}
-                                    error={!!errors.description}
-                                    helperText={errors.description?.message}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Container>
+                    <Grid size={12}>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={15}
+                            label="Description"
+                            {...register('description')}
+                            disabled={!isEditing && !isNew}
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                        />
+                    </Grid>
+                </Grid>
             </Box>
             <Snackbar
                 open={snackbarOpen}
@@ -259,6 +240,6 @@ export const ProjectDetail = () => {
                     ))}
                 </Alert>
             </Snackbar>
-        </Stack>
+        </Paper>
     );
 };

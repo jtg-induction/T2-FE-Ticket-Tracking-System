@@ -34,13 +34,13 @@ export const useRegisterForm = (tokenFromUrl: string) => {
     const onSubmit = async (values: RegisterFormValues) => {
         setFormError('');
         try {
-            const data = await registerTrigger({
+            const response = await registerTrigger({
                 ...values,
                 token: tokenFromUrl,
             }).unwrap();
 
-            if (data.access) {
-                dispatch(setCredentials(data.access));
+            if (response.data.access) {
+                dispatch(setCredentials(response.data.access));
             }
         } catch (err) {
             const apiError = err as ErrorResponse;

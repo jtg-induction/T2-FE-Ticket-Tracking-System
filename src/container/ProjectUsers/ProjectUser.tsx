@@ -1,0 +1,317 @@
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
+
+import { useNavigate, useParams } from 'react-router';
+
+import { Add as AddIcon, Logout as LogoutIcon } from '@mui/icons-material';
+import {
+    Alert,
+    Box,
+    CircularProgress,
+    Divider,
+    IconButton,
+    InputAdornment,
+    Pagination,
+    Paper,
+    Snackbar,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
+    useTheme,
+} from '@mui/material';
+
+import {
+    ErrorSnackbar,
+    ROLE_HIERARCHY,
+    UserAction,
+    UserCard,
+} from '@component';
+import { PAGE_SIZE, PATHS } from '@constant';
+import {
+    useGetProjectMembersQuery,
+    useInviteMemberMutation,
+    useRemoveMemberMutation,
+    useUpdateMemberRoleMutation,
+} from '@service';
+import { ErrorResponse, ProjectRole } from '@type';
+
+export const ProjectUsers = () => {
+    const { spacing } = useTheme();
+    const { projectId } = useParams<{ projectId: string }>();
+
+    const navigate = useNavigate();
+    const [menuAnchorEl, setMenuAnchorEl] = useState<{
+        userId: string;
+        el: HTMLElement;
+    } | null>(null);
+
+    const handleCardClick = (userId: string) => {
+        void navigate(`${PATHS.PROFILE}/${userId}`);
+    };
+
+    const handleMenuOpen = (userId: string, event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        setMenuAnchorEl({ userId, el: event.currentTarget });
+    };
+
+    const handleMenuClose = (event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        setMenuAnchorEl(null);
+    };
+
+    if (!projectId || projectId === 'new') {
+        return null;
+    }
+    const [page, setPage] = useState(1);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [activeError, setActiveError] = useState<ErrorResponse | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    const {
+        data: response,
+        isLoading,
+        isFetching,
+        error: fetchError,
+    } = useGetProjectMembersQuery({ id: projectId, page });
+
+    const [removeMember] = useRemoveMemberMutation();
+    const [updateRole] = useUpdateMemberRoleMutation();
+    const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
+
+    const members = response && response.success ? response.data : [];
+    const meta = response?.meta ?? null;
+
+    useEffect(() => {
+        if (fetchError) {
+            setActiveError(fetchError as ErrorResponse);
+        }
+    }, [fetchError]);
+
+    const totalPages = useMemo(
+        () => (meta ? Math.ceil(meta.count / PAGE_SIZE) : 0),
+        [meta],
+    );
+
+    const currentUser = useMemo(
+        () => (page === 1 ? members[0] : null),
+        [members, page],
+    );
+
+    const handleAction = async (action: UserAction, targetUserId: string) => {
+        if (!projectId) return;
+        try {
+            if (action === UserAction.RemoveUser) {
+                await removeMember({
+                    projectId,
+                    userId: targetUserId,
+                }).unwrap();
+            } else {
+                const roleMap: Partial<Record<UserAction, ProjectRole>> = {
+                    [UserAction.MakeOwner]: ProjectRole.Owner,
+                    [UserAction.MakeAdmin]: ProjectRole.Admin,
+                    [UserAction.RevokeAdmin]: ProjectRole.Member,
+                };
+                const newRole = roleMap[action];
+                if (newRole) {
+                    await updateRole({
+                        projectId,
+                        userId: targetUserId,
+                        projectRole: newRole,
+                    }).unwrap();
+                }
+            }
+        } catch (err: unknown) {
+            const errorObj = err as { data: ErrorResponse };
+            if (errorObj.data) setActiveError(errorObj.data);
+        }
+    };
+
+    const handleInvite = async () => {
+        if (!inviteEmail || !projectId) return;
+        try {
+            const inviteResponse = await inviteMember({
+                id: projectId,
+                email: inviteEmail,
+            }).unwrap();
+            setSuccessMessage(
+                inviteResponse.message || `Invitation sent to ${inviteEmail}`,
+            );
+            setInviteEmail('');
+        } catch (err: unknown) {
+            const errorObj = err as { data: ErrorResponse };
+            if (errorObj.data) setActiveError(errorObj.data);
+        }
+    };
+
+    return (
+        <Paper sx={{ minHeight: 400 }}>
+            <Box p={spacing(4)}>
+                <Stack
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    <Stack>
+                        <Typography variant="body1" fontWeight="bold">
+                            Project Members
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                            {isLoading
+                                ? 'Loading...'
+                                : `${meta?.count || 0} members total`}
+                        </Typography>
+                    </Stack>
+
+                    <Tooltip title="Leave Project">
+                        <IconButton
+                            color="error"
+                            onClick={() =>
+                                currentUser?.user_id &&
+                                void handleAction(
+                                    UserAction.RemoveUser,
+                                    currentUser.user_id,
+                                )
+                            }
+                        >
+                            <LogoutIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
+
+                <Box>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Invite by email..."
+                        value={inviteEmail}
+                        onChange={(e) => {
+                            setInviteEmail(e.target.value);
+                        }}
+                        disabled={isInviting}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => void handleInvite()}
+                                            disabled={
+                                                isInviting || !inviteEmail
+                                            }
+                                            color="primary"
+                                        >
+                                            {isInviting ? (
+                                                <CircularProgress size={20} />
+                                            ) : (
+                                                <AddIcon />
+                                            )}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </Box>
+            </Box>
+
+            <Divider />
+
+            <Box flexGrow={1} position="relative">
+                {isFetching && !isLoading ? (
+                    <Box display="flex" justifyContent="center" zIndex={1}>
+                        <CircularProgress size={24} />
+                    </Box>
+                ) : (
+                    <Stack spacing={0}>
+                        {members.map((user) => {
+                            const myRole: ProjectRole =
+                                currentUser?.projectRole ?? ProjectRole.Member;
+                            const userRole = user.projectRole;
+
+                            const myRoleValue = ROLE_HIERARCHY[myRole] ?? 0;
+                            const userRoleValue = ROLE_HIERARCHY[userRole] ?? 0;
+
+                            const showMenu = myRoleValue > userRoleValue;
+                            const canMakeOwner = myRole === ProjectRole.Owner;
+                            const canMakeAdmin =
+                                ((myRole === ProjectRole.Owner ||
+                                    myRole === ProjectRole.Admin) &&
+                                    userRole !== ProjectRole.Admin) ||
+                                (myRole === ProjectRole.Admin &&
+                                    userRole === ProjectRole.Member);
+                            const canRevokeAdmin =
+                                myRole === ProjectRole.Owner &&
+                                userRole === ProjectRole.Admin;
+
+                            return (
+                                <UserCard
+                                    key={user.user_id}
+                                    userId={user.user_id}
+                                    firstName={user.first_name}
+                                    lastName={user.last_name}
+                                    role={userRole}
+                                    showMenu={showMenu}
+                                    canMakeOwner={canMakeOwner}
+                                    canMakeAdmin={canMakeAdmin}
+                                    canRevokeAdmin={canRevokeAdmin}
+                                    anchorEl={
+                                        menuAnchorEl?.userId === user.user_id
+                                            ? menuAnchorEl.el
+                                            : null
+                                    }
+                                    onCardClick={() =>
+                                        handleCardClick(user.user_id)
+                                    }
+                                    onMenuOpen={(e) =>
+                                        handleMenuOpen(user.user_id, e)
+                                    }
+                                    onMenuClose={handleMenuClose}
+                                    onActionClick={(action, targetUserId) =>
+                                        void handleAction(action, targetUserId)
+                                    }
+                                />
+                            );
+                        })}
+                    </Stack>
+                )}
+            </Box>
+
+            {totalPages > 1 && (
+                <>
+                    <Divider />
+                    <Box display="flex" p={2} justifyContent="center">
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={(_, v) => setPage(v)}
+                            size="small"
+                            color="primary"
+                            shape="rounded"
+                            siblingCount={0}
+                        />
+                    </Box>
+                </>
+            )}
+
+            <ErrorSnackbar
+                error={activeError}
+                onClose={() => setActiveError(null)}
+            />
+
+            <Snackbar
+                open={Boolean(successMessage)}
+                autoHideDuration={4000}
+                onClose={() => setSuccessMessage(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    severity="success"
+                    variant="filled"
+                    onClose={() => setSuccessMessage(null)}
+                    sx={{ width: '100%' }}
+                >
+                    {successMessage}
+                </Alert>
+            </Snackbar>
+        </Paper>
+    );
+};

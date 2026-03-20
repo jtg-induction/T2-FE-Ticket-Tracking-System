@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const data = await refresh().unwrap();
-                dispatch(setCredentials(data.access));
+                const response = await refresh().unwrap();
+                dispatch(setCredentials(response.data.access));
             } catch {
                 dispatch(logOut());
             }

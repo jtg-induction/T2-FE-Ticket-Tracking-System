@@ -13,16 +13,16 @@ import {
 } from '@service';
 import { ErrorResponse, Project } from '@type';
 
-export const useProjectForm = (id: string) => {
+export const useProjectForm = (projectId: string) => {
     const navigate = useNavigate();
-    const isNew = id === 'new';
+    const isNew = projectId === 'new';
 
     const [isEditing, setIsEditing] = useState(isNew);
     const [errorMessages, setErrorMessages] = useState<string[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-    const { data: project, isLoading: isFetching } = useGetProjectByIdQuery(
-        id,
+    const { data: response, isLoading: isFetching } = useGetProjectByIdQuery(
+        projectId,
         { skip: isNew },
     );
 
@@ -52,16 +52,17 @@ export const useProjectForm = (id: string) => {
     const formValues = watch();
 
     useEffect(() => {
-        if (project && !isNew) {
-            reset(project, { keepDefaultValues: false });
+        if (response?.data && !isNew) {
+            reset(response.data, { keepDefaultValues: false });
         }
-    }, [project, isNew, reset]);
+    }, [response, isNew, reset]);
 
     const onSave = async (data: Project) => {
         try {
             if (isNew) {
                 const res = await createProject(data).unwrap();
-                if (res.id) void navigate(`${PATHS.PROJECTS}/${res.id}`);
+                if (res.data.id)
+                    void navigate(`${PATHS.PROJECTS}/${res.data.id}`);
             } else {
                 const keys = Object.keys(dirtyFields) as Array<keyof Project>;
                 if (keys.length === 0) {
@@ -75,7 +76,7 @@ export const useProjectForm = (id: string) => {
                 });
 
                 await updateProject({
-                    id,
+                    id: projectId,
                     body: payload,
                 }).unwrap();
                 setIsEditing(false);
@@ -91,7 +92,7 @@ export const useProjectForm = (id: string) => {
     };
 
     return {
-        project,
+        project: response?.data,
         formValues,
         errors,
         register,
@@ -115,7 +116,7 @@ export const useProjectForm = (id: string) => {
         handleUnarchive: async () => {
             try {
                 await updateProject({
-                    id: id,
+                    id: projectId,
                     body: { is_archived: false },
                 }).unwrap();
             } catch {

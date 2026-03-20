@@ -12,7 +12,7 @@ export const useProfileForm = (id: string) => {
     const [saveError, setSaveError] = useState('');
 
     const {
-        data: profile,
+        data: response,
         isLoading,
         error: fetchError,
     } = useGetUserByIdQuery(id);
@@ -31,17 +31,24 @@ export const useProfileForm = (id: string) => {
     const formValues = watch();
 
     useEffect(() => {
-        if (profile) {
+        if (response?.data) {
             reset({
-                first_name: profile.first_name || '',
-                last_name: profile.last_name || '',
-                role: profile.role || '',
-                dob: profile.dob ? profile.dob.split('T')[0] : '',
-                about: profile.about || '',
+                first_name: response.data.first_name || '',
+                last_name: response.data.last_name || '',
+                role: response.data.role || '',
+                dob: response.data.dob ? response.data.dob.split('T')[0] : '',
+                about: response.data.about || '',
                 jira_api_token: '',
             });
         }
-    }, [profile, reset]);
+    }, [
+        response?.data.first_name,
+        response?.data.last_name,
+        response?.data.role,
+        response?.data.dob,
+        response?.data.about,
+        reset,
+    ]);
 
     const onSave = async (values: EditProfileRequest) => {
         try {
@@ -72,11 +79,11 @@ export const useProfileForm = (id: string) => {
     };
 
     return {
-        profile,
+        profile: response?.data,
         isEditing,
         errors,
         register,
-        canUserEdit: profile?.can_edit ?? false,
+        canUserEdit: response?.data?.can_edit ?? false,
         formValues,
         isDirty,
         loading: isLoading || isUpdating,

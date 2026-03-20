@@ -1,10 +1,10 @@
 import { API_CONSTANTS } from '@constant';
 import { baseApi } from '@service';
-import { EditProfileRequest, UserResponse } from '@type';
+import { EditProfileRequest, EntityResponse, UserResponse } from '@type';
 
 export const userApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getUserById: builder.query<UserResponse, string>({
+        getUserById: builder.query<EntityResponse<UserResponse>, string>({
             query: (id) =>
                 id
                     ? `${API_CONSTANTS.ENDPOINTS.USER}${id}/`
@@ -16,7 +16,7 @@ export const userApi = baseApi.injectEndpoints({
         }),
 
         updateUser: builder.mutation<
-            UserResponse,
+            EntityResponse<UserResponse>,
             { body: EditProfileRequest }
         >({
             query: ({ body }) => ({

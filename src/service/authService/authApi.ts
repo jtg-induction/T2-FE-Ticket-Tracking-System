@@ -1,6 +1,7 @@
 import { API_CONSTANTS } from '@constant';
 import { baseApi } from '@service';
 import {
+    EntityResponse,
     LoginRequest,
     LoginResponse,
     RefreshResponse,
@@ -10,7 +11,7 @@ import {
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        login: builder.mutation<LoginResponse, LoginRequest>({
+        login: builder.mutation<EntityResponse<LoginResponse>, LoginRequest>({
             query: (credentials) => ({
                 url: API_CONSTANTS.ENDPOINTS.LOGIN,
                 method: API_CONSTANTS.METHODS.POST,
@@ -19,7 +20,10 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        signup: builder.mutation<SignupResponse, { email: string }>({
+        signup: builder.mutation<
+            EntityResponse<SignupResponse>,
+            { email: string }
+        >({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.SIGNUP,
                 method: API_CONSTANTS.METHODS.POST,
@@ -27,7 +31,10 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        register: builder.mutation<LoginResponse, Partial<RegisterRequest>>({
+        register: builder.mutation<
+            EntityResponse<LoginResponse>,
+            Partial<RegisterRequest>
+        >({
             query: (body) => ({
                 url: API_CONSTANTS.ENDPOINTS.USER,
                 method: API_CONSTANTS.METHODS.POST,
@@ -35,7 +42,7 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        logout: builder.mutation<void, void>({
+        logout: builder.mutation<EntityResponse<void>, void>({
             query: () => ({
                 url: API_CONSTANTS.ENDPOINTS.LOGOUT,
                 method: API_CONSTANTS.METHODS.POST,
@@ -43,7 +50,7 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        refresh: builder.mutation<RefreshResponse, void>({
+        refresh: builder.mutation<EntityResponse<RefreshResponse>, void>({
             query: () => ({
                 url: API_CONSTANTS.ENDPOINTS.REFRESH,
                 method: API_CONSTANTS.METHODS.POST,

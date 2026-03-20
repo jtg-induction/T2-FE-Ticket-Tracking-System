@@ -1,4 +1,10 @@
-export type { UserRole, EditProfileRequest, UserResponse } from './user.types';
+export type {
+    UserRole,
+    EditProfileRequest,
+    UserResponse,
+    ProjectMember,
+} from './user.types';
+
 export type {
     LoginRequest,
     LoginResponse,
@@ -10,6 +16,7 @@ export type {
 } from './auth.types';
 
 export type { Project } from './project.types';
+export { ProjectRole } from './project.types';
 
 export type {
     EntityResponse,

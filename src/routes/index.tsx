@@ -4,6 +4,7 @@ import { PATHS } from '@constant';
 import { LoginForm, RegisterForm, SignupForm } from '@container';
 import { RootLayout } from '@layout';
 import {
+    AcceptInvitePage,
     AuthPage,
     ErrorPage,
     ProfilePage,
@@ -44,7 +45,14 @@ export const router = createBrowserRouter([
             { path: PATHS.TASKS, element: <TasksPage /> },
             { path: PATHS.PROFILE, element: <ProfilePage /> },
             { path: `${PATHS.PROFILE}/:id`, element: <ProfilePage /> },
-            { path: `${PATHS.PROJECTS}/:id`, element: <ProjectDetailPage /> },
+            {
+                path: `${PATHS.PROJECTS}/:projectId`,
+                element: <ProjectDetailPage />,
+            },
+            {
+                path: PATHS.ACCEPT_INVITE,
+                element: <AcceptInvitePage />,
+            },
         ],
     },
 ]);
