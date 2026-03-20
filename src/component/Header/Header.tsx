@@ -4,7 +4,7 @@ import { Menu as MenuIcon } from '@mui/icons-material';
 import { Box } from '@mui/material';
 
 import Logo from '@assets/logo/logo-light.webp';
-import { CustomIconButon } from '@component';
+import { CustomIconButton } from '@component';
 import { PATHS } from '@constant';
 
 import {
@@ -21,13 +21,13 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
         <StyledAppBar>
             <StyledToolbar>
                 <Box display="flex" alignItems="center">
-                    <CustomIconButon
+                    <CustomIconButton
                         variant="standard"
                         aria-label="Toggle sidebar"
                         onClick={onSidebarToggle}
                     >
                         <MenuIcon />
-                    </CustomIconButon>
+                    </CustomIconButton>
                     <StyledLogo
                         component="img"
                         paddingX={4}
@@ -35,7 +35,7 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
                         alt="Logo"
                     />
                 </Box>
-                <CustomIconButon
+                <CustomIconButton
                     variant="standard"
                     onClick={() => void navigator(PATHS.PROFILE)}
                     aria-label="Go to profile"
@@ -43,7 +43,7 @@ export const Header = ({ userInitial, onSidebarToggle }: HeaderProps) => {
                     <StyledAvatar aria-label="User avatar">
                         {userInitial}
                     </StyledAvatar>
-                </CustomIconButon>
+                </CustomIconButton>
             </StyledToolbar>
         </StyledAppBar>
     );

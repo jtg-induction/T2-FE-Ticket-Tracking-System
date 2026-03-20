@@ -21,7 +21,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { CustomIconButon } from '@component';
+import { CustomIconButton } from '@component';
 import { useProjectForm } from '@hook';
 
 export const ProjectDetail = () => {
@@ -78,7 +78,7 @@ export const ProjectDetail = () => {
                             spacing={1}
                             sx={{ minWidth: 0 }}
                         >
-                            <CustomIconButon
+                            <CustomIconButton
                                 variant="standard"
                                 aria-label="Go back"
                                 onClick={() => void navigate(-1)}
@@ -86,7 +86,7 @@ export const ProjectDetail = () => {
                                 sx={{ flexShrink: 0 }}
                             >
                                 <ArrowBackIcon />
-                            </CustomIconButon>
+                            </CustomIconButton>
 
                             <Typography variant="h5" fontWeight={600} noWrap>
                                 {pageTitle}
@@ -105,13 +105,13 @@ export const ProjectDetail = () => {
                         <Stack direction="row" spacing={1}>
                             {!isNew && project?.is_archived && (
                                 <Tooltip title="Unarchive Project">
-                                    <CustomIconButon
+                                    <CustomIconButton
                                         variant="outlined"
                                         aria-label="Unarchive project"
                                         onClick={() => void handleUnarchive()}
                                     >
                                         <UnarchiveIcon fontSize="medium" />
-                                    </CustomIconButon>
+                                    </CustomIconButton>
                                 </Tooltip>
                             )}
                             {!isNew && !project?.is_archived && !isEditing && (

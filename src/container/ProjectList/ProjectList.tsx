@@ -18,15 +18,17 @@ import {
     Typography,
 } from '@mui/material';
 
-import { CustomIconButon } from '@component';
+import { CustomIconButton } from '@component';
 import { ProjectItem } from '@component';
 import { PAGE_SIZE, PATHS } from '@constant';
 import { useProjectList } from '@hook';
 
+import { ProjectState } from './ProjectList.types';
+
 export const ProjectList = () => {
     const navigate = useNavigate();
 
-    const [view, setView] = useState<'active' | 'archived'>('active');
+    const [view, setView] = useState<ProjectState>(ProjectState.ACTIVE);
 
     const {
         activeProjects,
@@ -43,14 +45,14 @@ export const ProjectList = () => {
 
     const handleViewChange = (
         _event: MouseEvent<HTMLElement>,
-        nextView: 'active' | 'archived',
+        nextView: ProjectState,
     ) => {
         if (nextView !== null) {
             setView(nextView);
         }
     };
 
-    const isShowingActive = view === 'active';
+    const isShowingActive = view === ProjectState.ACTIVE;
     const currentProjects = isShowingActive ? activeProjects : archivedProjects;
     const currentMeta = isShowingActive ? activeMeta : archivedMeta;
     const currentPage = isShowingActive ? activePage : archivedPage;
@@ -93,11 +95,11 @@ export const ProjectList = () => {
                 </Typography>
 
                 <Tooltip title="Create Project">
-                    <CustomIconButon
+                    <CustomIconButton
                         onClick={() => void navigate(PATHS.PROJECTS + '/new')}
                     >
                         <AddIcon />
-                    </CustomIconButon>
+                    </CustomIconButton>
                 </Tooltip>
             </Stack>
 

@@ -28,7 +28,7 @@ export const Sidebar = (props: SidebarProps) => {
                 const Icon = item.icon;
                 const isActive =
                     location.pathname === item.route ||
-                    location.pathname.startsWith(item.route + '/');
+                    location.pathname.startsWith(item.route);
 
                 return (
                     <ListItem key={item.id} disablePadding>

@@ -2,7 +2,7 @@ import { IconButton, styled } from '@mui/material';
 
 import { CustomButtonProps } from './CustomIconButton.type';
 
-export const CustomIconButon = styled(IconButton, {
+export const CustomIconButton = styled(IconButton, {
     shouldForwardProp: (prop) => prop !== 'variant',
 })<CustomButtonProps>(({ theme: { palette }, variant = 'contained' }) => ({
     ...(variant === 'contained' && {
