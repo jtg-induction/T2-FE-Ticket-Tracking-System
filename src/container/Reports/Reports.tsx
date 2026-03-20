@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from 'react-router';
 
+import { Download as DownloadIcon } from '@mui/icons-material';
 import {
     Autocomplete,
     Box,
@@ -20,7 +21,10 @@ import { ErrorSnackbar } from '@component';
 import { useDebounce, useReport } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FilterFormValues, filterSchema } from '@schema';
-import { useGetProjectMembersQuery } from '@service';
+import {
+    useGetProjectMembersQuery,
+    useLazyDownloadTicketReportQuery,
+} from '@service';
 import { ErrorResponse } from '@type/standard.types';
 
 import { ReportsProps } from './reports.types';
@@ -40,6 +44,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
         register,
         control,
         handleSubmit,
+        getValues,
         formState: { errors },
     } = useForm<FilterFormValues>({
         resolver: zodResolver(filterSchema),
@@ -69,6 +74,22 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
         setSubmittedFilters(values);
     };
 
+    // Download Logic
+
+    const [triggerDownload, { isFetching: isDownloading }] =
+        useLazyDownloadTicketReportQuery();
+
+    const handleDownload = () => {
+        const values = getValues();
+        void triggerDownload({
+            projectId,
+            userId,
+            userIds: values.userIds,
+            startDate: values.startDate,
+            endDate: values.endDate,
+        });
+    };
+
     if (loading || !data) {
         return (
             <Box
@@ -88,6 +109,22 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
             <Typography variant="h5" fontWeight="bold">
                 Project Insights
             </Typography>
+
+            <Button
+                variant="outlined"
+                startIcon={
+                    isDownloading ? (
+                        <CircularProgress size={20} />
+                    ) : (
+                        <DownloadIcon />
+                    )
+                }
+                onClick={handleDownload}
+                disabled={isDownloading}
+                sx={{ fontWeight: 'bold' }}
+            >
+                {isDownloading ? 'Exporting...' : 'Export PDF'}
+            </Button>
 
             <Form
                 onSubmit={() => {

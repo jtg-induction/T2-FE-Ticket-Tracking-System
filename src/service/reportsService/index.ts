@@ -1,1 +1,5 @@
-export { useGetTicketReportsQuery, reportsApi } from './reportsService';
+export {
+    useGetTicketReportsQuery,
+    reportsApi,
+    useLazyDownloadTicketReportQuery,
+} from './reportsService';

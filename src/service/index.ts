@@ -43,4 +43,7 @@ export {
     useUpdateCommentMutation,
 } from './commentService';
 
-export { useGetTicketReportsQuery } from './reportsService';
+export {
+    useGetTicketReportsQuery,
+    useLazyDownloadTicketReportQuery,
+} from './reportsService';
