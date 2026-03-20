@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { Request } from './api.type';
+import type { Request } from './api.types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
@@ -77,7 +77,6 @@ export const useApi = <T>(request: Request, dependencies: unknown[] = []) => {
         } finally {
             setLoading(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         endpoint,
         method,

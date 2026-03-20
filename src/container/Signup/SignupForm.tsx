@@ -11,59 +11,49 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
-import { signupApi } from '@service';
+import { useSignupForm } from '@hook';
 
-import { SignupInner, SignupRoot } from './signupForm.style';
-import { useSignupForm } from './useSignUpForm.hook';
+import { StyledSignupContainer, StyledSignupForm } from './SignupForm.style';
 
 export const SignupForm = () => {
     const {
-        values,
+        register,
+        handleSubmit,
         errors,
-        touched,
         formError,
+        emailValue,
         success,
         loading,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-    } = useSignupForm(async (data) => {
-        await signupApi(data.email);
-    });
+    } = useSignupForm();
 
     return (
-        <SignupRoot>
-            <SignupInner
+        <StyledSignupContainer>
+            <StyledSignupForm
                 component="form"
                 onSubmit={(e) => {
                     void handleSubmit(e);
                 }}
                 noValidate
             >
-                {/* Form error*/}
                 {formError && <Alert severity="error">{formError}</Alert>}
 
-                {/* Success message */}
                 {success && (
                     <Alert severity="success">
-                        Verification email sent to {values.email}
+                        Verification email sent to {emailValue}
                     </Alert>
                 )}
 
-                {/* Email Field */}
-                <FormControl sx={{ gap: 2 }}>
+                <FormControl fullWidth>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
+                        {...register('email')}
                         id="email"
-                        name="email"
-                        value={values.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.email && !!errors.email}
-                        helperText={touched.email && errors.email}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                         placeholder="your@email.com"
                         fullWidth
                         required
+                        disabled={loading || success}
                     />
                 </FormControl>
 
@@ -79,7 +69,8 @@ export const SignupForm = () => {
                           ? 'Verification Email sent'
                           : 'Send Verification Email'}
                 </Button>
-                <Typography sx={{ textAlign: 'center' }}>
+
+                <Typography textAlign="center">
                     Already have an account?{' '}
                     <Link
                         component={ReactLink}
@@ -89,7 +80,7 @@ export const SignupForm = () => {
                         Sign in
                     </Link>
                 </Typography>
-            </SignupInner>
-        </SignupRoot>
+            </StyledSignupForm>
+        </StyledSignupContainer>
     );
 };

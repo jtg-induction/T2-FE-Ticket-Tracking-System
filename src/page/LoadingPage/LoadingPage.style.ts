@@ -1,6 +1,6 @@
 import { Box, styled } from '@mui/material';
 
-export const LoadingWrapper = styled(Box)({
+export const StyledLoadingOverlay = styled(Box)({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

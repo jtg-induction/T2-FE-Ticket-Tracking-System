@@ -1,9 +1,9 @@
 import { CircularProgress } from '@mui/material';
 
-import { LoadingWrapper } from './loadingPage.style';
+import { StyledLoadingOverlay } from './LoadingPage.style';
 
 export const LoadingPage = () => (
-    <LoadingWrapper>
+    <StyledLoadingOverlay role="status">
         <CircularProgress size={100} />
-    </LoadingWrapper>
+    </StyledLoadingOverlay>
 );

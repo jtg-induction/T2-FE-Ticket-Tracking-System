@@ -11,25 +11,17 @@ import {
 } from '@mui/material';
 
 import { PATHS } from '@constant';
+import { useLoginForm } from '@hook';
 
-import { LoginInner, LoginRoot } from './loginForm.style';
-import { useLoginForm } from './useLoginForm.hook';
+import { StyledFormWrapper, StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
-    const {
-        values,
-        loading,
-        handleChange,
-        handleSubmit,
-        formError,
-        errors,
-        handleBlur,
-        touched,
-    } = useLoginForm();
+    const { register, handleSubmit, formError, errors, isLoading } =
+        useLoginForm();
 
     return (
-        <LoginRoot>
-            <LoginInner
+        <StyledLoginContainer>
+            <StyledFormWrapper
                 component="form"
                 onSubmit={(e) => {
                     void handleSubmit(e);
@@ -38,25 +30,17 @@ export const LoginForm = () => {
             >
                 {formError && <Alert severity="error">{formError}</Alert>}
 
-                {/* Email Field */}
-                <FormControl>
+                <FormControl fullWidth>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <TextField
-                        value={values.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.email && !!errors.email}
-                        helperText={
-                            touched.email && errors.email ? errors.email : ''
-                        }
+                        {...register('email')}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                         id="email"
                         type="email"
-                        name="email"
                         placeholder="Enter your email"
                         autoComplete="email"
-                        required
                         fullWidth
-                        variant="outlined"
                     />
                 </FormControl>
 
@@ -64,21 +48,13 @@ export const LoginForm = () => {
                 <FormControl>
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <TextField
-                        value={values.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.password && !!errors.password}
-                        helperText={
-                            touched.password && errors.password
-                                ? errors.password
-                                : ''
-                        }
-                        name="password"
-                        placeholder="Enter your password"
-                        type="password"
+                        {...register('password')}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
                         id="password"
+                        type="password"
+                        placeholder="Enter your password"
                         autoComplete="password"
-                        required
                         fullWidth
                         variant="outlined"
                     />
@@ -88,11 +64,11 @@ export const LoginForm = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    disabled={loading}
+                    disabled={isLoading}
                 >
-                    {loading ? 'Logging in...' : 'Login'}
+                    {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Typography sx={{ textAlign: 'center' }}>
+                <Typography textAlign="center">
                     Don&apos;t have an account?{' '}
                     <Link
                         component={ReactLink}
@@ -102,7 +78,7 @@ export const LoginForm = () => {
                         Sign up
                     </Link>
                 </Typography>
-            </LoginInner>
-        </LoginRoot>
+            </StyledFormWrapper>
+        </StyledLoginContainer>
     );
 };

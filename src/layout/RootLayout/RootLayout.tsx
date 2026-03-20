@@ -2,38 +2,48 @@ import { useEffect } from 'react';
 
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
+import { Header } from '@component';
 import { PATHS, PUBLICPATHS } from '@constant';
-import { useAuth } from '@context';
+import { useAppSelector } from '@hook';
 
-import { RootContainer } from './rootLayout.style';
+import { StyledLayoutRoot, StyledMainContent } from './RootLayout.style';
 
 export const RootLayout = () => {
-    const { accessToken } = useAuth();
+    const { accessToken, isLoading } = useAppSelector((state) => state.auth);
+
     const navigate = useNavigate();
     const location = useLocation();
 
     const isPublicPath = PUBLICPATHS.includes(location.pathname);
-    const isLoading =
+    const loading =
         (accessToken && (isPublicPath || location.pathname === '/')) ||
         (!accessToken && !isPublicPath);
 
     useEffect(() => {
+        if (isLoading) return;
+
         if (accessToken) {
             if (isPublicPath || location.pathname === '/') {
-                void navigate(PATHS.PROJECTS, { replace: true });
+                void navigate(PATHS.PROJECTS);
             }
         } else {
             if (!isPublicPath) {
-                void navigate(PATHS.LOGIN, { replace: true });
+                void navigate(PATHS.LOGIN);
             }
         }
-    }, [accessToken, location.pathname, navigate]);
+    }, [accessToken, isLoading, location.pathname, navigate]);
 
-    if (isLoading) return null;
+    if (loading) {
+        return null;
+    }
 
     return (
-        <RootContainer>
-            <Outlet />
-        </RootContainer>
+        <StyledLayoutRoot maxWidth="xl" disableGutters>
+            {/* TODO: Add logic to hide header when we are on Auth page */}
+            <Header userInitial="U" onSidebarToggle={() => {}} />
+            <StyledMainContent component="main">
+                <Outlet />
+            </StyledMainContent>
+        </StyledLayoutRoot>
     );
 };

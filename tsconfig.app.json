@@ -35,7 +35,10 @@
             "@context": ["context/index"],
             "@page": ["page/index"],
             "@type/*": ["type/*"],
-            "@type": ["type/index"]
+            "@type": ["type/index"],
+            "@store": ["store/index"],
+            "@store-logic": ["store/auth/index"],
+            "@schema": ["schema/index"]
         }
     },
     "include": ["src"]

@@ -2,11 +2,11 @@ import { Outlet } from 'react-router';
 
 import { SidePanel } from '@container';
 
-import { AuthPageRoot } from './authPage.style';
+import { StyledAuthLayout } from './AuthPage.style';
 
 export const AuthPage = () => (
-    <AuthPageRoot>
+    <StyledAuthLayout component="main">
         <SidePanel />
         <Outlet />
-    </AuthPageRoot>
+    </StyledAuthLayout>
 );
