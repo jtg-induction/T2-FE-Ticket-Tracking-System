@@ -21,6 +21,7 @@ import {
     StyledInviteCard,
     StyledInviteRoot,
 } from './AcceptInvite.style';
+import { InviteAction } from './AcceptInvite.types';
 
 export const AcceptInvite = () => {
     const { token } = useParams<{ token: string }>();
@@ -53,23 +54,23 @@ export const AcceptInvite = () => {
         );
     };
 
-    const handleAction = async (action: 'accept' | 'reject') => {
+    const handleAction = async (action: InviteAction) => {
         if (!token) return;
         try {
             setActiveError(null);
             const response =
-                action === 'accept'
+                action === InviteAction.ACCEPT
                     ? await acceptInvite(token).unwrap()
                     : await rejectInvite(token).unwrap();
 
             setSuccessMessage(
                 response?.message ||
-                    (action === 'accept'
+                    (action === InviteAction.ACCEPT
                         ? 'Successfully joined!'
                         : 'Invitation declined.'),
             );
 
-            if (action === 'accept') {
+            if (action === InviteAction.ACCEPT) {
                 timeoutRef.current = setTimeout(() => {
                     void navigate(PATHS.PROJECTS);
                 }, 2000);
@@ -117,14 +118,18 @@ export const AcceptInvite = () => {
                         >
                             <Button
                                 variant="contained"
-                                onClick={() => void handleAction('accept')}
+                                onClick={() =>
+                                    void handleAction(InviteAction.ACCEPT)
+                                }
                             >
                                 Yes
                             </Button>
                             <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() => void handleAction('reject')}
+                                onClick={() =>
+                                    void handleAction(InviteAction.REJECT)
+                                }
                             >
                                 No
                             </Button>

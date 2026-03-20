@@ -1,4 +1,4 @@
-import { Alert, Box, Snackbar, Typography } from '@mui/material';
+import { Alert, Snackbar, Stack, Typography } from '@mui/material';
 
 import type { ErrorSnackbarProps } from './ErrorSnackbar.types';
 
@@ -12,27 +12,29 @@ export const ErrorSnackbar = ({
         autoHideDuration={autoHideDuration}
         onClose={onClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{ border: 1, borderColor: 'error.light' }}
     >
         <Alert severity="error" onClose={onClose}>
-            <Box>
-                <Typography variant="body2" fontWeight={600}>
-                    {error?.message || 'An unexpected error occurred.'}
-                </Typography>
+            {error?.errors && Object.keys(error.errors).length > 0 ? (
+                <Stack>
+                    {Object.entries(error.errors).map(([field, messages]) => {
+                        const messageList = Array.isArray(messages)
+                            ? messages
+                            : [messages];
 
-                {error?.errors && Object.keys(error.errors).length > 0 && (
-                    <Box component="ul" sx={{ mt: 1, pl: 2, mb: 0 }}>
-                        {Object.entries(error.errors).map(([field, messages]) =>
-                            messages.map((msg, idx) => (
-                                <li key={`${field}-${idx}`}>
-                                    <Typography variant="caption">
-                                        <strong>{field}:</strong> {msg}
-                                    </Typography>
-                                </li>
-                            )),
-                        )}
-                    </Box>
-                )}
-            </Box>
+                        return messageList.map((msg, idx) => (
+                            <Typography
+                                variant="subtitle2"
+                                key={`${field}-${idx}`}
+                            >
+                                {msg}
+                            </Typography>
+                        ));
+                    })}
+                </Stack>
+            ) : (
+                <Typography variant="subtitle2">{error?.message}</Typography>
+            )}
         </Alert>
     </Snackbar>
 );

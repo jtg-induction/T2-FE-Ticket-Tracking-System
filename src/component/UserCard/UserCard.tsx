@@ -22,27 +22,22 @@ import {
 import { PATHS } from '@constant';
 
 import { StyledUserCardItem, StyledUserInfo } from './UserCard.style';
-import { ROLE_HIERARCHY, UserCardProps } from './UserCard.types';
+import { UserAction, UserCardProps } from './UserCard.types';
 
 export const UserCard = ({
     userId,
     firstName,
     lastName,
     role,
-    myRole,
+    showMenu,
+    canMakeOwner,
+    canMakeAdmin,
+    canRevokeAdmin,
     onAction,
 }: UserCardProps) => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-
-    const normalizedRole = role.toLowerCase();
-    const normalizedMyRole = myRole.toLowerCase();
-
-    const myRoleValue = ROLE_HIERARCHY[normalizedMyRole] || 0;
-    const userRoleValue = ROLE_HIERARCHY[normalizedRole] || 0;
-
-    const showMenu = myRoleValue > userRoleValue;
 
     const initials =
         `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
@@ -62,7 +57,7 @@ export const UserCard = ({
     };
 
     const handleActionClick = (
-        action: string,
+        action: UserAction,
         event: MouseEvent<HTMLElement>,
     ) => {
         event.stopPropagation();
@@ -112,10 +107,10 @@ export const UserCard = ({
                             vertical: 'bottom',
                         }}
                     >
-                        {normalizedMyRole === 'owner' && (
+                        {canMakeOwner && (
                             <MenuItem
                                 onClick={(e) =>
-                                    handleActionClick('make_owner', e)
+                                    handleActionClick(UserAction.MakeOwner, e)
                                 }
                             >
                                 <ListItemIcon>
@@ -125,13 +120,10 @@ export const UserCard = ({
                             </MenuItem>
                         )}
 
-                        {((normalizedMyRole === 'owner' &&
-                            normalizedRole !== 'admin') ||
-                            (normalizedMyRole === 'admin' &&
-                                normalizedRole === 'member')) && (
+                        {canMakeAdmin && (
                             <MenuItem
                                 onClick={(e) =>
-                                    handleActionClick('make_admin', e)
+                                    handleActionClick(UserAction.MakeAdmin, e)
                                 }
                             >
                                 <ListItemIcon>
@@ -141,27 +133,26 @@ export const UserCard = ({
                             </MenuItem>
                         )}
 
-                        {normalizedMyRole === 'owner' &&
-                            normalizedRole === 'admin' && (
-                                <MenuItem
-                                    color="error"
-                                    onClick={(e) =>
-                                        handleActionClick('revoke_admin', e)
-                                    }
-                                >
-                                    <ListItemIcon>
-                                        <AdminPanelSettingsIcon
-                                            fontSize="small"
-                                            color="error"
-                                        />
-                                    </ListItemIcon>
-                                    <ListItemText>Revoke Admin</ListItemText>
-                                </MenuItem>
-                            )}
+                        {canRevokeAdmin && (
+                            <MenuItem
+                                onClick={(e) =>
+                                    handleActionClick(UserAction.RevokeAdmin, e)
+                                }
+                            >
+                                <ListItemIcon>
+                                    <AdminPanelSettingsIcon
+                                        fontSize="small"
+                                        color="error"
+                                    />
+                                </ListItemIcon>
+                                <ListItemText>Revoke Admin</ListItemText>
+                            </MenuItem>
+                        )}
 
                         <MenuItem
-                            color="error"
-                            onClick={(e) => handleActionClick('remove_user', e)}
+                            onClick={(e) =>
+                                handleActionClick(UserAction.RemoveUser, e)
+                            }
                         >
                             <ListItemIcon>
                                 <PersonRemoveIcon

@@ -20,16 +20,20 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { ErrorSnackbar, UserCard } from '@component';
+import {
+    ErrorSnackbar,
+    ROLE_HIERARCHY,
+    UserAction,
+    UserCard,
+} from '@component';
+import { PAGE_SIZE } from '@constant';
 import {
     useGetProjectMembersQuery,
     useInviteMemberMutation,
     useRemoveMemberMutation,
     useUpdateMemberRoleMutation,
 } from '@service';
-import { ErrorResponse, ProjectMember } from '@type';
-
-const PAGE_SIZE = 5;
+import { ErrorResponse, ProjectRole } from '@type';
 
 export const ProjectUsers = () => {
     const { spacing } = useTheme();
@@ -55,52 +59,43 @@ export const ProjectUsers = () => {
     const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
 
     useEffect(() => {
-        if (fetchError && 'data' in fetchError) {
-            setActiveError(fetchError.data as ErrorResponse);
+        if (fetchError) {
+            setActiveError(fetchError as ErrorResponse);
         }
     }, [fetchError]);
 
     const members = response && response.success ? response.data : [];
-    const meta = response && 'meta' in response ? response.meta : null;
+    const meta = response?.meta ?? null;
 
     const totalPages = useMemo(
         () => (meta ? Math.ceil(meta.count / PAGE_SIZE) : 0),
         [meta],
     );
 
-    const [me, setMe] = useState<ProjectMember>();
+    const currentUser = useMemo(() => page === 1 ? members[0] : null, [members, page]);
 
-    useEffect(() => {
-        if (page === 1 && members.length > 0) {
-            setMe(members[0]);
-        }
-    }, [members, page]);
-
-    const handleAction = async (action: string, targetUserId: string) => {
+    const handleAction = async (action: UserAction, targetUserId: string) => {
         if (!projectId) return;
         try {
-            if (action === 'remove_user') {
+            if (action === UserAction.RemoveUser) {
                 await removeMember({
                     projectId,
                     userId: targetUserId,
                 }).unwrap();
-            } else if (
-                action === 'make_admin' ||
-                action === 'make_owner' ||
-                action === 'revoke_admin'
-            ) {
-                const newRole =
-                    action === 'make_owner'
-                        ? 'owner'
-                        : action === 'make_admin'
-                          ? 'admin'
-                          : 'member';
-
-                await updateRole({
-                    projectId,
-                    userId: targetUserId,
-                    projectRole: newRole,
-                }).unwrap();
+            } else {
+                const roleMap: Partial<Record<UserAction, ProjectRole>> = {
+                    [UserAction.MakeOwner]: ProjectRole.Owner,
+                    [UserAction.MakeAdmin]: ProjectRole.Admin,
+                    [UserAction.RevokeAdmin]: ProjectRole.Member,
+                };
+                const newRole = roleMap[action];
+                if (newRole) {
+                    await updateRole({
+                        projectId,
+                        userId: targetUserId,
+                        projectRole: newRole,
+                    }).unwrap();
+                }
             }
         } catch (err: unknown) {
             const errorObj = err as { data: ErrorResponse };
@@ -148,8 +143,11 @@ export const ProjectUsers = () => {
                         <IconButton
                             color="error"
                             onClick={() =>
-                                me?.user_id &&
-                                void handleAction('remove_user', me.user_id)
+                                currentUser?.user_id &&
+                                void handleAction(
+                                    UserAction.RemoveUser,
+                                    currentUser.user_id,
+                                )
                             }
                         >
                             <LogoutIcon />
@@ -201,19 +199,42 @@ export const ProjectUsers = () => {
                     </Box>
                 ) : (
                     <Stack spacing={0}>
-                        {members.map((user) => (
-                            <UserCard
-                                key={user.user_id}
-                                userId={user.user_id}
-                                firstName={user.first_name}
-                                lastName={user.last_name}
-                                role={user.projectRole}
-                                myRole={me?.projectRole ?? 'member'}
-                                onAction={(action, targetUserId) =>
-                                    void handleAction(action, targetUserId)
-                                }
-                            />
-                        ))}
+                        {members.map((user) => {
+                            const myRole: ProjectRole =
+                                currentUser?.projectRole ?? ProjectRole.Member;
+                            const userRole = user.projectRole;
+
+                            const myRoleValue = ROLE_HIERARCHY[myRole] ?? 0;
+                            const userRoleValue = ROLE_HIERARCHY[userRole] ?? 0;
+
+                            const showMenu = myRoleValue > userRoleValue;
+                            const canMakeOwner = myRole === ProjectRole.Owner;
+                            const canMakeAdmin =
+                                (myRole === ProjectRole.Owner &&
+                                    userRole !== ProjectRole.Admin) ||
+                                (myRole === ProjectRole.Admin &&
+                                    userRole === ProjectRole.Member);
+                            const canRevokeAdmin =
+                                myRole === ProjectRole.Member &&
+                                userRole === ProjectRole.Admin;
+
+                            return (
+                                <UserCard
+                                    key={user.user_id}
+                                    userId={user.user_id}
+                                    firstName={user.first_name}
+                                    lastName={user.last_name}
+                                    role={user.projectRole}
+                                    showMenu={showMenu}
+                                    canMakeOwner={canMakeOwner}
+                                    canMakeAdmin={canMakeAdmin}
+                                    canRevokeAdmin={canRevokeAdmin}
+                                    onAction={(action, targetUserId) =>
+                                        void handleAction(action, targetUserId)
+                                    }
+                                />
+                            );
+                        })}
                     </Stack>
                 )}
             </Box>

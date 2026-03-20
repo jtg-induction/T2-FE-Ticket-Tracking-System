@@ -1,2 +1,2 @@
 export { UserCard } from './UserCard';
-export type { UserRole } from './UserCard.types';
+export { UserAction, ROLE_HIERARCHY } from './UserCard.types';

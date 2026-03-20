@@ -15,7 +15,8 @@ export type {
     SignupFormValues,
 } from './auth.types';
 
-export type { Project, ProjectRole } from './project.types';
+export type { Project } from './project.types';
+export { ProjectRole } from './project.types';
 
 export type {
     EntityResponse,

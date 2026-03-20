@@ -5,12 +5,22 @@ export type UserCardProps = {
     firstName: string;
     lastName: string;
     role: ProjectRole;
-    myRole: string;
-    onAction: (action: string, userId: string) => void;
+    showMenu: boolean;
+    canMakeOwner: boolean;
+    canMakeAdmin: boolean;
+    canRevokeAdmin: boolean;
+    onAction: (action: UserAction, userId: string) => void;
 };
 
-export const ROLE_HIERARCHY: Record<string, number> = {
-    owner: 3,
-    admin: 2,
-    member: 1,
+export enum UserAction {
+    MakeOwner = 'make_owner',
+    MakeAdmin = 'make_admin',
+    RevokeAdmin = 'revoke_admin',
+    RemoveUser = 'remove_user',
+}
+
+export const ROLE_HIERARCHY: Record<ProjectRole, number> = {
+    [ProjectRole.Owner]: 3,
+    [ProjectRole.Admin]: 2,
+    [ProjectRole.Member]: 1,
 };

@@ -41,7 +41,7 @@ export const useProfileForm = (id: string) => {
                 jira_api_token: '',
             });
         }
-    }, [response, reset]);
+    }, [response?.data, reset]);
 
     const onSave = async (values: EditProfileRequest) => {
         try {
