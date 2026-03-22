@@ -15,6 +15,8 @@ import {
     Typography,
 } from '@mui/material';
 
+import { stringToColor } from '@util';
+
 import { StyledUserCardItem, StyledUserInfo } from './UserCard.style';
 import { UserAction, UserCardProps } from './UserCard.types';
 
@@ -22,6 +24,7 @@ export const UserCard = ({
     userId,
     firstName,
     lastName,
+    email,
     role,
     showMenu,
     canMakeOwner,
@@ -40,7 +43,7 @@ export const UserCard = ({
 
     return (
         <StyledUserCardItem onClick={onCardClick}>
-            <Avatar>{initials}</Avatar>
+            <Avatar sx={{ bgcolor: stringToColor(email) }}>{initials}</Avatar>
 
             <StyledUserInfo spacing={-1}>
                 <Typography

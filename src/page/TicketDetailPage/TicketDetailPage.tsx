@@ -1,15 +1,22 @@
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
-import { TicketDetail } from '@container';
+import { TicketComments, TicketDetail } from '@container';
 
 export const TicketDetailPage = () => (
     <Stack
-        height="100%"
-        direction="row"
+        flexWrap="wrap"
+        justifyItems="center"
+        direction={{ xs: 'column', md: 'row' }}
         padding={4}
         gap={4}
-        justifyContent="center"
+        height="100%"
+        overflow="hidden"
     >
-        <TicketDetail />
+        <Box flex={5} height="100%">
+            <TicketDetail />
+        </Box>
+        <Box flex={2} height="100%">
+            <TicketComments />
+        </Box>
     </Stack>
 );

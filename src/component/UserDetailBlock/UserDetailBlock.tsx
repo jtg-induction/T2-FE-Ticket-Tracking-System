@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Avatar, Box, Paper, Stack, Tooltip, Typography } from '@mui/material';
 
 import { PATHS, USER_ROLE_OPTIONS } from '@constant';
+import { stringToColor } from '@util';
 
 import { UserDetailProps } from './UserDetail.types';
 
@@ -38,7 +39,13 @@ export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
                     arrow
                     placement="left"
                 >
-                    <Avatar>{user?.first_name?.[0]}</Avatar>
+                    <Avatar
+                        sx={{
+                            bgcolor: `${stringToColor(user?.email ?? '')}`,
+                        }}
+                    >
+                        {user?.first_name?.[0]}
+                    </Avatar>
                 </Tooltip>
                 <Box sx={{ minWidth: 0 }}>
                     <Typography

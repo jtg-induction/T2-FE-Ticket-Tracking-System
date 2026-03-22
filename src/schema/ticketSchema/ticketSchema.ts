@@ -26,3 +26,11 @@ export const CreateTicketSchema = TicketBaseSchema.extend({
 export const JQLSearchSchema = z.object({
     query: z.string().trim().nonempty('Write some query!'),
 });
+
+export const CommentInputSchema = z.object({
+    message: z
+        .string()
+        .trim()
+        .min(1, 'Comment cannot be empty')
+        .max(5000, 'Comment exceeds maximum character limit'),
+});

@@ -32,12 +32,31 @@ export const getPriorityColor = (priority: TicketPriority, theme: Theme) => {
         case TicketPriority.High:
             return theme.palette.error.light;
         case TicketPriority.Medium:
-            return theme.palette.warning.dark;
-        case TicketPriority.Low:
             return theme.palette.warning.main;
-        case TicketPriority.Lowest:
+        case TicketPriority.Low:
             return theme.palette.success.main;
+        case TicketPriority.Lowest:
+            return theme.palette.success.dark;
         default:
-            return theme.palette.grey[500];
+            return theme.palette.text.disabled;
     }
+};
+
+/**
+ * Converts a string into a consistent hex color.
+ * @param string - The unique string (e.g. email or username) to hash.
+ */
+export const stringToColor = (string: string): string => {
+    if (!string.trim()) return `hsl(0, 0%, 70%)`;
+
+    let hash = 0;
+    for (let i = 0; i < string.length; i++) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const h = Math.abs(hash) % 180;
+    const s = 55 + (Math.abs(hash >> 8) % 30);
+    const l = 40 + (Math.abs(hash >> 16) % 15);
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
 };

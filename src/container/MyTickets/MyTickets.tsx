@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 import { useMyTicketsPage } from '@hook';
-import { getPriorityColor, getStatusColor } from '@util';
+import { getPriorityColor, getStatusColor, stringToColor } from '@util';
 
 import {
     StyledHeaderCell,
@@ -155,6 +155,10 @@ export const MyTickets = () => {
                                             >
                                                 <Avatar
                                                     sx={{
+                                                        bgcolor: stringToColor(
+                                                            ticket.reporter
+                                                                ?.email ?? '',
+                                                        ),
                                                         width: 28,
                                                         height: 28,
                                                         fontSize: '1.5rem',
@@ -188,6 +192,10 @@ export const MyTickets = () => {
                                             >
                                                 <Avatar
                                                     sx={{
+                                                        bgcolor: stringToColor(
+                                                            ticket.assignee
+                                                                ?.email ?? '',
+                                                        ),
                                                         width: 28,
                                                         height: 28,
                                                         fontSize: '1.5rem',

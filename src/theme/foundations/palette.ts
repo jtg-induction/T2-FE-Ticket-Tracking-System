@@ -9,10 +9,12 @@ import {
 } from '@mui/material/colors';
 import type { PaletteOptions } from '@mui/material/styles';
 
+import { PRIMARY } from '@constant';
+
 /* Custom Palette */
 export const palette: PaletteOptions = {
     primary: {
-        main: blue[700],
+        main: PRIMARY,
         light: blue[500],
         dark: blue[900],
     },

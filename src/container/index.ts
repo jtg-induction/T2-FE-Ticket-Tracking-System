@@ -12,3 +12,4 @@ export { TicketDetail } from './TicketDetail';
 export { CreateTicketModal } from './CreateTicketModal';
 export { TicketBoard } from './TicketBoard';
 export { MyTickets } from './MyTickets';
+export { TicketComments } from './TicketComments';

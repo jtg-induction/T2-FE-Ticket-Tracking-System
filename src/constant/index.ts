@@ -1,4 +1,9 @@
-export { HTML_FONT_SIZE, SCALING_FACTOR, FONT_SIZE } from './themeConstant';
+export {
+    HTML_FONT_SIZE,
+    SCALING_FACTOR,
+    FONT_SIZE,
+    PRIMARY,
+} from './themeConstant';
 export { API_CONSTANTS } from './apiConstant';
 export { PUBLICPATHS, PATHS } from './pathConstants';
 export { DIMENSIONS } from './layoutConstant';
