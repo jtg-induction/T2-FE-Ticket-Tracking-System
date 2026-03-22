@@ -43,7 +43,12 @@ export const UserCard = ({
             <Avatar>{initials}</Avatar>
 
             <StyledUserInfo spacing={-1}>
-                <Typography variant="subtitle2" noWrap fontWeight="600">
+                <Typography
+                    title={`${firstName} ${lastName}`}
+                    variant="subtitle2"
+                    noWrap
+                    fontWeight="600"
+                >
                     {firstName} {lastName}
                 </Typography>
                 <Typography

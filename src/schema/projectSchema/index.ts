@@ -1,1 +1,1 @@
-export { projectSchema } from './projectSchema';
+export { projectSchema, inviteMemberSchema } from './projectSchema';

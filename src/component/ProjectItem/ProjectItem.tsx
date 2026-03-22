@@ -14,6 +14,7 @@ export const ProjectItem = ({
         <CardContent>
             <Box>
                 <Typography
+                    title={name}
                     variant="h6"
                     component="div"
                     color="primary.main"

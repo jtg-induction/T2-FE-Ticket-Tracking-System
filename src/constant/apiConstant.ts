@@ -6,6 +6,7 @@ export const API_CONSTANTS = {
         LOGOUT: '/api/logout/',
         USER: '/api/user/',
         PROJECT: '/api/project/',
+        TICKET: '/api/ticket/',
     },
     METHODS: {
         GET: 'GET',

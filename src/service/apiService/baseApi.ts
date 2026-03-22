@@ -98,9 +98,6 @@ const baseQueryWithReauth: BaseQueryFn<
             | PaginatedResponse<unknown>
             | EntityResponse<unknown>;
 
-        if ('meta' in raw && Array.isArray(raw.data)) {
-            return { data: raw };
-        }
         return { data: raw };
     }
 
@@ -122,6 +119,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User', 'Project', 'ProjectMember'],
+    tagTypes: ['User', 'Project', 'ProjectMember', 'Ticket'],
     endpoints: () => ({}),
 });

@@ -41,16 +41,18 @@ export const projectApi = baseApi.injectEndpoints({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
                 params: { page, archived, page_size: PAGE_SIZE },
             }),
-            providesTags: (result) =>
-                result?.data
-                    ? [
-                          ...result.data.map(({ id }) => ({
-                              type: 'Project' as const,
-                              id,
-                          })),
-                          { type: 'Project', id: 'LIST' },
-                      ]
-                    : [{ type: 'Project', id: 'LIST' }],
+            providesTags: (result) => {
+                if (result?.data && Array.isArray(result.data)) {
+                    return [
+                        ...result.data.map(({ id }) => ({
+                            type: 'Project' as const,
+                            id,
+                        })),
+                        { type: 'Project' as const, id: 'LIST' },
+                    ];
+                }
+                return [{ type: 'Project' as const, id: 'LIST' }];
+            },
         }),
     }),
 });

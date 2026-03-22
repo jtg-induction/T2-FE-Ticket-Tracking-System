@@ -15,7 +15,7 @@ export type {
     SignupFormValues,
 } from './auth.types';
 
-export type { Project } from './project.types';
+export type { Project, InviteMemberInput } from './project.types';
 export { ProjectRole } from './project.types';
 
 export type {
@@ -24,3 +24,11 @@ export type {
     PaginatedResponse,
     ErrorResponse,
 } from './standard.types';
+
+export type {
+    Ticket,
+    TicketCategory,
+    TicketRole,
+    CreateTicketInput,
+    JQLSearchInput,
+} from './ticket.types';

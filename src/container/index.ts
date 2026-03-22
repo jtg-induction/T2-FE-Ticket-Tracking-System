@@ -8,3 +8,7 @@ export { ProjectList } from './ProjectList';
 export { ProjectDetail } from './ProjectDetail';
 export { ProjectUsers } from './ProjectUsers';
 export { AcceptInvite } from './Acceptinvite';
+export { TicketDetail } from './TicketDetail';
+export { CreateTicketModal } from './CreateTicketModal';
+export { TicketBoard } from './TicketBoard';
+export { MyTickets } from './MyTickets';

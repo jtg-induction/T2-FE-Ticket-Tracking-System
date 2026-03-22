@@ -6,11 +6,11 @@ export const projectUserApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getProjectMembers: builder.query<
             PaginatedResponse<ProjectMember>,
-            { id: string; page: number }
+            { id: string; page: number; search?: string }
         >({
-            query: ({ id, page }) => ({
+            query: ({ id, page, search }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/members/`,
-                params: { page, page_size: 5 },
+                params: { page, page_size: 5, search: search || undefined },
             }),
             providesTags: (result, _error, { id }) =>
                 result && 'data' in result && Array.isArray(result.data)
@@ -33,9 +33,6 @@ export const projectUserApi = baseApi.injectEndpoints({
                 method: API_CONSTANTS.METHODS.POST,
                 body: { email },
             }),
-            invalidatesTags: (_res, _err, { id }) => [
-                { type: 'ProjectMember', id: `LIST-${id}` },
-            ],
         }),
 
         acceptInvite: builder.mutation<EntityResponse<null>, string>({
@@ -64,9 +61,16 @@ export const projectUserApi = baseApi.injectEndpoints({
                 method: API_CONSTANTS.METHODS.POST,
                 body: { projectRole },
             }),
-            invalidatesTags: (_res, _err, { projectId }) => [
-                { type: 'ProjectMember', id: `LIST-${projectId}` },
-            ],
+            async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(
+                        projectUserApi.util.invalidateTags([
+                            { type: 'ProjectMember', id: `LIST-${projectId}` },
+                        ]),
+                    );
+                } catch {}
+            },
         }),
 
         removeMember: builder.mutation<
@@ -77,9 +81,16 @@ export const projectUserApi = baseApi.injectEndpoints({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/${userId}/`,
                 method: API_CONSTANTS.METHODS.POST,
             }),
-            invalidatesTags: (_res, _err, { projectId }) => [
-                { type: 'ProjectMember', id: `LIST-${projectId}` },
-            ],
+            async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(
+                        projectUserApi.util.invalidateTags([
+                            { type: 'ProjectMember', id: `LIST-${projectId}` },
+                        ]),
+                    );
+                } catch {}
+            },
         }),
     }),
 });

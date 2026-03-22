@@ -7,6 +7,15 @@ const globalCss = `
        html {
         font-size: 62.5%;
       } 
+      *::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+
+      *::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+      }
        @font-face {
         font-display: swap; 
         font-family: 'Inter';
