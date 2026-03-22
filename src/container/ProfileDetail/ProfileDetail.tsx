@@ -1,6 +1,8 @@
-import { useSearchParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import {
+    BarChart as BarChartIcon,
+    ChevronRight,
     Close as CloseIcon,
     Edit as EditIcon,
     Save as SaveIcon,
@@ -34,8 +36,8 @@ import {
 
 export const ProfileDetail = () => {
     const theme = useTheme();
-    const [searchParams] = useSearchParams();
-    const id = searchParams.get('id') || '';
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
 
     const {
         profile,
@@ -50,7 +52,7 @@ export const ProfileDetail = () => {
         errors,
         formValues,
         isDirty,
-    } = useProfileForm(id);
+    } = useProfileForm(id ?? '');
 
     if (loading && !profile) return <Typography>Loading Profile...</Typography>;
     if (fetchError || !profile)
@@ -221,6 +223,22 @@ export const ProfileDetail = () => {
                         sx={getTextFieldStyle(theme)}
                     />
                 </StyledFullWidthItem>
+
+                {canUserEdit && (
+                    <StyledFullWidthItem>
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<BarChartIcon />}
+                            onClick={() => void navigate(`/profile/insights`)}
+                            endIcon={<ChevronRight />}
+                            sx={{ borderRadius: 2 }}
+                        >
+                            View Performance Analytics
+                        </Button>
+                    </StyledFullWidthItem>
+                )}
             </StyledFormGrid>
             <Snackbar open={!!saveError}>
                 <Alert severity="error">{saveError}</Alert>

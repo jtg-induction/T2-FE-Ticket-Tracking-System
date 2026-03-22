@@ -43,8 +43,18 @@ export const reportsApi = baseApi.injectEndpoints({
                 success: true,
                 message: response.message,
                 data: {
-                    statusStats: response.data.status_stats,
-                    priorityStats: response.data.priority_stats,
+                    statusStats: response.data.status_stats.map((s: any) => ({
+                        name: s.name,
+                        count: s.count,
+                        statusKey: s.status_key,
+                    })),
+                    priorityStats: response.data.priority_stats.map(
+                        (p: any) => ({
+                            name: p.name,
+                            count: p.count,
+                            priorityKey: p.priority_key,
+                        }),
+                    ),
                     efficiencyStats: response.data.efficiency_stats,
                     timelineStats: response.data.timeline_stats,
                 },

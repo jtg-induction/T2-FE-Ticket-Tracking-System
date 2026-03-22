@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { useTheme } from '@mui/material';
 
 import { getGraphColors } from '@constant';
+import { TicketPriority, TicketStatus } from '@constant';
 import { TicketStatsData } from '@container';
 import { FilterFormValues } from '@schema';
 import { useGetTicketReportsQuery } from '@service';
-import { TicketPriority, TicketStatus } from '@type';
 
 export const useReport = (
     projectId?: string,

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Form } from 'react-router';
+import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 
-import { Download as DownloadIcon } from '@mui/icons-material';
+import { ArrowBack, Download as DownloadIcon } from '@mui/icons-material';
 import {
     Autocomplete,
     Box,
@@ -11,13 +11,18 @@ import {
     Chip,
     CircularProgress,
     Grid2 as Grid,
+    Paper,
     Stack,
     TextField,
     Typography,
 } from '@mui/material';
 
-import { DonutCard, StackedBarCard } from '@component';
-import { ErrorSnackbar } from '@component';
+import {
+    CustomIconButton,
+    DonutCard,
+    ErrorSnackbar,
+    StackedBarCard,
+} from '@component';
 import { useDebounce, useReport } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FilterFormValues, filterSchema } from '@schema';
@@ -33,6 +38,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [apiError, setApiError] = useState<ErrorResponse | null>(null);
     const debouncedSearch = useDebounce(searchTerm, 500);
+    const navigate = useNavigate();
 
     const [submittedFilters, setSubmittedFilters] = useState<FilterFormValues>({
         userIds: [],
@@ -43,8 +49,8 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
     const {
         register,
         control,
-        handleSubmit,
         getValues,
+        handleSubmit,
         formState: { errors },
     } = useForm<FilterFormValues>({
         resolver: zodResolver(filterSchema),
@@ -70,11 +76,9 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
 
     const handleCloseError = () => setApiError(null);
 
-    const onFilterSubmit: SubmitHandler<FilterFormValues> = (values) => {
+    const onFilterSubmit = (values: FilterFormValues) => {
         setSubmittedFilters(values);
     };
-
-    // Download Logic
 
     const [triggerDownload, { isFetching: isDownloading }] =
         useLazyDownloadTicketReportQuery();
@@ -104,181 +108,198 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
     }
 
     return (
-        <Stack spacing={4} p={4}>
-            <ErrorSnackbar error={apiError} onClose={handleCloseError} />
-            <Typography variant="h5" fontWeight="bold">
-                Project Insights
-            </Typography>
+        <Paper>
+            <Stack spacing={4} p={4}>
+                <ErrorSnackbar error={apiError} onClose={handleCloseError} />
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Stack direction="row" alignItems="center" gap={2}>
+                        <CustomIconButton
+                            variant="standard"
+                            onClick={() => navigate(-1)}
+                        >
+                            <ArrowBack />
+                        </CustomIconButton>
+                        <Typography variant="h4" fontWeight="bold">
+                            Insights
+                        </Typography>
+                    </Stack>
 
-            <Button
-                variant="outlined"
-                startIcon={
-                    isDownloading ? (
-                        <CircularProgress size={20} />
-                    ) : (
-                        <DownloadIcon />
-                    )
-                }
-                onClick={handleDownload}
-                disabled={isDownloading}
-                sx={{ fontWeight: 'bold' }}
-            >
-                {isDownloading ? 'Exporting...' : 'Export PDF'}
-            </Button>
+                    <Button
+                        variant="outlined"
+                        startIcon={
+                            isDownloading ? (
+                                <CircularProgress size={20} />
+                            ) : (
+                                <DownloadIcon />
+                            )
+                        }
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        sx={{ fontWeight: 'bold' }}
+                    >
+                        {isDownloading ? 'Exporting...' : 'Export PDF'}
+                    </Button>
+                </Stack>
 
-            <Form
-                onSubmit={() => {
-                    void handleSubmit(onFilterSubmit);
-                }}
-            >
-                <Grid container spacing={2}>
-                    {userFilter && (
-                        <Grid size={{ xs: 12, md: 5 }}>
-                            <Controller
-                                name="userIds"
-                                control={control}
-                                render={({ field: { onChange, value } }) => (
-                                    <Stack spacing={2}>
-                                        <Autocomplete
-                                            options={userOptions}
-                                            getOptionLabel={(option) =>
-                                                option.name
-                                            }
-                                            inputValue={searchTerm}
-                                            onInputChange={(_, newInputValue) =>
-                                                setSearchTerm(newInputValue)
-                                            }
-                                            onChange={(_, newValue) => {
-                                                if (
-                                                    newValue &&
-                                                    !value.includes(newValue.id)
-                                                ) {
-                                                    onChange([
-                                                        ...value,
-                                                        newValue.id,
-                                                    ]);
-                                                    setSearchTerm('');
+                <Box component="form" onSubmit={handleSubmit(onFilterSubmit)}>
+                    <Grid container spacing={2}>
+                        {userFilter && (
+                            <Grid size={{ xs: 12, md: 5 }}>
+                                <Controller
+                                    name="userIds"
+                                    control={control}
+                                    render={({
+                                        field: { onChange, value },
+                                    }) => (
+                                        <Stack spacing={2}>
+                                            <Autocomplete
+                                                options={userOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.name
                                                 }
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Search and Add Users"
-                                                    placeholder="Type to search..."
-                                                />
-                                            )}
-                                            value={null}
-                                            blurOnSelect
-                                        />
-
-                                        <Box
-                                            display="flex"
-                                            flexWrap="wrap"
-                                            gap={1}
-                                        >
-                                            {value.map((id: string) => {
-                                                const user = userOptions.find(
-                                                    (u) => u.id === id,
-                                                );
-                                                return (
-                                                    <Chip
-                                                        key={id}
-                                                        label={
-                                                            user?.name ||
-                                                            'Unknown User'
-                                                        }
-                                                        color="primary"
-                                                        variant="outlined"
-                                                        onDelete={() => {
-                                                            onChange(
-                                                                value.filter(
-                                                                    (
-                                                                        val: string,
-                                                                    ) =>
-                                                                        val !==
-                                                                        id,
-                                                                ),
-                                                            );
-                                                        }}
+                                                inputValue={searchTerm}
+                                                onInputChange={(_, newVal) =>
+                                                    setSearchTerm(newVal)
+                                                }
+                                                onChange={(_, newValue) => {
+                                                    if (
+                                                        newValue &&
+                                                        !value.includes(
+                                                            newValue.id,
+                                                        )
+                                                    ) {
+                                                        onChange([
+                                                            ...value,
+                                                            newValue.id,
+                                                        ]);
+                                                        setSearchTerm('');
+                                                    }
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Search and Add Users"
                                                     />
-                                                );
-                                            })}
-                                        </Box>
-                                    </Stack>
-                                )}
+                                                )}
+                                                value={null}
+                                            />
+
+                                            <Box
+                                                display="flex"
+                                                flexWrap="wrap"
+                                                gap={1}
+                                            >
+                                                {value.map((id: string) => {
+                                                    const user =
+                                                        userOptions.find(
+                                                            (u) => u.id === id,
+                                                        );
+                                                    return (
+                                                        <Chip
+                                                            key={id}
+                                                            label={
+                                                                user?.name ||
+                                                                'Unknown'
+                                                            }
+                                                            onDelete={() => {
+                                                                onChange(
+                                                                    value.filter(
+                                                                        (
+                                                                            v: string,
+                                                                        ) =>
+                                                                            v !==
+                                                                            id,
+                                                                    ),
+                                                                );
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
+                                            </Box>
+                                        </Stack>
+                                    )}
+                                />
+                            </Grid>
+                        )}
+                        {/* Date Inputs */}
+                        <Grid
+                            size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}
+                        >
+                            <TextField
+                                {...register('startDate')}
+                                label="From"
+                                type="date"
+                                fullWidth
+                                slotProps={{ inputLabel: { shrink: true } }}
                             />
                         </Grid>
-                    )}
 
-                    <Grid size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}>
-                        <TextField
-                            {...register('startDate')}
-                            label="From"
-                            type="date"
-                            fullWidth
-                            slotProps={{ inputLabel: { shrink: true } }}
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}>
-                        <TextField
-                            {...register('endDate')}
-                            label="To"
-                            type="date"
-                            fullWidth
-                            error={!!errors.endDate}
-                            helperText={errors.endDate?.message}
-                            slotProps={{ inputLabel: { shrink: true } }}
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 2 }}>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            sx={{ height: 56, fontWeight: 'bold' }}
+                        <Grid
+                            size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}
                         >
-                            Filter
-                        </Button>
+                            <TextField
+                                {...register('endDate')}
+                                label="To"
+                                type="date"
+                                fullWidth
+                                error={!!errors.endDate}
+                                helperText={errors.endDate?.message}
+                                slotProps={{ inputLabel: { shrink: true } }}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 2 }}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                sx={{ height: 56, fontWeight: 'bold' }}
+                            >
+                                Filter
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                <Grid container spacing={8}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <DonutCard
+                            title="Tickets by Status"
+                            chartData={data.statusData}
+                            total={data.totalStatus}
+                            label="TICKETS"
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <DonutCard
+                            title="Tickets by Priority"
+                            chartData={data.priorityData}
+                            total={data.totalPriority}
+                            label="TICKETS"
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <StackedBarCard
+                            title="Efficiency: Success vs. Failure"
+                            data={data.successFailureData}
+                            dataKeys={priorityKeys}
+                            colors={data.priorityColors}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <StackedBarCard
+                            title="Timeline: Deadline Trends"
+                            data={data.deadlineData}
+                            dataKeys={priorityKeys}
+                            colors={data.priorityColors}
+                        />
                     </Grid>
                 </Grid>
-            </Form>
-
-            <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                    <DonutCard
-                        title="Tickets by Status"
-                        chartData={data.statusData}
-                        total={data.totalStatus}
-                        label="TICKETS"
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                    <DonutCard
-                        title="Tickets by Priority"
-                        chartData={data.priorityData}
-                        total={data.totalPriority}
-                        label="TICKETS"
-                    />
-                </Grid>
-                <Grid size={12}>
-                    <StackedBarCard
-                        title="Efficiency: Success vs. Failure"
-                        data={data.successFailureData}
-                        dataKeys={priorityKeys}
-                        colors={data.priorityColors}
-                    />
-                </Grid>
-                <Grid size={12}>
-                    <StackedBarCard
-                        title="Timeline: Deadline Trends"
-                        data={data.deadlineData}
-                        dataKeys={priorityKeys}
-                        colors={data.priorityColors}
-                    />
-                </Grid>
-            </Grid>
-        </Stack>
+            </Stack>
+        </Paper>
     );
 };

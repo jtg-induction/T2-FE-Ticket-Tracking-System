@@ -1,15 +1,15 @@
 import { Theme } from '@mui/material';
 
-import { TicketPriority, TicketStatus } from '@type';
+import { TicketPriority, TicketStatus } from '@constant';
 
 export const getGraphColors = ({ palette }: Theme) =>
     ({
         priority: {
             [TicketPriority.Highest]: palette.error.dark,
             [TicketPriority.High]: palette.error.light,
-            [TicketPriority.Medium]: palette.warning.dark,
-            [TicketPriority.Low]: palette.warning.main,
-            [TicketPriority.Lowest]: palette.success.main,
+            [TicketPriority.Medium]: palette.warning.main,
+            [TicketPriority.Low]: palette.success.main,
+            [TicketPriority.Lowest]: palette.success.dark,
         },
         status: {
             [TicketStatus.ToDo]: palette.error.main,

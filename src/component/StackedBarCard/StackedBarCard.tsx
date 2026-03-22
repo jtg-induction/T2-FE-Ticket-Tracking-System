@@ -22,15 +22,15 @@ export const StackedBarCard = ({
     const { palette, zIndex } = useTheme();
     return (
         <Box>
-            <Typography variant="h6" mb={3} fontWeight={600}>
+            <Typography variant="h6" mb={3} fontWeight={600} textAlign="center">
                 {title}
             </Typography>
 
-            <Box width="100%" height={400}>
+            <Box width="100%" sx={{ height: { xs: 400, md: 600 } }}>
                 <ResponsiveContainer>
                     <BarChart
                         data={data}
-                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                     >
                         <CartesianGrid
                             strokeDasharray="3 3"
@@ -41,13 +41,13 @@ export const StackedBarCard = ({
                             dataKey="label"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 12 }}
+                            tick={{ fontSize: 16 }}
                             dy={10}
                         />
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 12 }}
+                            tick={{ fontSize: 16 }}
                         />
                         <Tooltip
                             cursor={{ fill: palette.grey[200] }}
@@ -55,8 +55,9 @@ export const StackedBarCard = ({
                         />
                         <Legend
                             verticalAlign="bottom"
-                            align="right"
+                            align="center"
                             iconType="circle"
+                            wrapperStyle={{ paddingTop: 16 }}
                         />
                         {dataKeys.map((key, index) => (
                             <Bar
