@@ -18,7 +18,7 @@ import { CustomIconButton, RichTextEditor } from '@component';
 import { useUpdateCommentMutation } from '@service';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { convertIsoToDateYear } from '@util';
+import { convertIsoToDateYear, stringToColor } from '@util';
 
 import { CommentItemProps } from './CommentItem.types';
 
@@ -73,7 +73,10 @@ export const CommentItem = ({
                 <Avatar
                     component={Link}
                     to={`/profile/${commentator.user_id}`}
-                    sx={{ textDecoration: 'none' }}
+                    sx={{
+                        textDecoration: 'none',
+                        bgcolor: stringToColor(commentator.email),
+                    }}
                 >
                     {commentator.first_name[0]}
                     {commentator.last_name[0]}

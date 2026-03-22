@@ -3,6 +3,7 @@ import { Paper, styled } from '@mui/material';
 export const StyledTicketSurface = styled(Paper)(
     ({ theme: { breakpoints } }) => ({
         padding: 16,
+        height: '100%',
         width: '100%',
         maxWidth: breakpoints.values.lg,
         overflow: 'auto',

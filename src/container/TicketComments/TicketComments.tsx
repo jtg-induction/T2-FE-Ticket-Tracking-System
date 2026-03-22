@@ -1,7 +1,6 @@
 import { useParams } from 'react-router';
 
 import {
-    Alert,
     Box,
     Button,
     CircularProgress,
@@ -14,6 +13,7 @@ import {
 import { CommentInput, CommentItem, ErrorSnackbar } from '@component';
 import { DIMENSIONS } from '@constant';
 import { useTicketComments } from '@hook';
+import { ErrorPage } from '@page';
 
 export const TicketComments = () => {
     const { ticketId = '' } = useParams<{ ticketId: string }>();
@@ -32,13 +32,7 @@ export const TicketComments = () => {
         clearActionError,
     } = useTicketComments(ticketId);
 
-    if (fetchError) {
-        return (
-            <Box p={2}>
-                <Alert severity="error">Failed to load comments.</Alert>
-            </Box>
-        );
-    }
+    if (fetchError) return <ErrorPage></ErrorPage>;
 
     if (isLoading) {
         return (
@@ -50,10 +44,8 @@ export const TicketComments = () => {
 
     return (
         <Stack
-            flex={1}
             component={Paper}
             height={`calc(100vh - ${DIMENSIONS.HEADER_HEIGHT + 48}px)`}
-            minHeight={500}
             padding={4}
             direction="column"
             overflow="hidden"

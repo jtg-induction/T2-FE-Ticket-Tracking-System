@@ -10,6 +10,7 @@ export type UserCardProps = {
     userId: string;
     firstName: string;
     lastName: string;
+    email: string;
     role: ProjectRole;
     /** Whether the action menu (is visible for this card. */
     showMenu: boolean;

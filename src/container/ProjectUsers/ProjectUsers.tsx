@@ -295,6 +295,7 @@ export const ProjectUsers = () => {
                                         userId={user.user_id}
                                         firstName={user.first_name}
                                         lastName={user.last_name}
+                                        email={user.email}
                                         role={userRole}
                                         showMenu={showMenu}
                                         canMakeOwner={canMakeOwner}

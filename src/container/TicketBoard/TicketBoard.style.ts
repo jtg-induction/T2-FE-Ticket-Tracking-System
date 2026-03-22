@@ -1,5 +1,4 @@
 import {
-    Avatar,
     Box,
     Card,
     CardContent,
@@ -68,14 +67,6 @@ export const StyledTicketTitle = styled(Typography)(
         WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical',
         overflow: 'hidden',
-    }),
-);
-
-export const StyledAssigneeAvatar = styled(Avatar)(
-    ({ theme: { spacing } }) => ({
-        width: 22,
-        height: 22,
-        fontSize: spacing(2),
     }),
 );
 

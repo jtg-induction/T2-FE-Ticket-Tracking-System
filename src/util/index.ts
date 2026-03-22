@@ -1,2 +1,2 @@
 export { convertIsoToDateYear, toDateTimeLocalValue } from './formatDate';
-export { getPriorityColor, getStatusColor } from './getColor';
+export { getPriorityColor, getStatusColor, stringToColor } from './getColor';

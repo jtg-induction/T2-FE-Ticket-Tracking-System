@@ -10,6 +10,7 @@ import {
     Settings,
 } from '@mui/icons-material';
 import {
+    Avatar,
     Box,
     Chip,
     CircularProgress,
@@ -25,10 +26,9 @@ import { PAGE_SIZE, TicketStatus } from '@constant';
 import { CreateTicketModal } from '@container';
 import { useProjectDashboard } from '@hook';
 import { ErrorPage } from '@page';
-import { getPriorityColor } from '@util';
+import { getPriorityColor, stringToColor } from '@util';
 
 import {
-    StyledAssigneeAvatar,
     StyledColumnHeader,
     StyledMainContent,
     StyledScrollableArea,
@@ -236,12 +236,25 @@ export const TicketBoard = () => {
                                                                       .email
                                                               }
                                                           >
-                                                              <StyledAssigneeAvatar>
+                                                              <Avatar
+                                                                  sx={{
+                                                                      bgcolor:
+                                                                          stringToColor(
+                                                                              ticket
+                                                                                  .assignee
+                                                                                  .email,
+                                                                          ),
+                                                                      width: 24,
+                                                                      height: 24,
+                                                                      fontSize:
+                                                                          '1rem',
+                                                                  }}
+                                                              >
                                                                   {ticket
                                                                       .assignee
                                                                       .first_name?.[0] ||
                                                                       '?'}
-                                                              </StyledAssigneeAvatar>
+                                                              </Avatar>
                                                           </Tooltip>
                                                       )}
                                                   </Stack>
