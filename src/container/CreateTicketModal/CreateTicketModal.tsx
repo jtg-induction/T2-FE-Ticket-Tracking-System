@@ -1,3 +1,5 @@
+import { Form } from 'react-router';
+
 import {
     Autocomplete,
     Button,
@@ -11,9 +13,8 @@ import {
     TextField,
 } from '@mui/material';
 
+import { TicketPriority, TicketStatus } from '@constant';
 import { useCreateTicket } from '@hook';
-import { TicketPriority, TicketStatus } from '@type/ticket.types';
-import { Form } from 'react-router';
 
 interface Props {
     open: boolean;
@@ -44,7 +45,14 @@ export const CreateTicketModal = ({
     } = form;
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <Dialog
+            open={open}
+            onClose={() => {
+                onClose();
+            }}
+            fullWidth
+            maxWidth="sm"
+        >
             <DialogTitle>Create New Ticket</DialogTitle>
             <Form onSubmit={() => void onSubmit()}>
                 <DialogContent>
@@ -71,7 +79,6 @@ export const CreateTicketModal = ({
                                 select
                                 fullWidth
                                 label="Category"
-                                defaultValue="Development"
                                 {...register('category')}
                                 error={!!errors.category}
                                 helperText={errors.category?.message}
@@ -92,7 +99,6 @@ export const CreateTicketModal = ({
                                 select
                                 fullWidth
                                 label="Priority"
-                                defaultValue={TicketPriority.Medium}
                                 {...register('priority')}
                                 error={!!errors.priority}
                                 helperText={errors.priority?.message}

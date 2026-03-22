@@ -70,24 +70,35 @@ export const ProjectDetail = () => {
                 justifyContent="space-between"
                 paddingBottom={4}
             >
-                <Stack direction="row" alignItems="center">
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    sx={{ minWidth: 0, flex: 1 }}
+                >
                     <CustomIconButton
                         variant="standard"
                         aria-label="Go back"
                         onClick={() => void navigate(-1)}
                         size="small"
-                        sx={{ flexShrink: 0 }}
+                        sx={{ flexShrink: 0, mr: 1 }}
                     >
                         <ArrowBackIcon />
                     </CustomIconButton>
 
-                    <Typography variant="h5" fontWeight={600} noWrap>
+                    <Typography
+                        title={pageTitle}
+                        variant="h5"
+                        fontWeight={600}
+                        minWidth={0}
+                        flex={1}
+                    >
                         {pageTitle}
                         {project?.is_archived && (
                             <Typography
                                 component="span"
                                 color="error"
-                                marginLeft={2}
+                                ml={2}
+                                display="inline"
                             >
                                 (Archived)
                             </Typography>
@@ -188,6 +199,7 @@ export const ProjectDetail = () => {
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
+                            title={formValues.jira_project_key}
                             fullWidth
                             label="Jira Project Key"
                             {...register('jira_project_key')}
@@ -203,6 +215,7 @@ export const ProjectDetail = () => {
 
                     <Grid size={12}>
                         <TextField
+                            title={formValues.site_url}
                             fullWidth
                             label="Site URL"
                             {...register('site_url')}

@@ -21,29 +21,37 @@ export const useTicketDetail = () => {
     }>();
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [error, setError] = useState<ErrorResponse | null>(null);
+    const [updateError, setUpdateError] = useState<ErrorResponse | null>(null);
     const debouncedSearch = useDebounce(searchTerm, 500);
 
-    const { data: response, isLoading } = useGetTicketByIdQuery(
+    const {
+        data: response,
+        isLoading,
+        error: fetchTicketError,
+    } = useGetTicketByIdQuery(
         { projectId: projectId!, ticketId: ticketId! },
-        { skip: !ticketId },
+        { skip: !projectId || !ticketId },
     );
 
     const ticket = response?.data;
     const role = ticket?.ticket_role;
 
-    const { data: membersRes, isFetching: isSearching } =
-        useGetProjectMembersQuery({
-            id: projectId!,
-            page: 1,
-            search: debouncedSearch,
-        });
+    const {
+        data: membersRes,
+        isFetching: isSearching,
+        error: fetchMemberError,
+    } = useGetProjectMembersQuery({
+        id: projectId!,
+        page: 1,
+        search: debouncedSearch,
+    });
     const members = membersRes?.success ? membersRes.data : [];
 
     const [updateTicket, { isLoading: isUpdating }] = useUpdateTicketMutation();
 
     const form = useForm<CreateTicketInput>({
         resolver: zodResolver(CreateTicketSchema),
+        mode: 'onChange',
         defaultValues: {
             name: ticket?.name,
             description: ticket?.description,
@@ -56,6 +64,9 @@ export const useTicketDetail = () => {
             assignee: ticket?.assignee?.user_id || '',
         },
     });
+
+    const { isDirty } = form.formState;
+    const { setError } = form;
 
     useEffect(() => {
         if (ticket && isEditing) {
@@ -71,7 +82,7 @@ export const useTicketDetail = () => {
                 assignee: ticket.assignee?.user_id,
             });
         }
-    }, [ticket, isEditing, form]);
+    }, [ticket, isEditing, form.reset]);
 
     const canEditFields = ['reporter', 'admin'].includes(role || '');
     const canEditStatus = ['reporter', 'admin', 'assignee'].includes(
@@ -80,23 +91,36 @@ export const useTicketDetail = () => {
     const canViewEditButton = role !== 'member';
 
     const onSave = async (data: CreateTicketInput) => {
+        if (!isDirty) {
+            setIsEditing(false);
+            return;
+        }
         try {
-            setError(null);
+            setUpdateError(null);
             const { assignee, ...rest } = data;
-            const body: Partial<CreateTicketInput> & { assignee?: string } = {
-                ...rest,
-            };
-
-            body.assignee = assignee || '';
+            const body = { ...rest, assignee: assignee || '' };
 
             await updateTicket({
                 projectId: projectId!,
                 ticketId: ticketId!,
                 body,
             }).unwrap();
+
             setIsEditing(false);
+            form.reset(data);
         } catch (err) {
-            setError(err as ErrorResponse);
+            const apiError = err as ErrorResponse;
+            setUpdateError(apiError);
+            if (apiError.errors) {
+                Object.entries(apiError.errors).forEach(([key, messages]) => {
+                    setError(key as keyof CreateTicketInput, {
+                        type: 'server',
+                        message: Array.isArray(messages)
+                            ? messages[0]
+                            : (messages as string),
+                    });
+                });
+            }
         }
     };
 
@@ -105,6 +129,7 @@ export const useTicketDetail = () => {
         isEditing,
         setIsEditing,
         form,
+        isDirty,
         isLoading,
         isUpdating,
         members,
@@ -112,7 +137,8 @@ export const useTicketDetail = () => {
         permissions: { canEditFields, canEditStatus, canViewEditButton, role },
         isSearching,
         setSearchTerm,
-        error,
-        clearError: () => setError(null),
+        fetchError: fetchTicketError || fetchMemberError,
+        updateError,
+        clearUpdateError: () => setUpdateError(null),
     };
 };

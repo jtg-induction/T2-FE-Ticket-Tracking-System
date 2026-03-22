@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 
+import { PAGE_SIZE, TicketStatus } from '@constant';
 import { useGetProjectByIdQuery, useGetProjectTicketsQuery } from '@service';
 import { Project } from '@type/project.types';
-import { Ticket, TicketStatus } from '@type/ticket.types';
+import { Ticket } from '@type/ticket.types';
 
 interface StatusColumnData {
     tickets: Ticket[];
@@ -13,8 +14,6 @@ interface StatusColumnData {
 }
 
 export const useProjectDashboard = (projectId: string) => {
-    const PAGE_SIZE = 10;
-
     const [todoPage, setTodoPage] = useState(0);
     const [progressPage, setProgressPage] = useState(0);
     const [donePage, setDonePage] = useState(0);
@@ -22,33 +21,50 @@ export const useProjectDashboard = (projectId: string) => {
 
     const [isModalOpen, setModalOpen] = useState(false);
 
-    const { data: projectResponse, isLoading: isProjectLoading } =
-        useGetProjectByIdQuery(projectId, { skip: !projectId });
+    const {
+        data: projectResponse,
+        isLoading: isProjectLoading,
+        error: projectFetchError,
+    } = useGetProjectByIdQuery(projectId, { skip: !projectId });
 
-    const todoQuery = useGetProjectTicketsQuery({
-        projectId,
-        status: 'To Do',
-        page: todoPage + 1,
-        pageSize: PAGE_SIZE,
-    });
-    const progressQuery = useGetProjectTicketsQuery({
-        projectId,
-        status: 'In Progress',
-        page: progressPage + 1,
-        pageSize: PAGE_SIZE,
-    });
-    const doneQuery = useGetProjectTicketsQuery({
-        projectId,
-        status: 'Done',
-        page: donePage + 1,
-        pageSize: PAGE_SIZE,
-    });
-    const closedQuery = useGetProjectTicketsQuery({
-        projectId,
-        status: 'Closed',
-        page: closedPage + 1,
-        pageSize: PAGE_SIZE,
-    });
+    const ticketQueryOptions = { skip: !projectId };
+
+    const todoQuery = useGetProjectTicketsQuery(
+        {
+            projectId,
+            status: 'To Do',
+            page: todoPage + 1,
+            pageSize: PAGE_SIZE,
+        },
+        ticketQueryOptions,
+    );
+    const progressQuery = useGetProjectTicketsQuery(
+        {
+            projectId,
+            status: 'In Progress',
+            page: progressPage + 1,
+            pageSize: PAGE_SIZE,
+        },
+        ticketQueryOptions,
+    );
+    const doneQuery = useGetProjectTicketsQuery(
+        {
+            projectId,
+            status: 'Done',
+            page: donePage + 1,
+            pageSize: PAGE_SIZE,
+        },
+        ticketQueryOptions,
+    );
+    const closedQuery = useGetProjectTicketsQuery(
+        {
+            projectId,
+            status: 'Closed',
+            page: closedPage + 1,
+            pageSize: PAGE_SIZE,
+        },
+        ticketQueryOptions,
+    );
 
     const project = projectResponse?.data as Project;
 
@@ -65,7 +81,7 @@ export const useProjectDashboard = (projectId: string) => {
             total: progressQuery.data?.meta.count || 0,
             page: progressPage,
             setPage: setProgressPage,
-            loading: progressQuery.isLoading || todoQuery.isFetching,
+            loading: progressQuery.isLoading || progressQuery.isFetching,
         },
         Done: {
             tickets: doneQuery.data?.data || [],
@@ -90,5 +106,11 @@ export const useProjectDashboard = (projectId: string) => {
         isLoading: isProjectLoading,
         setModalOpen,
         pageSize: PAGE_SIZE,
+        fetchError:
+            !!projectFetchError ||
+            !!todoQuery.error ||
+            !!progressQuery.error ||
+            !!doneQuery.error ||
+            !!closedQuery.error,
     };
 };

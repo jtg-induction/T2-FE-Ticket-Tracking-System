@@ -1,45 +1,73 @@
+import { Link } from 'react-router';
+
 import { Avatar, Box, Paper, Stack, Tooltip, Typography } from '@mui/material';
 
-import { ProjectMember } from '@type/user.types';
+import { PATHS, USER_ROLE_OPTIONS } from '@constant';
 
 import { UserDetailProps } from './UserDetail.types';
 
 export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
-    <Box sx={{ mb: 3 }}>
+    <Box sx={{ my: 4 }}>
         <Stack direction="row" alignItems="center" spacing={1} mb={1}>
             {icon}
             <Typography
                 variant="caption"
                 fontWeight={700}
-                color="text.secondary"
+                color="textSecondary"
                 sx={{ textTransform: 'uppercase' }}
             >
                 {label}
             </Typography>
         </Stack>
-        <Tooltip
-            title={user?.email || 'No email available'}
-            arrow
-            placement="left"
+        <Paper
+            variant="outlined"
+            sx={{
+                p: 1.5,
+                bgcolor: 'grey.50',
+                borderStyle: 'dashed',
+            }}
         >
-            <Paper
-                variant="outlined"
-                sx={{ p: 1.5, bgcolor: 'grey.50', borderStyle: 'dashed' }}
+            <Stack
+                direction="row"
+                component={Link}
+                to={`${PATHS.PROFILE}/${user?.user_id}`}
+                sx={{ textDecoration: 'none' }}
             >
-                <Stack direction="row" spacing={2} alignItems="center">
+                <Tooltip
+                    title={user?.email || 'No email available'}
+                    arrow
+                    placement="left"
+                >
                     <Avatar>{user?.first_name?.[0]}</Avatar>
-                    <Box>
-                        <Typography variant="body2" fontWeight={600}>
-                            {user
+                </Tooltip>
+                <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                        title={
+                            user
                                 ? `${user.first_name} ${user.last_name}`
-                                : 'Unassigned'}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                            {(user as ProjectMember)?.role || 'Team Member'}
-                        </Typography>
-                    </Box>
-                </Stack>
-            </Paper>
-        </Tooltip>
+                                : 'Unassigned'
+                        }
+                        color="text.primary"
+                        variant="body2"
+                        fontWeight={600}
+                    >
+                        {user
+                            ? `${user.first_name} ${user.last_name}`
+                            : 'Unassigned'}
+                    </Typography>
+                    <Typography
+                        title={
+                            USER_ROLE_OPTIONS.find(
+                                (r) => r.value === user?.role,
+                            )?.label || user?.role
+                        }
+                        variant="caption"
+                        color="text.secondary"
+                    >
+                        {user?.role || 'Team Member'}
+                    </Typography>
+                </Box>
+            </Stack>
+        </Paper>
     </Box>
 );

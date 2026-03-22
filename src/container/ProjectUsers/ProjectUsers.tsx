@@ -1,12 +1,18 @@
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, useMemo, useState } from 'react';
 
+import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 
-import { Add as AddIcon, Logout as LogoutIcon } from '@mui/icons-material';
+import { Logout as LogoutIcon, Send as SendIcon } from '@mui/icons-material';
 import {
     Alert,
     Box,
+    Button,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     IconButton,
     InputAdornment,
@@ -27,23 +33,45 @@ import {
     UserCard,
 } from '@component';
 import { PAGE_SIZE, PATHS } from '@constant';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { inviteMemberSchema } from '@schema';
 import {
     useGetProjectMembersQuery,
     useInviteMemberMutation,
     useRemoveMemberMutation,
     useUpdateMemberRoleMutation,
 } from '@service';
-import { ErrorResponse, ProjectRole } from '@type';
+import {
+    ErrorResponse,
+    InviteMemberInput,
+    ProjectMember,
+    ProjectRole,
+} from '@type';
 
 export const ProjectUsers = () => {
     const { spacing } = useTheme();
     const { projectId } = useParams<{ projectId: string }>();
-
     const navigate = useNavigate();
+
     const [menuAnchorEl, setMenuAnchorEl] = useState<{
         userId: string;
         el: HTMLElement;
     } | null>(null);
+    const [page, setPage] = useState(1);
+    const [actionError, setActionError] = useState<ErrorResponse | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        setError,
+        formState: { errors },
+    } = useForm<InviteMemberInput>({
+        resolver: zodResolver(inviteMemberSchema),
+        defaultValues: { email: '' },
+    });
 
     const handleCardClick = (userId: string) => {
         void navigate(`${PATHS.PROFILE}/${userId}`);
@@ -59,13 +87,7 @@ export const ProjectUsers = () => {
         setMenuAnchorEl(null);
     };
 
-    if (!projectId || projectId === 'new') {
-        return null;
-    }
-    const [page, setPage] = useState(1);
-    const [inviteEmail, setInviteEmail] = useState('');
-    const [activeError, setActiveError] = useState<ErrorResponse | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    if (!projectId || projectId === 'new') return null;
 
     const {
         data: response,
@@ -81,12 +103,6 @@ export const ProjectUsers = () => {
     const members: ProjectMember[] = response?.data || [];
     const meta = response?.meta ?? null;
 
-    useEffect(() => {
-        if (fetchError) {
-            setActiveError(fetchError as ErrorResponse);
-        }
-    }, [fetchError]);
-
     const totalPages = useMemo(
         () => (meta ? Math.ceil(meta.count / PAGE_SIZE) : 0),
         [meta],
@@ -96,6 +112,24 @@ export const ProjectUsers = () => {
         () => (page === 1 ? members[0] : null),
         [members, page],
     );
+
+    const handleInvite = async (data: InviteMemberInput) => {
+        try {
+            const inviteResponse = await inviteMember({
+                id: projectId,
+                email: data.email,
+            }).unwrap();
+            setSuccessMessage(
+                inviteResponse.message || `Invitation sent to ${data.email}`,
+            );
+            reset();
+        } catch (err) {
+            const error = err as ErrorResponse;
+            setError('email', {
+                message: error?.message || 'Failed to send invitation',
+            });
+        }
+    };
 
     const handleAction = async (action: UserAction, targetUserId: string) => {
         if (!projectId) return;
@@ -120,31 +154,18 @@ export const ProjectUsers = () => {
                     }).unwrap();
                 }
             }
-        } catch (err: unknown) {
-            const errorObj = err as { data: ErrorResponse };
-            if (errorObj.data) setActiveError(errorObj.data);
-        }
-    };
-
-    const handleInvite = async () => {
-        if (!inviteEmail || !projectId) return;
-        try {
-            const inviteResponse = await inviteMember({
-                id: projectId,
-                email: inviteEmail,
-            }).unwrap();
-            setSuccessMessage(
-                inviteResponse.message || `Invitation sent to ${inviteEmail}`,
+        } catch (err) {
+            setActionError(
+                (err as ErrorResponse) ?? {
+                    success: false,
+                    message: 'An unexpected error occurred',
+                },
             );
-            setInviteEmail('');
-        } catch (err: unknown) {
-            const errorObj = err as { data: ErrorResponse };
-            if (errorObj.data) setActiveError(errorObj.data);
         }
     };
 
     return (
-        <Paper sx={{ minHeight: 400 }}>
+        <Paper sx={{ height: '100%' }}>
             <Box p={spacing(4)}>
                 <Stack
                     flexDirection="row"
@@ -165,46 +186,47 @@ export const ProjectUsers = () => {
                     <Tooltip title="Leave Project">
                         <IconButton
                             color="error"
-                            onClick={() =>
-                                currentUser?.user_id &&
-                                void handleAction(
-                                    UserAction.RemoveUser,
-                                    currentUser.user_id,
-                                )
-                            }
+                            onClick={() => setLeaveDialogOpen(true)}
                         >
                             <LogoutIcon />
                         </IconButton>
                     </Tooltip>
                 </Stack>
 
-                <Box>
+                <Box
+                    component="form"
+                    onSubmit={(e) => void handleSubmit(handleInvite)(e)}
+                    mt={1}
+                >
                     <TextField
                         fullWidth
                         size="small"
                         placeholder="Invite by email..."
-                        value={inviteEmail}
-                        onChange={(e) => {
-                            setInviteEmail(e.target.value);
-                        }}
+                        {...register('email')}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                         disabled={isInviting}
                         slotProps={{
                             input: {
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => void handleInvite()}
-                                            disabled={
-                                                isInviting || !inviteEmail
-                                            }
-                                            color="primary"
-                                        >
-                                            {isInviting ? (
-                                                <CircularProgress size={20} />
-                                            ) : (
-                                                <AddIcon />
-                                            )}
-                                        </IconButton>
+                                        <Tooltip title="Send invite">
+                                            <span>
+                                                <IconButton
+                                                    type="submit"
+                                                    disabled={isInviting}
+                                                    color="primary"
+                                                >
+                                                    {isInviting ? (
+                                                        <CircularProgress
+                                                            size={20}
+                                                        />
+                                                    ) : (
+                                                        <SendIcon fontSize="small" />
+                                                    )}
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
                                     </InputAdornment>
                                 ),
                             },
@@ -216,62 +238,92 @@ export const ProjectUsers = () => {
             <Divider />
 
             <Box flexGrow={1} position="relative">
-                {isFetching && !isLoading ? (
-                    <Box display="flex" justifyContent="center" zIndex={1}>
-                        <CircularProgress size={24} />
-                    </Box>
-                ) : (
-                    <Stack spacing={0}>
-                        {members.map((user) => {
-                            const myRole: ProjectRole =
-                                currentUser?.projectRole ?? ProjectRole.Member;
-                            const userRole = user.projectRole;
-
-                            const myRoleValue = ROLE_HIERARCHY[myRole] ?? 0;
-                            const userRoleValue = ROLE_HIERARCHY[userRole] ?? 0;
-
-                            const showMenu = myRoleValue > userRoleValue;
-                            const canMakeOwner = myRole === ProjectRole.Owner;
-                            const canMakeAdmin =
-                                ((myRole === ProjectRole.Owner ||
-                                    myRole === ProjectRole.Admin) &&
-                                    userRole !== ProjectRole.Admin) ||
-                                (myRole === ProjectRole.Admin &&
-                                    userRole === ProjectRole.Member);
-                            const canRevokeAdmin =
-                                myRole === ProjectRole.Owner &&
-                                userRole === ProjectRole.Admin;
-
-                            return (
-                                <UserCard
-                                    key={user.user_id}
-                                    userId={user.user_id}
-                                    firstName={user.first_name}
-                                    lastName={user.last_name}
-                                    role={userRole}
-                                    showMenu={showMenu}
-                                    canMakeOwner={canMakeOwner}
-                                    canMakeAdmin={canMakeAdmin}
-                                    canRevokeAdmin={canRevokeAdmin}
-                                    anchorEl={
-                                        menuAnchorEl?.userId === user.user_id
-                                            ? menuAnchorEl.el
-                                            : null
-                                    }
-                                    onCardClick={() =>
-                                        handleCardClick(user.user_id)
-                                    }
-                                    onMenuOpen={(e) =>
-                                        handleMenuOpen(user.user_id, e)
-                                    }
-                                    onMenuClose={handleMenuClose}
-                                    onActionClick={(action, targetUserId) =>
-                                        void handleAction(action, targetUserId)
-                                    }
-                                />
-                            );
-                        })}
+                {isLoading ? (
+                    <Stack alignItems="center" justifyContent="center" py={6}>
+                        <CircularProgress size={28} />
                     </Stack>
+                ) : fetchError ? (
+                    <Stack
+                        alignItems="center"
+                        justifyContent="center"
+                        py={6}
+                        px={3}
+                    >
+                        <Typography
+                            variant="body2"
+                            color="error"
+                            fontWeight={600}
+                            textAlign="center"
+                        >
+                            {'message' in fetchError
+                                ? fetchError.message
+                                : 'Failed to load members'}
+                        </Typography>
+                    </Stack>
+                ) : (
+                    <>
+                        {isFetching && (
+                            <Box display="flex" justifyContent="center">
+                                <CircularProgress size={24} />
+                            </Box>
+                        )}
+                        <Stack spacing={0}>
+                            {members.map((user) => {
+                                const myRole: ProjectRole =
+                                    currentUser?.projectRole ??
+                                    ProjectRole.Member;
+                                const userRole = user.projectRole;
+                                const myRoleValue = ROLE_HIERARCHY[myRole] ?? 0;
+                                const userRoleValue =
+                                    ROLE_HIERARCHY[userRole] ?? 0;
+                                const showMenu = myRoleValue > userRoleValue;
+                                const canMakeOwner =
+                                    myRole === ProjectRole.Owner;
+                                const canMakeAdmin =
+                                    ((myRole === ProjectRole.Owner ||
+                                        myRole === ProjectRole.Admin) &&
+                                        userRole !== ProjectRole.Admin) ||
+                                    (myRole === ProjectRole.Admin &&
+                                        userRole === ProjectRole.Member);
+                                const canRevokeAdmin =
+                                    myRole === ProjectRole.Owner &&
+                                    userRole === ProjectRole.Admin;
+
+                                return (
+                                    <UserCard
+                                        key={user.user_id}
+                                        userId={user.user_id}
+                                        firstName={user.first_name}
+                                        lastName={user.last_name}
+                                        role={userRole}
+                                        showMenu={showMenu}
+                                        canMakeOwner={canMakeOwner}
+                                        canMakeAdmin={canMakeAdmin}
+                                        canRevokeAdmin={canRevokeAdmin}
+                                        anchorEl={
+                                            menuAnchorEl?.userId ===
+                                            user.user_id
+                                                ? menuAnchorEl.el
+                                                : null
+                                        }
+                                        onCardClick={() =>
+                                            handleCardClick(user.user_id)
+                                        }
+                                        onMenuOpen={(e) =>
+                                            handleMenuOpen(user.user_id, e)
+                                        }
+                                        onMenuClose={handleMenuClose}
+                                        onActionClick={(action, targetUserId) =>
+                                            void handleAction(
+                                                action,
+                                                targetUserId,
+                                            )
+                                        }
+                                    />
+                                );
+                            })}
+                        </Stack>
+                    </>
                 )}
             </Box>
 
@@ -293,8 +345,8 @@ export const ProjectUsers = () => {
             )}
 
             <ErrorSnackbar
-                error={activeError}
-                onClose={() => setActiveError(null)}
+                error={actionError}
+                onClose={() => setActionError(null)}
             />
 
             <Snackbar
@@ -312,6 +364,41 @@ export const ProjectUsers = () => {
                     {successMessage}
                 </Alert>
             </Snackbar>
+
+            <Dialog
+                open={leaveDialogOpen}
+                onClose={() => setLeaveDialogOpen(false)}
+            >
+                <DialogTitle>Leave Project</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to leave this project?
+                    </Typography>
+                    <Typography variant="body2" color="error">
+                        You will lose to the project access unless re-invited.
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ p: 4 }}>
+                    <Button onClick={() => setLeaveDialogOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={() => {
+                            setLeaveDialogOpen(false);
+                            if (currentUser?.user_id) {
+                                void handleAction(
+                                    UserAction.RemoveUser,
+                                    currentUser.user_id,
+                                );
+                            }
+                        }}
+                    >
+                        Leave
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Paper>
     );
 };

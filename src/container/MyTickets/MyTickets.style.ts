@@ -2,6 +2,7 @@ import { LinkProps } from 'react-router';
 
 import {
     Box,
+    Paper,
     PaperProps,
     styled,
     TableCell,
@@ -11,11 +12,8 @@ import {
     Typography,
 } from '@mui/material';
 
-export const StyledPageRoot = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(2),
-    [theme.breakpoints.up('md')]: {
-        padding: theme.spacing(4),
-    },
+export const StyledPageRoot = styled(Paper)(({ theme: { spacing } }) => ({
+    padding: spacing(4),
     width: '100%',
     height: '100%',
     display: 'flex',
@@ -23,13 +21,14 @@ export const StyledPageRoot = styled(Box)(({ theme }) => ({
 }));
 
 export const StyledTableContainer = styled(TableContainer)<PaperProps>(
-    ({ theme }) => ({
+    ({ theme: { shape, palette } }) => ({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: theme.shape.borderRadius * 1.5,
+        boxShadow: 'none',
+        borderRadius: shape.borderRadius * 4,
         border: '1px solid',
-        borderColor: theme.palette.divider,
+        borderColor: palette.divider,
         overflow: 'hidden',
     }),
 );
@@ -57,7 +56,7 @@ export const StyledHeaderCell = styled(TableCell)({
     fontWeight: 700,
 });
 
-export const StyledTicketKey = styled(Typography)(({ theme }) => ({
+export const StyledTicketKey = styled(Typography)(({ theme: { palette } }) => ({
     fontWeight: 800,
-    color: theme.palette.primary.main,
+    color: palette.primary.main,
 }));

@@ -98,16 +98,6 @@ const baseQueryWithReauth: BaseQueryFn<
             | PaginatedResponse<unknown>
             | EntityResponse<unknown>;
 
-        const isDoubleWrapped =
-            'success' in raw &&
-            raw.data !== null &&
-            typeof raw.data === 'object' &&
-            'success' in (raw.data as Record<string, unknown>);
-
-        if (isDoubleWrapped) {
-            return { data: raw.data };
-        }
-
         return { data: raw };
     }
 

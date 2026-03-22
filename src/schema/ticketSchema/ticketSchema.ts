@@ -1,9 +1,13 @@
 import z from 'zod';
 
-import { TicketPriority, TicketStatus } from '@type/ticket.types';
+import { TicketPriority, TicketStatus } from '@constant';
 
 export const TicketBaseSchema = z.object({
-    name: z.string().trim().min(3, 'Title must be at least 3 characters'),
+    name: z
+        .string()
+        .trim()
+        .nonempty("This field can't be empty")
+        .max(100, "Name can't be more than 100 characters long"),
     description: z
         .string()
         .trim()
@@ -16,5 +20,9 @@ export const TicketBaseSchema = z.object({
 });
 
 export const CreateTicketSchema = TicketBaseSchema.extend({
-    assignee: z.string().nullish(),
+    assignee: z.uuid().nullish(),
+});
+
+export const JQLSearchSchema = z.object({
+    query: z.string().trim().nonempty('Write some query!'),
 });

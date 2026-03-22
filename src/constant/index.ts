@@ -5,3 +5,4 @@ export { DIMENSIONS } from './layoutConstant';
 export { USER_ROLE_OPTIONS } from './userConstant';
 export { FORM } from './formConstant';
 export { PAGE_SIZE } from './otherConstants';
+export { TicketPriority, TicketStatus } from './enumConstants';

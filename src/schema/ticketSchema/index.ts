@@ -1,1 +1,5 @@
-export { TicketBaseSchema, CreateTicketSchema } from './ticketSchema';
+export {
+    TicketBaseSchema,
+    CreateTicketSchema,
+    JQLSearchSchema,
+} from './ticketSchema';

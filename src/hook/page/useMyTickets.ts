@@ -17,7 +17,7 @@ export const useMyTicketsPage = () => {
 
     return {
         tickets: myTickets?.data || [],
-        totalCount: myTickets?.data.length || 0,
+        totalCount: myTickets?.meta.count ?? 0,
         page,
         setPage,
         rowsPerPage,

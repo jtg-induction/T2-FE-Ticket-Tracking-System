@@ -5,6 +5,10 @@ export {
     signupSchema,
 } from './authSchema';
 
-export { projectSchema } from './projectSchema';
+export { projectSchema, inviteMemberSchema } from './projectSchema';
 
-export { TicketBaseSchema, CreateTicketSchema } from './ticketSchema';
+export {
+    TicketBaseSchema,
+    CreateTicketSchema,
+    JQLSearchSchema,
+} from './ticketSchema';

@@ -133,17 +133,27 @@ export const ticketApi = baseApi.injectEndpoints({
                     ...(cursor && { cursor }),
                 },
             }),
-
-            serializeQueryArgs: ({ endpointName, queryArgs }) =>
-                `${endpointName}-${queryArgs.query}`,
+            serializeQueryArgs: ({ queryArgs }) => `jql-search-${queryArgs.projectId}-${queryArgs.query}`,
+            forceRefetch({ currentArg, previousArg }) {
+                return (
+                    currentArg?.cursor !== previousArg?.cursor ||
+                    currentArg?.query !== previousArg?.query
+                );
+            },
             merge: (currentCache, newItems) => {
-                if (currentCache.success && newItems.success) {
-                    currentCache.data.push(...newItems.data);
+                if (newItems.data) {
+                    if (!currentCache.data) currentCache.data = [];
+
+                    const existingIds = new Set(
+                        currentCache.data.map((t) => t.jira_id),
+                    );
+                    const uniqueTickets = newItems.data.filter(
+                        (t) => !existingIds.has(t.jira_id),
+                    );
+
+                    currentCache.data.push(...uniqueTickets);
                     currentCache.meta = newItems.meta;
                 }
-            },
-            forceRefetch({ currentArg, previousArg }) {
-                return currentArg !== previousArg;
             },
         }),
 
@@ -156,9 +166,16 @@ export const ticketApi = baseApi.injectEndpoints({
                 method: API_CONSTANTS.METHODS.POST,
                 body: { jira_id },
             }),
-            invalidatesTags: (_result, _error, { projectId }) => [
-                { type: 'Ticket', id: `LIST-${projectId}` },
-            ],
+            async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(
+                        ticketApi.util.invalidateTags([
+                            { type: 'Ticket', id: `LIST-${projectId}` },
+                        ]),
+                    );
+                } catch {}
+            },
         }),
     }),
 });

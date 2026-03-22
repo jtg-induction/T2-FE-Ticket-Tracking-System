@@ -115,8 +115,13 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
                             paper: { sx: { width: 260, borderRadius: 2 } },
                         }}
                     >
-                        <Stack spacing={2}>
+                        <Stack p={2}>
                             <Typography
+                                title={
+                                    response?.data
+                                        ? `${response.data.first_name} ${response.data.last_name}`
+                                        : 'Loading...'
+                                }
                                 variant="h6"
                                 fontWeight={700}
                                 color="primary"
@@ -127,13 +132,23 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
                                     : 'Loading...'}
                             </Typography>
                             <Typography
+                                title={response?.data.email}
                                 variant="caption"
                                 color="text.secondary"
                                 noWrap
                             >
                                 {response?.data.email}
                             </Typography>
-                            <Typography fontWeight={600} variant="body2" noWrap>
+                            <Typography
+                                title={
+                                    USER_ROLE_OPTIONS.find(
+                                        (r) => r.value === response?.data.role,
+                                    )?.label || response?.data.role
+                                }
+                                fontWeight={600}
+                                variant="body2"
+                                noWrap
+                            >
                                 {USER_ROLE_OPTIONS.find(
                                     (r) => r.value === response?.data.role,
                                 )?.label || response?.data.role}

@@ -2,16 +2,12 @@ import { useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 
+import { TicketPriority, TicketStatus } from '@constant';
 import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTicketSchema } from '@schema';
 import { useCreateTicketMutation, useGetProjectMembersQuery } from '@service';
-import {
-    CreateTicketInput,
-    ErrorResponse,
-    TicketPriority,
-    TicketStatus,
-} from '@type';
+import { CreateTicketInput, ErrorResponse } from '@type';
 
 export const useCreateTicket = (
     projectId: string,
@@ -62,7 +58,14 @@ export const useCreateTicket = (
             form.reset();
             onSuccess();
         } catch (err) {
-            setError(err as ErrorResponse);
+            if (err && typeof err === 'object' && 'message' in err) {
+                setError(err as ErrorResponse);
+            } else {
+                setError({
+                    success: false,
+                    message: 'An unexpected error occurred',
+                } as ErrorResponse);
+            }
         }
     };
 

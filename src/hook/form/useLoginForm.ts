@@ -27,7 +27,10 @@ export function useLoginForm() {
     const onSubmit = async (values: LoginRequest) => {
         setFormError('');
         try {
-            const response = await loginTrigger(values).unwrap();
+            const response = await loginTrigger({
+                ...values,
+                password: btoa(values.password),
+            }).unwrap();
             dispatch(setCredentials(response.data.access));
         } catch (err) {
             const apiError = err as ErrorResponse;

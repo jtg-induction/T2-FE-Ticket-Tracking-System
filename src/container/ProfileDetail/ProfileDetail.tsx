@@ -72,10 +72,14 @@ export const ProfileDetail = () => {
         >
             <StyledHeaderBox>
                 <Box overflow="hidden">
-                    <Typography variant="h3" fontWeight={700}>
+                    <Typography title={fullName} variant="h3" fontWeight={700}>
                         {fullName}
                     </Typography>
-                    <Typography variant="h4" color="textDisabled">
+                    <Typography
+                        title={roleLabel}
+                        variant="h4"
+                        color="textDisabled"
+                    >
                         {roleLabel}
                     </Typography>
                 </Box>

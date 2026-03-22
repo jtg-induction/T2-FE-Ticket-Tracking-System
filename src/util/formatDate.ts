@@ -14,3 +14,19 @@ export const convertIsoToDateYear = (isoString: string) => {
         return String(err);
     }
 };
+
+/**
+ * Convert ISO 8061 string to YYYY-MM-DDTHH:mm format for datetime-local inputs
+ * @param isoString : date in ISO 8061 format
+ * @returns Formatted string for input value
+ */
+export const toDateTimeLocalValue = (isoString: string | undefined | null) => {
+    if (!isoString) return '';
+    try {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return '';
+
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString().slice(0, 16);
+    } catch {}
+};

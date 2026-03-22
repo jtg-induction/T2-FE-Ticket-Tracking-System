@@ -20,25 +20,31 @@ import {
     TextField,
     Tooltip,
     Typography,
+    useTheme,
 } from '@mui/material';
 
-import { UserDetailBlock } from '@component';
+import { ErrorSnackbar, UserDetailBlock } from '@component';
+import { TicketPriority, TicketStatus } from '@constant';
 import { useTicketDetail } from '@hook';
-import { LoadingPage } from '@page';
-import { TicketPriority, TicketStatus } from '@type/ticket.types';
+import { ErrorPage, LoadingPage } from '@page';
+import { ErrorResponse } from '@type/standard.types';
+import { getStatusColor, toDateTimeLocalValue } from '@util';
 
 import {
     StyledDescriptionContainer,
     StyledDetailView,
+    StyledTicketSurface,
 } from './TicketDetail.style';
 
 export const TicketDetail = () => {
+    const { shadows, zIndex } = useTheme();
     const navigate = useNavigate();
     const {
         ticket,
         isEditing,
         setIsEditing,
         form,
+        isDirty,
         isLoading,
         isUpdating,
         onSave,
@@ -46,6 +52,9 @@ export const TicketDetail = () => {
         members,
         isSearching,
         setSearchTerm,
+        fetchError,
+        updateError,
+        clearUpdateError,
     } = useTicketDetail();
 
     const {
@@ -55,8 +64,19 @@ export const TicketDetail = () => {
         watch,
     } = form;
 
-    if (isLoading || !ticket)
-        return <Typography sx={{ p: 4 }}>Loading...</Typography>;
+    const selectedAssigneeId = watch('assignee');
+    const displayUser = isEditing
+        ? members.find((m) => m.user_id === selectedAssigneeId) || null
+        : ticket?.assignee;
+
+    if (isLoading) return <LoadingPage />;
+
+    if (fetchError) return <ErrorPage />;
+
+    if (!ticket)
+        return (
+            <Typography color="text.secondary">Ticket not found.</Typography>
+        );
 
     const statusOptions = Object.values(TicketStatus).filter(
         (s) =>
@@ -65,14 +85,20 @@ export const TicketDetail = () => {
     );
 
     return (
-        <Stack width="100%">
+        <StyledTicketSurface>
             {isUpdating && <LoadingPage />}
             <Stack
-                maxWidth="lg"
+                position="sticky"
+                top={0}
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                mb={3}
+                py={3}
+                px={4}
+                mb={2}
+                bgcolor="background.paper"
+                boxShadow={shadows[2]}
+                zIndex={zIndex.fab}
             >
                 <Button
                     startIcon={<ArrowBack />}
@@ -81,6 +107,28 @@ export const TicketDetail = () => {
                 >
                     Back
                 </Button>
+
+                {isEditing && (
+                    <Stack direction="row" spacing={2}>
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            color="error"
+                            onClick={() => setIsEditing(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            fullWidth
+                            type="submit"
+                            form="ticket-detail-form"
+                            variant="contained"
+                            disabled={!isDirty || isUpdating}
+                        >
+                            Save
+                        </Button>
+                    </Stack>
+                )}
 
                 {!isEditing && permissions.canViewEditButton && (
                     <Button
@@ -94,7 +142,7 @@ export const TicketDetail = () => {
                 )}
             </Stack>
 
-            <Stack>
+            <Stack pb={4}>
                 <Box sx={{ mb: 4 }}>
                     <Stack
                         direction="row"
@@ -160,7 +208,11 @@ export const TicketDetail = () => {
             </Stack>
 
             <StyledDetailView elevation={0}>
-                <Form onSubmit={(e) => void onSave(e)}>
+                <Form
+                    id="ticket-detail-form"
+                    onSubmit={(e) => void onSave(e)}
+                    noValidate
+                >
                     <Typography
                         variant="subtitle2"
                         fontWeight={800}
@@ -176,7 +228,11 @@ export const TicketDetail = () => {
                         alignItems="center"
                         mb={2}
                     >
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            color="text.secondary"
+                        >
                             Status
                         </Typography>
                         {isEditing && permissions.canEditStatus ? (
@@ -186,6 +242,8 @@ export const TicketDetail = () => {
                                 {...register('status')}
                                 defaultValue={ticket.status}
                                 sx={{ minWidth: 140 }}
+                                error={!!errors.status}
+                                helperText={errors.status?.message}
                             >
                                 {statusOptions.map((opt) => (
                                     <MenuItem key={opt} value={opt}>
@@ -201,7 +259,7 @@ export const TicketDetail = () => {
                             >
                                 <Chip
                                     label={ticket.status}
-                                    color="primary"
+                                    {...getStatusColor(ticket.status)}
                                     size="small"
                                     sx={{ fontWeight: 700 }}
                                 />
@@ -226,7 +284,11 @@ export const TicketDetail = () => {
                         alignItems="center"
                         mb={3}
                     >
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            color="text.secondary"
+                        >
                             Priority
                         </Typography>
                         {isEditing && permissions.canEditFields ? (
@@ -235,6 +297,8 @@ export const TicketDetail = () => {
                                 size="small"
                                 {...register('priority')}
                                 defaultValue={ticket.priority}
+                                error={!!errors.priority}
+                                helperText={errors.priority?.message}
                                 sx={{ minWidth: 140 }}
                             >
                                 {Object.values(TicketPriority).map((opt) => (
@@ -254,13 +318,7 @@ export const TicketDetail = () => {
 
                     <UserDetailBlock
                         label="Assignee"
-                        user={
-                            members.find(
-                                (m) => m.user_id === watch('assignee'),
-                            ) ||
-                            ticket.assignee ||
-                            null
-                        }
+                        user={displayUser ?? null}
                         icon={<Person fontSize="inherit" />}
                     />
 
@@ -268,6 +326,14 @@ export const TicketDetail = () => {
                         <Autocomplete
                             fullWidth
                             options={members}
+                            value={
+                                members.find(
+                                    (m) => m.user_id === selectedAssigneeId,
+                                ) || null
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                                option.user_id === value.user_id
+                            }
                             getOptionLabel={(option) =>
                                 `${option.first_name} ${option.last_name}`
                             }
@@ -276,7 +342,6 @@ export const TicketDetail = () => {
                             onChange={(_, value) =>
                                 setValue('assignee', value?.user_id || '')
                             }
-                            defaultValue={ticket.assignee || null}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -303,6 +368,11 @@ export const TicketDetail = () => {
                                 />
                             )}
                         />
+                    )}
+                    {!!errors.assignee && (
+                        <Typography variant="caption" color="error">
+                            {errors.assignee?.message}
+                        </Typography>
                     )}
 
                     <UserDetailBlock
@@ -342,11 +412,11 @@ export const TicketDetail = () => {
                                 {...register('deadline')}
                                 defaultValue={
                                     ticket.deadline
-                                        ? new Date(ticket.deadline)
-                                              .toISOString()
-                                              .slice(0, 16)
+                                        ? toDateTimeLocalValue(ticket.deadline)
                                         : ''
                                 }
+                                error={!!errors.deadline}
+                                helperText={errors.deadline?.message}
                             />
                         ) : (
                             <Typography variant="body2" fontWeight={600}>
@@ -356,29 +426,13 @@ export const TicketDetail = () => {
                             </Typography>
                         )}
                     </Box>
-
-                    {isEditing && (
-                        <Stack direction="row" spacing={2}>
-                            <Button
-                                fullWidth
-                                variant="text"
-                                onClick={() => setIsEditing(false)}
-                                sx={{ color: 'text.secondary' }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                fullWidth
-                                type="submit"
-                                variant="contained"
-                                disabled={isUpdating}
-                            >
-                                Save
-                            </Button>
-                        </Stack>
-                    )}
                 </Form>
             </StyledDetailView>
-        </Stack>
+            <ErrorSnackbar
+                error={updateError as ErrorResponse}
+                onClose={clearUpdateError}
+                autoHideDuration={6000}
+            />
+        </StyledTicketSurface>
     );
 };

@@ -1,6 +1,6 @@
 import { ChipProps, Theme } from '@mui/material';
 
-import { TicketPriority, TicketStatus } from '@type';
+import { TicketPriority, TicketStatus } from '@constant';
 
 /**
  * Returns MUI Chip props based on ticket status.

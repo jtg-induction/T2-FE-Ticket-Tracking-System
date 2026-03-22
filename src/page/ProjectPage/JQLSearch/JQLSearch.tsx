@@ -1,16 +1,17 @@
-import { UIEvent } from 'react';
+import { Form } from 'react-router';
 
 import {
     Button,
     CircularProgress,
+    Snackbar,
     Stack,
     TextField,
     Typography,
 } from '@mui/material';
 
+import { ErrorSnackbar } from '@component';
 import { useJQLSearch } from '@hook';
 
-import { Form } from 'react-router';
 import {
     StyledJQLSearchWrapper,
     StyledResultsWrapper,
@@ -22,77 +23,90 @@ export const JQLSearch = () => {
         form,
         onSubmit,
         searchResult,
+        searchError,
         isSearching,
-        isImporting,
+        importingTicketId,
         onImport,
+        importError,
+        importSuccess,
+        setImportError,
+        setImportSuccess,
         errors,
         hasMore,
+        searchParams,
         loadMore,
     } = useJQLSearch();
 
-    const typedSearchResults = searchResult;
-    const { register } = form;
-
     return (
         <StyledJQLSearchWrapper>
-            <Typography variant="h6" gutterBottom>
+            <ErrorSnackbar
+                error={importError}
+                onClose={() => setImportError(null)}
+            />
+            <Snackbar
+                open={!!importSuccess}
+                message={importSuccess}
+                onClose={() => setImportSuccess(null)}
+                autoHideDuration={4000}
+            />
+
+            <Typography variant="h6" gutterBottom fontWeight={700}>
                 JQL Ticket Search
             </Typography>
 
             <Form onSubmit={(e) => void onSubmit(e)}>
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" gap={1} mb={1} alignItems="flex-start">
                     <TextField
                         fullWidth
                         size="small"
-                        label="Enter JQL (e.g. created < '1d')"
-                        {...register('query')}
-                        error={!!errors.query}
+                        placeholder="e.g. status = 'Open'"
+                        {...form.register('query')}
+                        error={!!searchError}
+                        helperText={
+                            (searchError && 'message' in searchError
+                                ? searchError.message
+                                : undefined) ?? errors.query?.message
+                        }
                     />
+
                     <Button
                         type="submit"
                         variant="contained"
                         disabled={isSearching}
+                        sx={{ height: 40, flexShrink: 0 }}
                     >
                         Search
                     </Button>
                 </Stack>
             </Form>
 
-            <StyledResultsWrapper
-                sx={{
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    mt: 2,
-                    p: 1,
-                    border: '1px solid #eee',
-                }}
-                onScroll={(e: UIEvent<HTMLDivElement>) => {
-                    const el = e.currentTarget;
-                    if (
-                        el.scrollHeight - el.scrollTop === el.clientHeight &&
-                        hasMore
-                    ) {
-                        loadMore();
-                    }
-                }}
-            >
-                {typedSearchResults.map((ticket) => (
-                    <StyledTicketItem
-                        key={ticket.jira_id}
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            mb: 1,
-                        }}
-                    >
-                        <Typography variant="body2">
-                            <strong>{ticket.jira_id}</strong>: {ticket.name}
-                        </Typography>
+            <StyledResultsWrapper>
+                {searchResult.map((ticket) => (
+                    <StyledTicketItem key={ticket.jira_id}>
+                        <Stack sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                                variant="caption"
+                                color="primary"
+                                fontWeight={700}
+                            >
+                                {ticket.jira_id}
+                            </Typography>
+                            <Typography
+                                title={ticket.name}
+                                variant="body2"
+                                fontWeight={500}
+                            >
+                                {ticket.name}
+                            </Typography>
+                        </Stack>
+
                         <Button
                             size="small"
                             variant="outlined"
                             onClick={() => void onImport(ticket.jira_id)}
-                            disabled={isImporting}
+                            disabled={!!importingTicketId}
+                            loading={importingTicketId == ticket.jira_id}
+                            sx={{ flexShrink: 0 }}
                         >
                             Import
                         </Button>
@@ -100,16 +114,39 @@ export const JQLSearch = () => {
                 ))}
 
                 {isSearching && (
-                    <Stack alignItems="center" py={2}>
-                        <CircularProgress size={24} />
+                    <Stack alignItems="center" py="auto">
+                        <CircularProgress size={28} />
+                        <Typography variant="caption" sx={{ mt: 1 }}>
+                            Loading results...
+                        </Typography>
                     </Stack>
                 )}
 
-                {!isSearching && typedSearchResults.length === 0 && (
-                    <Typography variant="caption" color="text.secondary">
-                        No results found.
-                    </Typography>
+                {!isSearching && hasMore && (
+                    <Button variant="outlined" fullWidth onClick={loadMore}>
+                        Load More
+                    </Button>
                 )}
+
+                {!isSearching &&
+                    searchResult.length === 0 &&
+                    searchParams == null && (
+                        <Stack alignItems="center">
+                            <Typography variant="body2" color="textSecondary">
+                                Search tickets through JQL query.
+                            </Typography>
+                        </Stack>
+                    )}
+
+                {!isSearching &&
+                    searchResult.length === 0 &&
+                    searchParams !== null && (
+                        <Stack alignItems="center">
+                            <Typography variant="body2" color="textDisabled">
+                                No tickets match your JQL query.
+                            </Typography>
+                        </Stack>
+                    )}
             </StyledResultsWrapper>
         </StyledJQLSearchWrapper>
     );
