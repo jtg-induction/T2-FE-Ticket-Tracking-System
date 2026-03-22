@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router';
 import {
     AddCircle as AddCircleIcon,
     ArrowBack,
+    BarChart,
     ChevronLeft,
     ChevronRight,
     Settings,
@@ -90,9 +91,19 @@ export const TicketBoard = () => {
                 </Typography>
                 <CustomIconButton
                     variant="standard"
+                    onClick={() => void navigate(`insights`)}
+                >
+                    <Tooltip title="Project Report">
+                        <BarChart />
+                    </Tooltip>
+                </CustomIconButton>
+                <CustomIconButton
+                    variant="standard"
                     onClick={() => void navigate(`detail`)}
                 >
-                    <Settings />
+                    <Tooltip title="Project settings">
+                        <Settings />
+                    </Tooltip>
                 </CustomIconButton>
             </Stack>
 

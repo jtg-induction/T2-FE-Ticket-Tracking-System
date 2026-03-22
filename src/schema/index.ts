@@ -13,3 +13,6 @@ export {
     JQLSearchSchema,
     CommentInputSchema,
 } from './ticketSchema';
+
+export { filterSchema } from './reportSchema';
+export type { FilterFormValues } from './reportSchema';

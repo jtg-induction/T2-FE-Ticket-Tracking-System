@@ -1,0 +1,80 @@
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Legend,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
+
+import { Box, Typography, useTheme } from '@mui/material';
+
+import type { StackedBarCardProps } from './StackedBarCard.types';
+
+export const StackedBarCard = ({
+    title,
+    data,
+    dataKeys,
+    colors,
+}: StackedBarCardProps) => {
+    const { palette, zIndex } = useTheme();
+    return (
+        <Box>
+            <Typography variant="h6" mb={3} fontWeight={600} textAlign="center">
+                {title}
+            </Typography>
+
+            <Box width="100%" sx={{ height: { xs: 400, md: 600 } }}>
+                <ResponsiveContainer>
+                    <BarChart
+                        data={data}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                        <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                            stroke={palette.grey[500]}
+                        />
+                        <XAxis
+                            dataKey="label"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 16 }}
+                            dy={10}
+                        />
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 16 }}
+                        />
+                        <Tooltip
+                            cursor={{ fill: palette.grey[200] }}
+                            wrapperStyle={{ zIndex: zIndex.tooltip }}
+                        />
+                        <Legend
+                            verticalAlign="bottom"
+                            align="center"
+                            iconType="circle"
+                            wrapperStyle={{ paddingTop: 16 }}
+                        />
+                        {dataKeys.map((key, index) => (
+                            <Bar
+                                key={key}
+                                dataKey={key}
+                                stackId="a"
+                                fill={colors[key]}
+                                radius={
+                                    index === dataKeys.length - 1
+                                        ? [8, 8, 0, 0]
+                                        : [0, 0, 0, 0]
+                                }
+                            />
+                        ))}
+                    </BarChart>
+                </ResponsiveContainer>
+            </Box>
+        </Box>
+    );
+};
