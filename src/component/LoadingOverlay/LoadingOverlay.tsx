@@ -1,8 +1,8 @@
 import { CircularProgress } from '@mui/material';
 
-import { StyledLoadingOverlay } from './LoadingPage.style';
+import { StyledLoadingOverlay } from './LoadingOverlay.style';
 
-export const LoadingPage = () => (
+export const LoadingOverlay = () => (
     <StyledLoadingOverlay>
         <CircularProgress size={100} />
     </StyledLoadingOverlay>

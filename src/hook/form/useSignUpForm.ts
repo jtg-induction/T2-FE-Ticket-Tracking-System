@@ -20,6 +20,7 @@ export const useSignupForm = () => {
     } = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
         defaultValues: { email: '' },
+        mode: 'onTouched',
     });
 
     const emailValue = watch('email');
@@ -31,13 +32,7 @@ export const useSignupForm = () => {
         } catch (err) {
             const apiError = err as ErrorResponse;
 
-            const fieldErrors = apiError.errors
-                ? Object.values(apiError.errors).flat()
-                : [];
-            const bestMessage =
-                fieldErrors[0] || apiError.message || 'Signup failed';
-
-            setFormError(bestMessage);
+            setFormError(apiError.message || 'Signup failed');
 
             if (apiError.errors) {
                 Object.entries(apiError.errors).forEach(([key, messages]) => {

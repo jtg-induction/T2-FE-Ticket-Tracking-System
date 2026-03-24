@@ -1,4 +1,4 @@
-import { TicketPriority, TicketStatus } from '@type';
+import { TicketPriority, TicketStatus } from '@constant';
 
 /**
  * Represents a single data point for Donut/Pie charts.

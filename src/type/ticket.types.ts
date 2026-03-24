@@ -38,6 +38,8 @@ export interface Ticket extends z.infer<typeof TicketBaseSchema> {
     reporter: UserResponse;
     assignee?: UserResponse | null;
     project: string;
+    is_subscribed?: boolean;
+    is_imported?: boolean;
 }
 
 /**

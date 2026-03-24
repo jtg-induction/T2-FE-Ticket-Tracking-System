@@ -1,11 +1,10 @@
-import { Link as ReactLink } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import {
     Alert,
     Button,
     FormControl,
     FormLabel,
-    Link,
     TextField,
     Typography,
 } from '@mui/material';
@@ -16,6 +15,7 @@ import { useLoginForm } from '@hook';
 import { StyledFormWrapper, StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
+    const navigate = useNavigate();
     const { register, handleSubmit, formError, errors, isLoading } =
         useLoginForm();
 
@@ -70,13 +70,9 @@ export const LoginForm = () => {
                 </Button>
                 <Typography textAlign="center">
                     Don&apos;t have an account?{' '}
-                    <Link
-                        component={ReactLink}
-                        to={PATHS.SIGNUP}
-                        variant="body2"
-                    >
+                    <Button onClick={() => void navigate(PATHS.SIGNUP)}>
                         Sign up
-                    </Link>
+                    </Button>
                 </Typography>
             </StyledFormWrapper>
         </StyledLoginContainer>

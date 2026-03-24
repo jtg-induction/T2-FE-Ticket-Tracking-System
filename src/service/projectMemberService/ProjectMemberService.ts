@@ -46,7 +46,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         rejectInvite: builder.mutation<EntityResponse<null>, string>({
             query: (token) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}reject-invite/${token}/`,
-                method: API_CONSTANTS.METHODS.POST,
+                method: API_CONSTANTS.METHODS.DELETE,
             }),
             // Broad invalidation is intentional as API doesn't return project ID.
             invalidatesTags: () => [{ type: 'ProjectMember' }],
@@ -58,7 +58,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ projectId, userId, projectRole }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/${userId}/role/`,
-                method: API_CONSTANTS.METHODS.POST,
+                method: API_CONSTANTS.METHODS.PATCH,
                 body: { projectRole },
             }),
             async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
@@ -79,7 +79,7 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ projectId, userId }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/${userId}/`,
-                method: API_CONSTANTS.METHODS.POST,
+                method: API_CONSTANTS.METHODS.PATCH,
             }),
             async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
                 try {

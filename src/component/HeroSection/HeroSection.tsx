@@ -4,9 +4,9 @@ import {
     StyledBrandingSection,
     StyledIllustration,
     StyledLogo,
-} from './SidePanel.style';
+} from './HeroSection.style';
 
-export const SidePanel = () => (
+export const HeroSection = () => (
     <StyledBrandingSection component="aside">
         <StyledIllustration
             component="img"

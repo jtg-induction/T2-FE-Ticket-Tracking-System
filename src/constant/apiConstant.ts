@@ -8,6 +8,8 @@ export const API_CONSTANTS = {
         PROJECT: '/api/project/',
         TICKET: '/api/ticket/',
         REPORTS: '/api/report/',
+        SUBSCRIBE: 'tickets/',
+        UNSUBSCRIBE: 'tickets/',
     },
     METHODS: {
         GET: 'GET',

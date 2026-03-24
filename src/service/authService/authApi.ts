@@ -39,6 +39,7 @@ export const authApi = baseApi.injectEndpoints({
                 url: API_CONSTANTS.ENDPOINTS.USER,
                 method: API_CONSTANTS.METHODS.POST,
                 body,
+                credentials: 'include',
             }),
         }),
 

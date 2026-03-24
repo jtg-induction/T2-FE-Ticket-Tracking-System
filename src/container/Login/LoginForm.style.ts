@@ -15,6 +15,6 @@ export const StyledFormWrapper = styled(Stack)<StackProps<'form'>>(
         minHeight: '100%',
         maxWidth: typography.pxToRem(500),
         justifyContent: 'center',
-        gap: spacing(2),
+        gap: spacing(4),
     }),
 );

@@ -133,7 +133,8 @@ export const ticketApi = baseApi.injectEndpoints({
                     ...(cursor && { cursor }),
                 },
             }),
-            serializeQueryArgs: ({ queryArgs }) => `jql-search-${queryArgs.projectId}-${queryArgs.query}`,
+            serializeQueryArgs: ({ queryArgs }) =>
+                `jql-search-${queryArgs.projectId}-${queryArgs.query}`,
             forceRefetch({ currentArg, previousArg }) {
                 return (
                     currentArg?.cursor !== previousArg?.cursor ||
@@ -177,6 +178,64 @@ export const ticketApi = baseApi.injectEndpoints({
                 } catch {}
             },
         }),
+
+        subscribeToTicket: builder.mutation<
+            EntityResponse<null>,
+            { ticketId: string; projectId: string }
+        >({
+            query: ({ ticketId }) => ({
+                url: `api/tickets/${ticketId}/subscribe/`,
+                method: API_CONSTANTS.METHODS.POST,
+            }),
+            async onQueryStarted(
+                { ticketId, projectId },
+                { dispatch, queryFulfilled },
+            ) {
+                const patch = dispatch(
+                    ticketApi.util.updateQueryData(
+                        'getTicketById',
+                        { projectId, ticketId },
+                        (draft) => {
+                            if (draft.data) draft.data.is_subscribed = true;
+                        },
+                    ),
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
+        }),
+
+        unsubscribeFromTicket: builder.mutation<
+            EntityResponse<null>,
+            { ticketId: string; projectId: string }
+        >({
+            query: ({ ticketId }) => ({
+                url: `api/tickets/${ticketId}/unsubscribe/`,
+                method: API_CONSTANTS.METHODS.DELETE,
+            }),
+            async onQueryStarted(
+                { ticketId, projectId },
+                { dispatch, queryFulfilled },
+            ) {
+                const patch = dispatch(
+                    ticketApi.util.updateQueryData(
+                        'getTicketById',
+                        { projectId, ticketId },
+                        (draft) => {
+                            if (draft.data) draft.data.is_subscribed = false;
+                        },
+                    ),
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
+        }),
     }),
 });
 
@@ -189,4 +248,6 @@ export const {
     useDeleteTicketMutation,
     useSearchTicketsJqlQuery,
     useImportJiraTicketMutation,
+    useSubscribeToTicketMutation,
+    useUnsubscribeFromTicketMutation,
 } = ticketApi;

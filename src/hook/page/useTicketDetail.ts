@@ -7,6 +7,10 @@ import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTicketSchema } from '@schema';
 import {
+    useSubscribeToTicketMutation,
+    useUnsubscribeFromTicketMutation,
+} from '@service';
+import {
     useGetProjectMembersQuery,
     useGetTicketByIdQuery,
     useUpdateTicketMutation,
@@ -33,6 +37,11 @@ export const useTicketDetail = () => {
         { skip: !projectId || !ticketId },
     );
 
+    const [subscribeToTicket, { isLoading: isSubscribing }] =
+        useSubscribeToTicketMutation();
+    const [unsubscribeFromTicket, { isLoading: isUnsubscribing }] =
+        useUnsubscribeFromTicketMutation();
+
     const ticket = response?.data;
     const role = ticket?.ticket_role;
 
@@ -51,44 +60,57 @@ export const useTicketDetail = () => {
 
     const form = useForm<CreateTicketInput>({
         resolver: zodResolver(CreateTicketSchema),
-        mode: 'onChange',
+        mode: 'onTouched',
         defaultValues: {
-            name: ticket?.name,
-            description: ticket?.description,
+            name: ticket?.name ?? '',
+            description: ticket?.description ?? '',
             priority: ticket?.priority,
             category: ticket?.category,
             status: ticket?.status,
             deadline: ticket?.deadline
                 ? new Date(ticket.deadline).toISOString().slice(0, 16)
                 : null,
-            assignee: ticket?.assignee?.user_id || '',
+            assignee: ticket?.assignee?.user_id ?? '',
         },
     });
 
-    const { isDirty } = form.formState;
-    const { setError } = form;
+    const { isDirty, isValid } = form.formState;
+    const { setError, reset } = form;
 
     useEffect(() => {
         if (ticket && isEditing) {
-            form.reset({
-                name: ticket.name,
-                description: ticket.description,
+            reset({
+                name: ticket.name ?? '',
+                description: ticket.description ?? '',
                 priority: ticket.priority,
                 category: ticket.category,
                 status: ticket.status,
                 deadline: ticket.deadline
                     ? new Date(ticket.deadline).toISOString().slice(0, 16)
                     : null,
-                assignee: ticket.assignee?.user_id,
+                assignee: ticket.assignee?.user_id ?? '',
             });
         }
-    }, [ticket, isEditing, form.reset]);
+    }, [ticket, isEditing, reset]);
 
     const canEditFields = ['reporter', 'admin'].includes(role || '');
     const canEditStatus = ['reporter', 'admin', 'assignee'].includes(
         role || '',
     );
     const canViewEditButton = role !== 'member';
+
+    const handleSubscriptionToggle = async () => {
+        if (!ticketId || !projectId) return;
+        try {
+            if (ticket?.is_subscribed) {
+                await unsubscribeFromTicket({ ticketId, projectId }).unwrap();
+            } else {
+                await subscribeToTicket({ ticketId, projectId }).unwrap();
+            }
+        } catch (err) {
+            setUpdateError(err as ErrorResponse);
+        }
+    };
 
     const onSave = async (data: CreateTicketInput) => {
         if (!isDirty) {
@@ -97,8 +119,19 @@ export const useTicketDetail = () => {
         }
         try {
             setUpdateError(null);
-            const { assignee, ...rest } = data;
-            const body = { ...rest, assignee: assignee || '' };
+            const { assignee, deadline, ...rest } = data;
+
+            const body = {
+                ...rest,
+                name: rest.name.trim(),
+                description: rest.description?.trim() ?? '',
+                assignee: assignee ?? '',
+                deadline: deadline
+                    ? deadline.length === 16
+                        ? `${deadline}:00Z`
+                        : deadline
+                    : null,
+            };
 
             await updateTicket({
                 projectId: projectId!,
@@ -130,6 +163,7 @@ export const useTicketDetail = () => {
         setIsEditing,
         form,
         isDirty,
+        isValid,
         isLoading,
         isUpdating,
         members,
@@ -140,5 +174,8 @@ export const useTicketDetail = () => {
         fetchError: fetchTicketError || fetchMemberError,
         updateError,
         clearUpdateError: () => setUpdateError(null),
+        isSubscribed: ticket?.is_subscribed ?? false,
+        isSubscribing: isSubscribing || isUnsubscribing,
+        handleSubscriptionToggle,
     };
 };

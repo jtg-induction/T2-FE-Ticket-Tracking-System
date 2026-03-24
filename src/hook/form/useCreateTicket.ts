@@ -57,15 +57,25 @@ export const useCreateTicket = (
 
             form.reset();
             onSuccess();
-        } catch (err) {
-            if (err && typeof err === 'object' && 'message' in err) {
-                setError(err as ErrorResponse);
-            } else {
-                setError({
-                    success: false,
-                    message: 'An unexpected error occurred',
-                } as ErrorResponse);
+        } catch (err: any) {
+            if (err?.data?.errors) {
+                Object.entries(err.data.errors).forEach(([field, messages]) => {
+                    form.setError(field as keyof CreateTicketInput, {
+                        type: 'server',
+                        message: Array.isArray(messages)
+                            ? messages[0]
+                            : (messages as string),
+                    });
+                });
             }
+
+            setError({
+                success: false,
+                message:
+                    err?.data?.message ||
+                    err?.message ||
+                    'An unexpected error occurred',
+            } as ErrorResponse);
         }
     };
 

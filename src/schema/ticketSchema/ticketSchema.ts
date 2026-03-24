@@ -20,7 +20,7 @@ export const TicketBaseSchema = z.object({
 });
 
 export const CreateTicketSchema = TicketBaseSchema.extend({
-    assignee: z.uuid().nullish(),
+    assignee: z.string().nullish(),
 });
 
 export const JQLSearchSchema = z.object({

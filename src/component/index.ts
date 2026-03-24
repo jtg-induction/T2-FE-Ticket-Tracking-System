@@ -1,3 +1,4 @@
+export { HeroSection } from './HeroSection';
 export { Header } from './Header';
 export { ProjectItem } from './ProjectItem';
 export type { ProjectItemProps } from './ProjectItem';
@@ -16,3 +17,5 @@ export { DonutCard } from './DonutCard';
 export type { DonutChartDataItem } from './DonutCard';
 export { StackedBarCard } from './StackedBarCard';
 export type { StackedBarDataItem } from './StackedBarCard';
+export { PasswordCheckBox } from './PasswordCheckBox';
+export { LoadingOverlay } from './LoadingOverlay';

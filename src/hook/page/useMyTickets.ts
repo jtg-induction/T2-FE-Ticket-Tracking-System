@@ -9,6 +9,7 @@ export const useMyTicketsPage = () => {
     const {
         data: myTickets,
         isLoading,
+        isFetching,
         isError,
     } = useGetMyTicketsQuery({
         page: page + 1,
@@ -22,7 +23,7 @@ export const useMyTicketsPage = () => {
         setPage,
         rowsPerPage,
         setRowsPerPage,
-        isLoading,
+        isLoading: isLoading || isFetching,
         isError,
     };
 };

@@ -26,9 +26,9 @@ export const useProjectForm = (projectId: string) => {
         { skip: isNew },
     );
 
-    const [updateProject, { isLoading: isUpdating }] =
+    const [updateProject, { isLoading: isUpdating, error: updateError }] =
         useUpdateProjectMutation();
-    const [createProject, { isLoading: isCreating }] =
+    const [createProject, { isLoading: isCreating, error: createError }] =
         useCreateProjectMutation();
 
     const {
@@ -125,5 +125,7 @@ export const useProjectForm = (projectId: string) => {
         },
         navigate,
         setValue,
+        createError: createError as ErrorResponse,
+        updateError: updateError as ErrorResponse,
     };
 };

@@ -15,12 +15,14 @@ export const useRegisterForm = (tokenFromUrl: string) => {
     const [formError, setFormError] = useState('');
 
     const {
+        watch,
         register,
         handleSubmit,
         setError,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
+        mode: 'onChange',
         defaultValues: {
             first_name: '',
             last_name: '',
@@ -80,9 +82,11 @@ export const useRegisterForm = (tokenFromUrl: string) => {
     };
 
     return {
+        watch,
         register,
         handleSubmit: handleSubmit(onSubmit),
         errors,
+        isValid,
         formError,
         isLoading,
     };

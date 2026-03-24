@@ -27,7 +27,7 @@ import { PAGE_SIZE, TicketStatus } from '@constant';
 import { CreateTicketModal } from '@container';
 import { useProjectDashboard } from '@hook';
 import { ErrorPage } from '@page';
-import { getPriorityColor, stringToColor } from '@util';
+import { convertIsoToDateYear, getPriorityColor, stringToColor } from '@util';
 
 import {
     StyledColumnHeader,
@@ -89,22 +89,22 @@ export const TicketBoard = () => {
                 >
                     {project?.title || 'Loading...'}
                 </Typography>
-                <CustomIconButton
-                    variant="standard"
-                    onClick={() => void navigate(`insights`)}
-                >
-                    <Tooltip title="Project Report">
+                <Tooltip title="Project Report">
+                    <CustomIconButton
+                        variant="standard"
+                        onClick={() => void navigate(`insights`)}
+                    >
                         <BarChart />
-                    </Tooltip>
-                </CustomIconButton>
-                <CustomIconButton
-                    variant="standard"
-                    onClick={() => void navigate(`detail`)}
-                >
-                    <Tooltip title="Project settings">
+                    </CustomIconButton>
+                </Tooltip>
+                <Tooltip title="Project settings">
+                    <CustomIconButton
+                        variant="standard"
+                        onClick={() => void navigate(`detail`)}
+                    >
                         <Settings />
-                    </Tooltip>
-                </CustomIconButton>
+                    </CustomIconButton>
+                </Tooltip>
             </Stack>
 
             <StyledScrollableArea>
@@ -204,22 +204,14 @@ export const TicketBoard = () => {
                                           >
                                               <StyledTicketCardContent>
                                                   <Box mb={1}>
-                                                      <Stack
-                                                          direction="row"
-                                                          justifyContent="space-between"
-                                                          alignItems="start"
+                                                      <Typography
+                                                          title={ticket.jira_id}
+                                                          variant="caption"
+                                                          fontWeight="bold"
+                                                          color="primary"
                                                       >
-                                                          <Typography
-                                                              title={
-                                                                  ticket.jira_id
-                                                              }
-                                                              variant="caption"
-                                                              fontWeight="bold"
-                                                              color="primary"
-                                                          >
-                                                              {ticket.jira_id}
-                                                          </Typography>
-                                                      </Stack>
+                                                          {ticket.jira_id}
+                                                      </Typography>
                                                       <StyledTicketTitle
                                                           title={ticket.name}
                                                           variant="body2"
@@ -227,6 +219,20 @@ export const TicketBoard = () => {
                                                       >
                                                           {ticket.name}
                                                       </StyledTicketTitle>
+                                                      {ticket.deadline && (
+                                                          <Typography
+                                                              title={convertIsoToDateYear(
+                                                                  ticket.deadline,
+                                                              )}
+                                                              fontSize="1.2rem"
+                                                              fontWeight={600}
+                                                              color="primary"
+                                                          >
+                                                              {convertIsoToDateYear(
+                                                                  ticket.deadline,
+                                                              )}
+                                                          </Typography>
+                                                      )}
                                                   </Box>
                                                   <Stack
                                                       direction="row"
@@ -244,7 +250,11 @@ export const TicketBoard = () => {
                                                               title={
                                                                   ticket
                                                                       .assignee
-                                                                      .email
+                                                                      .first_name +
+                                                                  ' ' +
+                                                                  ticket
+                                                                      .assignee
+                                                                      .last_name
                                                               }
                                                           >
                                                               <Avatar
@@ -261,10 +271,16 @@ export const TicketBoard = () => {
                                                                           '1rem',
                                                                   }}
                                                               >
-                                                                  {ticket
-                                                                      .assignee
-                                                                      .first_name?.[0] ||
-                                                                      '?'}
+                                                                  {
+                                                                      ticket
+                                                                          .assignee
+                                                                          .first_name?.[0]
+                                                                  }
+                                                                  {
+                                                                      ticket
+                                                                          .assignee
+                                                                          .last_name?.[0]
+                                                                  }
                                                               </Avatar>
                                                           </Tooltip>
                                                       )}

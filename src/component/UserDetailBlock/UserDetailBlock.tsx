@@ -30,23 +30,26 @@ export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
         >
             <Stack
                 direction="row"
-                component={Link}
+                component={!!user ? Link : Stack}
                 to={`${PATHS.PROFILE}/${user?.user_id}`}
                 sx={{ textDecoration: 'none' }}
             >
-                <Tooltip
-                    title={user?.email || 'No email available'}
-                    arrow
-                    placement="left"
-                >
-                    <Avatar
-                        sx={{
-                            bgcolor: `${stringToColor(user?.email ?? '')}`,
-                        }}
+                {!!user && (
+                    <Tooltip
+                        title={user?.email || 'No email available'}
+                        arrow
+                        placement="left"
                     >
-                        {user?.first_name?.[0]}
-                    </Avatar>
-                </Tooltip>
+                        <Avatar
+                            sx={{
+                                bgcolor: `${stringToColor(user?.email ?? '')}`,
+                            }}
+                        >
+                            {user?.first_name?.[0]}
+                            {user?.last_name?.[0]}
+                        </Avatar>
+                    </Tooltip>
+                )}
                 <Box sx={{ minWidth: 0 }}>
                     <Typography
                         title={
@@ -71,7 +74,7 @@ export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
                         variant="caption"
                         color="text.secondary"
                     >
-                        {user?.role || 'Team Member'}
+                        {user?.role}
                     </Typography>
                 </Box>
             </Stack>

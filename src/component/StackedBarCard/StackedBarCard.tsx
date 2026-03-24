@@ -2,6 +2,7 @@ import {
     Bar,
     BarChart,
     CartesianGrid,
+    Label,
     Legend,
     ResponsiveContainer,
     Tooltip,
@@ -30,7 +31,7 @@ export const StackedBarCard = ({
                 <ResponsiveContainer>
                     <BarChart
                         data={data}
-                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                        margin={{ top: 10, right: 10, left: 20, bottom: 0 }}
                     >
                         <CartesianGrid
                             strokeDasharray="3 3"
@@ -48,7 +49,19 @@ export const StackedBarCard = ({
                             axisLine={false}
                             tickLine={false}
                             tick={{ fontSize: 16 }}
-                        />
+                        >
+                            <Label
+                                value="No. of Tickets"
+                                angle={-90}
+                                position="insideLeft"
+                                style={{
+                                    textAnchor: 'middle',
+                                    fill: palette.text.secondary,
+                                    fontWeight: 500,
+                                    fontSize: 14,
+                                }}
+                            />
+                        </YAxis>
                         <Tooltip
                             cursor={{ fill: palette.grey[200] }}
                             wrapperStyle={{ zIndex: zIndex.tooltip }}

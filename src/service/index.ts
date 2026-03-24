@@ -34,6 +34,8 @@ export {
     useDeleteTicketMutation,
     useSearchTicketsJqlQuery,
     useImportJiraTicketMutation,
+    useSubscribeToTicketMutation,
+    useUnsubscribeFromTicketMutation,
 } from './ticketService';
 
 export {

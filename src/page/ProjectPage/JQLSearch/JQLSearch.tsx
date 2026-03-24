@@ -100,16 +100,18 @@ export const JQLSearch = () => {
                             </Typography>
                         </Stack>
 
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => void onImport(ticket.jira_id)}
-                            disabled={!!importingTicketId}
-                            loading={importingTicketId == ticket.jira_id}
-                            sx={{ flexShrink: 0 }}
-                        >
-                            Import
-                        </Button>
+                        {!ticket.is_imported && (
+                            <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => void onImport(ticket.jira_id)}
+                                disabled={!!importingTicketId}
+                                loading={importingTicketId === ticket.jira_id}
+                                sx={{ flexShrink: 0 }}
+                            >
+                                Import
+                            </Button>
+                        )}
                     </StyledTicketItem>
                 ))}
 

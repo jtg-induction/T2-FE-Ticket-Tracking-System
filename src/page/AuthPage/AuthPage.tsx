@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router';
 
-import { SidePanel } from '@container';
+import { HeroSection } from '@component';
 
 import { StyledAuthLayout } from './AuthPage.style';
 
 export const AuthPage = () => (
     <StyledAuthLayout component="main">
-        <SidePanel />
+        <HeroSection />
         <Outlet />
     </StyledAuthLayout>
 );

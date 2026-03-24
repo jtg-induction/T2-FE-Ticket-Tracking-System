@@ -1,12 +1,12 @@
-import { Link as ReactLink } from 'react-router';
+import { useNavigate } from 'react-router';
 
+import { InfoOutlined } from '@mui/icons-material';
 import {
     Alert,
     Button,
-    FormControl,
     FormLabel,
-    Link,
     TextField,
+    Tooltip,
     Typography,
 } from '@mui/material';
 
@@ -16,6 +16,7 @@ import { useSignupForm } from '@hook';
 import { StyledSignupContainer, StyledSignupForm } from './SignupForm.style';
 
 export const SignupForm = () => {
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -43,19 +44,30 @@ export const SignupForm = () => {
                     </Alert>
                 )}
 
-                <FormControl fullWidth>
-                    <FormLabel htmlFor="email">Email</FormLabel>
-                    <TextField
-                        {...register('email')}
-                        id="email"
-                        error={!!errors.email}
-                        helperText={errors.email?.message}
-                        placeholder="your@email.com"
-                        fullWidth
-                        required
-                        disabled={loading || success}
-                    />
-                </FormControl>
+                <FormLabel
+                    htmlFor="email"
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                >
+                    Email{' '}
+                    <Tooltip title="Verification link will be sent on this email">
+                        <InfoOutlined
+                            sx={{
+                                fontSize: 16,
+                                color: 'text.disabled',
+                            }}
+                        />
+                    </Tooltip>
+                </FormLabel>
+                <TextField
+                    {...register('email')}
+                    id="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    placeholder="your@email.com"
+                    fullWidth
+                    required
+                    disabled={loading || success}
+                />
 
                 <Button
                     type="submit"
@@ -72,13 +84,9 @@ export const SignupForm = () => {
 
                 <Typography textAlign="center">
                     Already have an account?{' '}
-                    <Link
-                        component={ReactLink}
-                        to={PATHS.LOGIN}
-                        variant="body2"
-                    >
-                        Sign in
-                    </Link>
+                    <Button onClick={() => void navigate(PATHS.LOGIN)}>
+                        Login
+                    </Button>
                 </Typography>
             </StyledSignupForm>
         </StyledSignupContainer>

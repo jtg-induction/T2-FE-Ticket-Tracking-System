@@ -7,21 +7,19 @@ import {
     Unarchive as UnarchiveIcon,
 } from '@mui/icons-material';
 import {
-    Alert,
     Box,
     Button,
     Checkbox,
     CircularProgress,
     Grid2 as Grid,
     Paper,
-    Snackbar,
     Stack,
     TextField,
     Tooltip,
     Typography,
 } from '@mui/material';
 
-import { CustomIconButton } from '@component';
+import { CustomIconButton, ErrorSnackbar } from '@component';
 import { useProjectForm } from '@hook';
 
 export const ProjectDetail = () => {
@@ -37,10 +35,9 @@ export const ProjectDetail = () => {
         handleToggleEdit,
         handleSave,
         navigate,
-        snackbarOpen,
-        setSnackbarOpen,
-        errorMessages,
         handleUnarchive,
+        createError,
+        updateError,
     } = useProjectForm(projectId ?? '');
 
     const pageTitle = isNew
@@ -239,20 +236,11 @@ export const ProjectDetail = () => {
                     </Grid>
                 </Grid>
             </Box>
-            <Snackbar
-                open={snackbarOpen}
+            <ErrorSnackbar
+                error={createError || updateError}
+                onClose={() => {}}
                 autoHideDuration={6000}
-                onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-                <Alert onClose={() => setSnackbarOpen(false)} severity="error">
-                    {errorMessages.map((msg, index) => (
-                        <li key={index}>
-                            <Typography variant="caption">{msg}</Typography>
-                        </li>
-                    ))}
-                </Alert>
-            </Snackbar>
+            />
         </Paper>
     );
 };

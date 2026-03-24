@@ -5,6 +5,8 @@ import {
     Edit,
     Event,
     InfoOutlined,
+    Notifications,
+    NotificationsOff,
     Person,
     Security,
 } from '@mui/icons-material';
@@ -45,6 +47,7 @@ export const TicketDetail = () => {
         setIsEditing,
         form,
         isDirty,
+        isValid,
         isLoading,
         isUpdating,
         onSave,
@@ -55,6 +58,9 @@ export const TicketDetail = () => {
         fetchError,
         updateError,
         clearUpdateError,
+        isSubscribed,
+        isSubscribing,
+        handleSubscriptionToggle,
     } = useTicketDetail();
 
     const {
@@ -107,39 +113,58 @@ export const TicketDetail = () => {
                 >
                     Back
                 </Button>
-
-                {isEditing && (
-                    <Stack direction="row" spacing={2}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            color="error"
-                            onClick={() => setIsEditing(false)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            fullWidth
-                            type="submit"
-                            form="ticket-detail-form"
-                            variant="contained"
-                            disabled={!isDirty || isUpdating}
-                        >
-                            Save
-                        </Button>
-                    </Stack>
-                )}
-
-                {!isEditing && permissions.canViewEditButton && (
+                <Stack direction="row" gap={2}>
                     <Button
-                        variant="contained"
-                        startIcon={<Edit />}
-                        onClick={() => setIsEditing(true)}
-                        sx={{ borderRadius: 2, px: 3 }}
+                        variant="outlined"
+                        startIcon={
+                            isSubscribing ? (
+                                <CircularProgress size={16} />
+                            ) : isSubscribed ? (
+                                <NotificationsOff />
+                            ) : (
+                                <Notifications />
+                            )
+                        }
+                        onClick={() => void handleSubscriptionToggle()}
+                        disabled={isSubscribing}
+                        color={isSubscribed ? 'error' : 'primary'}
                     >
-                        Edit Ticket
+                        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
                     </Button>
-                )}
+
+                    {isEditing && (
+                        <Stack direction="row" spacing={2}>
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                color="error"
+                                onClick={() => setIsEditing(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                fullWidth
+                                type="submit"
+                                form="ticket-detail-form"
+                                variant="contained"
+                                disabled={!isDirty || isUpdating || !isValid}
+                            >
+                                Save
+                            </Button>
+                        </Stack>
+                    )}
+
+                    {!isEditing && permissions.canViewEditButton && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Edit />}
+                            onClick={() => setIsEditing(true)}
+                            sx={{ borderRadius: 2, px: 3 }}
+                        >
+                            Edit Ticket
+                        </Button>
+                    )}
+                </Stack>
             </Stack>
 
             <Stack pb={4}>
@@ -170,7 +195,9 @@ export const TicketDetail = () => {
                             fullWidth
                             variant="outlined"
                             label="Ticket Title"
-                            {...register('name')}
+                            {...register('name', {
+                                setValueAs: (v: string) => v.trim(),
+                            })}
                             error={!!errors.name}
                             helperText={errors.name?.message}
                             sx={{ mt: 2 }}
@@ -192,7 +219,10 @@ export const TicketDetail = () => {
                             multiline
                             rows={6}
                             placeholder="Describe the task..."
-                            {...register('description')}
+                            {...register('description', {
+                                setValueAs: (v: string) =>
+                                    v == null ? v : v.trim(),
+                            })}
                             error={!!errors.description}
                             helperText={errors.description?.message}
                         />
@@ -339,9 +369,12 @@ export const TicketDetail = () => {
                             }
                             loading={isSearching}
                             onInputChange={(_, value) => setSearchTerm(value)}
-                            onChange={(_, value) =>
-                                setValue('assignee', value?.user_id || '')
-                            }
+                            onChange={(_, value) => {
+                                setValue('assignee', value?.user_id ?? '', {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                });
+                            }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}

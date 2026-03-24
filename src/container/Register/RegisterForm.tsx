@@ -1,7 +1,17 @@
 import { useSearchParams } from 'react-router';
 
-import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
+import { HelpOutlineOutlined } from '@mui/icons-material';
+import {
+    Alert,
+    Button,
+    FormLabel,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 
+import { PasswordCheckBox } from '@component';
 import { useRegisterForm } from '@hook';
 
 import {
@@ -12,8 +22,15 @@ import {
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();
     const tokenFromUrl = searchParams.get('token') || '';
-    const { register, handleSubmit, errors, formError, isLoading } =
-        useRegisterForm(tokenFromUrl);
+    const {
+        watch,
+        register,
+        handleSubmit,
+        errors,
+        formError,
+        isLoading,
+        isValid,
+    } = useRegisterForm(tokenFromUrl);
 
     if (!tokenFromUrl) {
         return <Alert severity="error">Invalid Registration Link.</Alert>;
@@ -34,21 +51,36 @@ export const RegisterForm = () => {
 
                 {formError && <Alert severity="error">{formError}</Alert>}
 
-                <Stack spacing={4}>
-                    <TextField
-                        label="First Name"
-                        {...register('first_name')}
-                        error={!!errors.first_name}
-                        helperText={errors.first_name?.message}
-                        fullWidth
-                    />
-                    <TextField
-                        label="Last Name"
-                        {...register('last_name')}
-                        error={!!errors.last_name}
-                        helperText={errors.last_name?.message}
-                        fullWidth
-                    />
+                <Stack spacing={1}>
+                    <FormLabel htmlFor="email">Name *</FormLabel>
+                    <Stack direction="row" gap={4}>
+                        <TextField
+                            label="First Name"
+                            {...register('first_name')}
+                            error={!!errors.first_name}
+                            helperText={errors.first_name?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Last Name"
+                            {...register('last_name')}
+                            error={!!errors.last_name}
+                            helperText={errors.last_name?.message}
+                            fullWidth
+                        />
+                    </Stack>
+                    <FormLabel
+                        htmlFor="Jira ID"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                    >
+                        Jira Id *
+                        <Tooltip title="You can get this Id from Jira application by going to profile section">
+                            <HelpOutlineOutlined
+                                color="action"
+                                sx={{ fontSize: 20 }}
+                            />
+                        </Tooltip>
+                    </FormLabel>
                     <TextField
                         label="Jira ID"
                         {...register('jira_id')}
@@ -56,6 +88,18 @@ export const RegisterForm = () => {
                         helperText={errors.jira_id?.message}
                         fullWidth
                     />
+                    <FormLabel
+                        htmlFor="Jira API Token"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                    >
+                        Jira API Token *
+                        <Tooltip title="You can get or generate new token from Jira application by going to settings > security">
+                            <HelpOutlineOutlined
+                                color="action"
+                                sx={{ fontSize: 20 }}
+                            />
+                        </Tooltip>
+                    </FormLabel>
                     <TextField
                         label="Jira API Token"
                         type="password"
@@ -64,29 +108,41 @@ export const RegisterForm = () => {
                         helperText={errors.jira_api_token?.message}
                         fullWidth
                     />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        {...register('password')}
-                        error={!!errors.password}
-                        helperText={errors.password?.message}
-                        fullWidth
-                    />
-                    <TextField
-                        label="Confirm Password"
-                        type="password"
-                        {...register('confirm_password')}
-                        error={!!errors.confirm_password}
-                        helperText={errors.confirm_password?.message}
-                        fullWidth
-                    />
+                    <FormLabel htmlFor="password">Password *</FormLabel>
+                    <Stack direction="row" gap={4}>
+                        <TextField
+                            label="Password"
+                            type="password"
+                            {...register('password')}
+                            error={!!errors.password}
+                            helperText={
+                                !!errors.password ? (
+                                    <PasswordCheckBox
+                                        password={watch('password')}
+                                    />
+                                ) : (
+                                    ''
+                                )
+                            }
+                            fullWidth
+                        />
+                        <TextField
+                            label="Confirm Password"
+                            type="password"
+                            {...register('confirm_password')}
+                            error={!!errors.confirm_password}
+                            helperText={errors.confirm_password?.message}
+                            fullWidth
+                            required
+                        />
+                    </Stack>
                 </Stack>
 
                 <Button
                     type="submit"
                     variant="contained"
                     size="large"
-                    disabled={isLoading}
+                    disabled={isLoading || !isValid}
                 >
                     {isLoading ? 'Processing...' : 'Complete Registration'}
                 </Button>

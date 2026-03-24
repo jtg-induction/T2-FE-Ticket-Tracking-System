@@ -29,7 +29,7 @@ export const palette: PaletteOptions = {
         disabled: blueGrey[600],
     },
     background: {
-        default: grey[50],
+        default: grey[200],
     },
     error: {
         main: red[700],

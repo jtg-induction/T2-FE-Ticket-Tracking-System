@@ -25,6 +25,7 @@ import { useAppDispatch } from '@hook';
 import { useGetUserByIdQuery, useLogoutMutation } from '@service';
 import { logOut } from '@store';
 import { ErrorResponse } from '@type';
+import { stringToColor } from '@util';
 
 import {
     StyledAppBar,
@@ -58,7 +59,6 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
         try {
             await logoutApi().unwrap();
             dispatch(logOut());
-            void navigate(PATHS.LOGIN);
         } catch (err) {
             setError(err as ErrorResponse);
         }
@@ -94,7 +94,16 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
                         onClick={handleOpenMenu}
                         aria-label="Go to profile"
                     >
-                        <StyledAvatar aria-label="User avatar">
+                        <StyledAvatar
+                            aria-label="User avatar"
+                            sx={{
+                                bgcolor: stringToColor(
+                                    response?.data.email
+                                        ? response?.data.email
+                                        : '',
+                                ),
+                            }}
+                        >
                             {initials}
                         </StyledAvatar>
                     </CustomIconButton>

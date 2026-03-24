@@ -1,6 +1,6 @@
+import { Project } from '@type/project.types';
+
 export type ProjectItemProps = {
-    name: string;
-    description?: string;
-    lastUpdated?: string;
+    project: Project;
     onClick: () => void;
 };

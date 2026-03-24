@@ -1,6 +1,6 @@
 import { useLocation, useParams } from 'react-router';
 
-import { Box, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 
 import { PATHS } from '@constant';
 import { Reports } from '@container';

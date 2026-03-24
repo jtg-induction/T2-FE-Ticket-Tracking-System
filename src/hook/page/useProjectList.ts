@@ -17,12 +17,10 @@ export const useProjectList = () => {
         activeMeta: activeResponse?.meta,
         activePage,
         setActivePage,
-        isActiveLoading,
-
+        isLoading: isActiveLoading || isArchivedLoading,
         archivedProjects: archivedResponse?.data ?? [],
         archivedMeta: archivedResponse?.meta,
         archivedPage,
         setArchivedPage,
-        isArchivedLoading,
     };
 };

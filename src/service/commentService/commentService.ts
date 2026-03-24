@@ -21,7 +21,8 @@ export const commentApi = baseApi.injectEndpoints({
                     page_size: pageSize,
                 },
             }),
-            serializeQueryArgs: ({ endpointName, queryArgs }) => `${endpointName}-${queryArgs.ticketId}`,
+            serializeQueryArgs: ({ endpointName, queryArgs }) =>
+                `${endpointName}-${queryArgs.ticketId}`,
             merge: (currentCache, newItems, { arg }) => {
                 if (!arg.cursor) {
                     return newItems;

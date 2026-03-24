@@ -15,8 +15,7 @@ export const StyledRegistrationForm = styled(Stack)<StackProps<'form'>>(
         maxWidth: typography.pxToRem(500),
         marginInline: 'auto',
         minHeight: '100%',
-        gap: spacing(2),
-        padding: spacing(7),
+        gap: spacing(4),
         justifyContent: 'center',
     }),
 );

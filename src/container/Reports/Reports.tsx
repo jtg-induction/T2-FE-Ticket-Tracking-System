@@ -59,7 +59,10 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
 
     const { data: membersResponse } = useGetProjectMembersQuery(
         { id: projectId!, page: 1, search: debouncedSearch },
-        { skip: !projectId || !userFilter },
+        {
+            skip:
+                !projectId || !userFilter || debouncedSearch.trim().length <= 1,
+        },
     );
 
     const userOptions =
@@ -119,7 +122,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                     <Stack direction="row" alignItems="center" gap={2}>
                         <CustomIconButton
                             variant="standard"
-                            onClick={() => navigate(-1)}
+                            onClick={() => void navigate(-1)}
                         >
                             <ArrowBack />
                         </CustomIconButton>
@@ -145,7 +148,10 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                     </Button>
                 </Stack>
 
-                <Box component="form" onSubmit={handleSubmit(onFilterSubmit)}>
+                <Box
+                    component="form"
+                    onSubmit={void handleSubmit(onFilterSubmit)}
+                >
                     <Grid container spacing={2}>
                         {userFilter && (
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -225,7 +231,6 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 />
                             </Grid>
                         )}
-                        {/* Date Inputs */}
                         <Grid
                             size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}
                         >
@@ -259,7 +264,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 type="submit"
                                 sx={{ height: 56, fontWeight: 'bold' }}
                             >
-                                Filter
+                                {loading ? 'Loading..' : 'Filter'}
                             </Button>
                         </Grid>
                     </Grid>
@@ -267,36 +272,44 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
 
                 <Grid container spacing={8}>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <DonutCard
-                            title="Tickets by Status"
-                            chartData={data.statusData}
-                            total={data.totalStatus}
-                            label="TICKETS"
-                        />
+                        <Paper sx={{ p: 4 }}>
+                            <DonutCard
+                                title="Tickets by Status"
+                                chartData={data.statusData}
+                                total={data.totalStatus}
+                                label="TICKETS"
+                            />
+                        </Paper>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <DonutCard
-                            title="Tickets by Priority"
-                            chartData={data.priorityData}
-                            total={data.totalPriority}
-                            label="TICKETS"
-                        />
+                        <Paper sx={{ p: 4 }}>
+                            <DonutCard
+                                title="Tickets by Priority"
+                                chartData={data.priorityData}
+                                total={data.totalPriority}
+                                label="TICKETS"
+                            />
+                        </Paper>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <StackedBarCard
-                            title="Efficiency: Success vs. Failure"
-                            data={data.successFailureData}
-                            dataKeys={priorityKeys}
-                            colors={data.priorityColors}
-                        />
+                        <Paper sx={{ p: 4 }}>
+                            <StackedBarCard
+                                title="Efficiency: Success vs. Failure"
+                                data={data.successFailureData}
+                                dataKeys={priorityKeys}
+                                colors={data.priorityColors}
+                            />
+                        </Paper>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <StackedBarCard
-                            title="Timeline: Deadline Trends"
-                            data={data.deadlineData}
-                            dataKeys={priorityKeys}
-                            colors={data.priorityColors}
-                        />
+                        <Paper sx={{ p: 4 }}>
+                            <StackedBarCard
+                                title="Timeline: Deadline Trends"
+                                data={data.deadlineData}
+                                dataKeys={priorityKeys}
+                                colors={data.priorityColors}
+                            />
+                        </Paper>
                     </Grid>
                 </Grid>
             </Stack>
