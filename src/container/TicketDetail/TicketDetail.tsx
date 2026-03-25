@@ -27,7 +27,7 @@ import {
 
 import { ErrorSnackbar, UserDetailBlock } from '@component';
 import { TicketPriority, TicketStatus } from '@constant';
-import { useTicketDetail } from '@hook';
+import { useDocumentTitle, useTicketDetail } from '@hook';
 import { ErrorPage, LoadingPage } from '@page';
 import { ErrorResponse } from '@type/standard.types';
 import { getStatusColor, toDateTimeLocalValue } from '@util';
@@ -62,6 +62,10 @@ export const TicketDetail = () => {
         isSubscribing,
         handleSubscriptionToggle,
     } = useTicketDetail();
+
+    useDocumentTitle(
+        ticket ? `${ticket.jira_id}: ${ticket.name}` : 'Loading Ticket...',
+    );
 
     const {
         register,

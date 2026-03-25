@@ -17,6 +17,7 @@ export {
 } from './projectsService';
 
 export {
+    useListAllUsersQuery,
     useGetProjectMembersQuery,
     useInviteMemberMutation,
     useUpdateMemberRoleMutation,

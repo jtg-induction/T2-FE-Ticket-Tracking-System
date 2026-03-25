@@ -1,4 +1,5 @@
 export { AuthPage } from './AuthPage';
+export { ProtectedPage } from './ProtectedPage';
 export { ErrorPage } from './ErrorPage';
 export { LoadingPage } from './LoadingPage';
 export { ProfilePage } from './ProfilePage';

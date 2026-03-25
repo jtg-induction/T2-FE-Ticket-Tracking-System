@@ -2,6 +2,7 @@ import {
     Box,
     Card,
     CardContent,
+    Fab,
     Paper,
     Stack,
     styled,
@@ -9,6 +10,7 @@ import {
 } from '@mui/material';
 
 export const StyledMainContent = styled(Paper)(({ theme: { spacing } }) => ({
+    position: 'relative',
     flex: '8 8 400px',
     display: 'flex',
     flexDirection: 'column',
@@ -72,4 +74,14 @@ export const StyledTicketTitle = styled(Typography)(
 
 export const StyledColumnHeader = styled(Stack)(({ theme: { spacing } }) => ({
     marginBottom: spacing(1.5),
+}));
+
+export const StyledFab = styled(Fab)(({ theme: { spacing } }) => ({
+    position: 'absolute',
+    bottom: spacing(6),
+    right: spacing(6),
+    '&:hover': {
+        transform: 'scale(1.05)',
+        transition: 'transform 0.2s ease-in-out',
+    },
 }));

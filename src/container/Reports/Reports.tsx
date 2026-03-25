@@ -21,6 +21,7 @@ import {
     CustomIconButton,
     DonutCard,
     ErrorSnackbar,
+    HighlightTextMatch,
     StackedBarCard,
 } from '@component';
 import { useDebounce, useReport } from '@hook';
@@ -148,10 +149,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                     </Button>
                 </Stack>
 
-                <Box
-                    component="form"
-                    onSubmit={void handleSubmit(onFilterSubmit)}
-                >
+                <Box component="form" onSubmit={handleSubmit(onFilterSubmit)}>
                     <Grid container spacing={2}>
                         {userFilter && (
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -164,6 +162,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                         <Stack spacing={2}>
                                             <Autocomplete
                                                 options={userOptions}
+                                                // getOptionLabel MUST return a string
                                                 getOptionLabel={(option) =>
                                                     option.name
                                                 }
@@ -184,6 +183,33 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                         ]);
                                                         setSearchTerm('');
                                                     }
+                                                }}
+                                                renderOption={(
+                                                    props,
+                                                    option,
+                                                ) => {
+                                                    const {
+                                                        key,
+                                                        ...optionProps
+                                                    } = props;
+                                                    return (
+                                                        <Box
+                                                            component="li"
+                                                            key={key}
+                                                            {...optionProps}
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems:
+                                                                    'center',
+                                                                gap: 0.5,
+                                                            }}
+                                                        >
+                                                            {HighlightTextMatch(
+                                                                option.name,
+                                                                searchTerm,
+                                                            )}
+                                                        </Box>
+                                                    );
                                                 }}
                                                 renderInput={(params) => (
                                                     <TextField

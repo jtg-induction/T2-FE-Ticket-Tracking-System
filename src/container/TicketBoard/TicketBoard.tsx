@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import {
+    Add,
     AddCircle as AddCircleIcon,
     ArrowBack,
     BarChart,
@@ -25,12 +26,13 @@ import {
 import { CustomIconButton } from '@component';
 import { PAGE_SIZE, TicketStatus } from '@constant';
 import { CreateTicketModal } from '@container';
-import { useProjectDashboard } from '@hook';
+import { useDocumentTitle, useProjectDashboard } from '@hook';
 import { ErrorPage } from '@page';
 import { convertIsoToDateYear, getPriorityColor, stringToColor } from '@util';
 
 import {
     StyledColumnHeader,
+    StyledFab,
     StyledMainContent,
     StyledScrollableArea,
     StyledTicketCard,
@@ -49,7 +51,7 @@ export const TicketBoard = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const { projectId } = useParams<{ projectId: string }>();
-    const [selectedStatus, setSelectedStatus] = useState<TicketStatus>(
+    const [selectedStatus, setSelectedStatus] = useState<TicketStatus | null>(
         TicketStatus.ToDo,
     );
 
@@ -70,6 +72,8 @@ export const TicketBoard = () => {
         pageSize,
         fetchError,
     } = useProjectDashboard(projectId);
+
+    useDocumentTitle(project ? `${project.title} Board` : 'Kanban Board');
 
     if (fetchError) return <ErrorPage></ErrorPage>;
 
@@ -310,6 +314,18 @@ export const TicketBoard = () => {
                     );
                 })}
             </StyledScrollableArea>
+            <Tooltip title="Create New Ticket" placement="left">
+                <StyledFab
+                    color="primary"
+                    aria-label="add"
+                    onClick={() => {
+                        setSelectedStatus(null);
+                        setModalOpen(true);
+                    }}
+                >
+                    <Add />
+                </StyledFab>
+            </Tooltip>
             <CreateTicketModal
                 key={selectedStatus}
                 open={isModalOpen}

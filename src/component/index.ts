@@ -19,3 +19,4 @@ export { StackedBarCard } from './StackedBarCard';
 export type { StackedBarDataItem } from './StackedBarCard';
 export { PasswordCheckBox } from './PasswordCheckBox';
 export { LoadingOverlay } from './LoadingOverlay';
+export { HighlightTextMatch } from './HighlightTextMatch';

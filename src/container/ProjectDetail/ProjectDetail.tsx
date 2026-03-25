@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 
 import { CustomIconButton, ErrorSnackbar } from '@component';
-import { useProjectForm } from '@hook';
+import { useDocumentTitle, useProjectForm } from '@hook';
 
 export const ProjectDetail = () => {
     const { projectId } = useParams<{ projectId: string }>();
@@ -39,6 +39,11 @@ export const ProjectDetail = () => {
         createError,
         updateError,
     } = useProjectForm(projectId ?? '');
+    useDocumentTitle(
+        !loading && project
+            ? `${project.title} (${project.jira_project_key})`
+            : 'Loading Project...',
+    );
 
     const pageTitle = isNew
         ? 'Create Project'

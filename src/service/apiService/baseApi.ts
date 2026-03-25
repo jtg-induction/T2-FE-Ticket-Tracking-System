@@ -59,8 +59,9 @@ const baseQueryWithReauth: BaseQueryFn<
                     extraOptions,
                 );
 
-                const data = refreshResult.data as RefreshResponse;
-                const newToken = data?.access;
+                const data =
+                    refreshResult.data as EntityResponse<RefreshResponse>;
+                const newToken = data.data.access;
 
                 if (newToken) {
                     api.dispatch(setCredentials(newToken));

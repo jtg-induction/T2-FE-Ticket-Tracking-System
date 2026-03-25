@@ -1,0 +1,1 @@
+export { HighlightTextMatch } from './HightlightTextMatch';

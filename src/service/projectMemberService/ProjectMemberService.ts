@@ -4,6 +4,29 @@ import { EntityResponse, PaginatedResponse, ProjectMember } from '@type';
 
 export const projectUserApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
+        listAllUsers: builder.query<
+            PaginatedResponse<ProjectMember>,
+            { projectId: string; search: string; cursor?: string | null }
+        >({
+            query: ({ projectId, search, cursor }) => ({
+                url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/list-all-users/`,
+                params: { search, cursor: cursor || undefined },
+            }),
+            serializeQueryArgs: ({ queryArgs }) => {
+                return `search-members-${queryArgs.projectId}`;
+            },
+            merge: (currentCache, newItems, { arg }) => {
+                if (!arg.cursor) {
+                    return newItems;
+                }
+                currentCache.data.push(...newItems.data);
+                currentCache.meta = newItems.meta;
+            },
+            forceRefetch: ({ currentArg, previousArg }) =>
+                currentArg?.search !== previousArg?.search ||
+                currentArg?.cursor !== previousArg?.cursor,
+        }),
+
         getProjectMembers: builder.query<
             PaginatedResponse<ProjectMember>,
             { id: string; page: number; search?: string }
@@ -26,13 +49,16 @@ export const projectUserApi = baseApi.injectEndpoints({
 
         inviteMember: builder.mutation<
             EntityResponse<null>,
-            { id: string; email: string }
+            { projectId: string; userId: string; email: string }
         >({
-            query: ({ id, email }) => ({
-                url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/invite/`,
+            query: ({ projectId, userId, email }) => ({
+                url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/invite/`,
                 method: API_CONSTANTS.METHODS.POST,
-                body: { email },
+                body: { user_id: userId, email: email },
             }),
+            invalidatesTags: (_result, _error, { projectId }) => [
+                { type: 'ProjectMember', id: `LIST-${projectId}` },
+            ],
         }),
 
         acceptInvite: builder.mutation<EntityResponse<null>, string>({
@@ -96,6 +122,7 @@ export const projectUserApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useListAllUsersQuery,
     useGetProjectMembersQuery,
     useInviteMemberMutation,
     useUpdateMemberRoleMutation,

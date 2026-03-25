@@ -15,6 +15,7 @@ import {
     ReportsPage,
     TicketDetailPage,
 } from '@page';
+import { ProtectedPage } from 'page/ProtectedPage';
 
 export const router = createBrowserRouter([
     {
@@ -44,38 +45,43 @@ export const router = createBrowserRouter([
                     },
                 ],
             },
-            { path: PATHS.PROJECTS, element: <ProjectPage /> },
-            { path: PATHS.TICKET, element: <MyTicketsPage /> },
-            { path: PATHS.PROFILE, element: <ProfilePage /> },
-            { path: `${PATHS.PROFILE}/:id`, element: <ProfilePage /> },
             {
-                path: `${PATHS.PROJECTS}/:projectId`,
-                element: <ProjectDashboardPage />,
-            },
-            {
-                path: `${PATHS.PROJECTS}/:projectId/detail`,
-                element: <ProjectDetailPage />,
-            },
-            {
-                path: `${PATHS.PROJECTS}/:projectId${PATHS.TICKET}/:ticketId`,
-                element: <TicketDetailPage />,
-            },
-            {
-                path: PATHS.ACCEPT_INVITE,
-                element: <AcceptInvitePage />,
-            },
+                element: <ProtectedPage />,
+                children: [
+                    { path: PATHS.PROJECTS, element: <ProjectPage /> },
+                    { path: PATHS.TICKET, element: <MyTicketsPage /> },
+                    { path: PATHS.PROFILE, element: <ProfilePage /> },
+                    { path: `${PATHS.PROFILE}/:id`, element: <ProfilePage /> },
+                    {
+                        path: `${PATHS.PROJECTS}/:projectId`,
+                        element: <ProjectDashboardPage />,
+                    },
+                    {
+                        path: `${PATHS.PROJECTS}/:projectId/detail`,
+                        element: <ProjectDetailPage />,
+                    },
+                    {
+                        path: `${PATHS.PROJECTS}/:projectId${PATHS.TICKET}/:ticketId`,
+                        element: <TicketDetailPage />,
+                    },
+                    {
+                        path: PATHS.ACCEPT_INVITE,
+                        element: <AcceptInvitePage />,
+                    },
 
-            {
-                path: `${PATHS.PROJECTS}/:projectId/insights`,
-                element: <ReportsPage />,
-            },
-            {
-                path: `${PATHS.PROFILE}/insights`,
-                element: <ReportsPage />,
-            },
-            {
-                path: `${PATHS.PROFILE}/:userId/insights`,
-                element: <ReportsPage />,
+                    {
+                        path: `${PATHS.PROJECTS}/:projectId/insights`,
+                        element: <ReportsPage />,
+                    },
+                    {
+                        path: `${PATHS.PROFILE}/insights`,
+                        element: <ReportsPage />,
+                    },
+                    {
+                        path: `${PATHS.PROFILE}/:userId/insights`,
+                        element: <ReportsPage />,
+                    },
+                ],
             },
         ],
     },

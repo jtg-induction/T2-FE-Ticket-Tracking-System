@@ -21,7 +21,3 @@ export const projectSchema = z.object({
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
 });
-
-export const inviteMemberSchema = z.object({
-    email: z.email('Please enter a valid email address'),
-});

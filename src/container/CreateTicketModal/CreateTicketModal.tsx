@@ -19,20 +19,14 @@ import {
 import { ErrorSnackbar } from '@component';
 import { TicketPriority, TicketStatus } from '@constant';
 import { useCreateTicket } from '@hook';
-
-interface Props {
-    open: boolean;
-    onClose: () => void;
-    projectId: string;
-    initialStatus: TicketStatus;
-}
+import { CreateTicketModalProps } from './createTickeModel.types';
 
 export const CreateTicketModal = ({
     open,
     onClose,
     projectId,
     initialStatus,
-}: Props) => {
+}: CreateTicketModalProps) => {
     const {
         form,
         onSubmit,
@@ -42,7 +36,7 @@ export const CreateTicketModal = ({
         setSearchTerm,
         error,
         clearError,
-    } = useCreateTicket(projectId, onClose, initialStatus);
+    } = useCreateTicket(projectId, onClose, initialStatus ?? TicketStatus.ToDo);
 
     const {
         register,
@@ -57,7 +51,7 @@ export const CreateTicketModal = ({
             reset({
                 priority: TicketPriority.Medium,
                 category: 'Development',
-                status: initialStatus,
+                status: initialStatus ?? TicketStatus.ToDo,
                 name: '',
                 description: '',
                 assignee: '',
@@ -97,10 +91,28 @@ export const CreateTicketModal = ({
                             helperText={errors.description?.message}
                         />
 
+                        {!initialStatus && (
+                            <TextField
+                                select
+                                fullWidth
+                                label="Status"
+                                {...register('status')}
+                                error={!!errors.status}
+                                helperText={errors.status?.message}
+                            >
+                                {Object.values(TicketStatus).map((status) => (
+                                    <MenuItem key={status} value={status}>
+                                        {status}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        )}
+
                         <Stack direction="row" spacing={2}>
                             <TextField
                                 select
                                 fullWidth
+                                // style={{ width: '50%' }}
                                 label="Category"
                                 {...register('category')}
                                 error={!!errors.category}

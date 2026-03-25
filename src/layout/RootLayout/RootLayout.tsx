@@ -1,62 +1,15 @@
-import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router';
 
-import { Outlet, useLocation, useNavigate } from 'react-router';
-
-import { Header } from '@component';
-import { PATHS, PUBLICPATHS } from '@constant';
-import { Sidebar } from '@container';
+import { StyledLayoutRoot } from './RootLayout.style';
 import { useAppSelector } from '@hook';
-
-import { StyledLayoutRoot, StyledMainContent } from './RootLayout.style';
+import { LoadingOverlay } from '@component';
 
 export const RootLayout = () => {
-    const { accessToken, isLoading } = useAppSelector((state) => state.auth);
-
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const isPublicPath = PUBLICPATHS.includes(location.pathname);
-    const loading =
-        (accessToken && (isPublicPath || location.pathname === '/')) ||
-        (!accessToken && !isPublicPath);
-
-    const [sidebarOpen, toggleSidebar] = useState(false);
-    const handleDrawerToggle = () => {
-        toggleSidebar((prev) => !prev);
-    };
-
-    useEffect(() => {
-        if (isLoading) return;
-
-        if (accessToken) {
-            if (isPublicPath || location.pathname === '/') {
-                void navigate(PATHS.PROJECTS);
-            }
-        } else {
-            if (!isPublicPath) {
-                void navigate(PATHS.LOGIN);
-            }
-        }
-    }, [accessToken, isLoading, location.pathname, navigate]);
-
-    if (loading) {
-        return null;
-    }
-
+    const { isLoading } = useAppSelector((state) => state.auth);
+    if (isLoading) return <LoadingOverlay />;
     return (
         <StyledLayoutRoot maxWidth="xl" disableGutters>
-            {!isPublicPath && (
-                <>
-                    <Header
-                        userInitial="U"
-                        onSidebarToggle={handleDrawerToggle}
-                    />
-                    <Sidebar onClose={handleDrawerToggle} open={sidebarOpen} />
-                </>
-            )}
-            <StyledMainContent component="main">
-                <Outlet />
-            </StyledMainContent>
+            <Outlet />
         </StyledLayoutRoot>
     );
 };

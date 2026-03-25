@@ -41,8 +41,8 @@ export const StyledTableScrollArea = styled(Box)({
 export const StyledPriorityIndicator = styled(Box, {
     shouldForwardProp: (prop) => prop !== 'priorityColor',
 })<{ priorityColor: string }>(({ priorityColor }) => ({
-    width: 8,
-    height: 8,
+    width: 10,
+    height: 10,
     borderRadius: '50%',
     backgroundColor: priorityColor,
 }));

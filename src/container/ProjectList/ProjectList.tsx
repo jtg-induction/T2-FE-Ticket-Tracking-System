@@ -22,12 +22,13 @@ import {
 import { CustomIconButton, LoadingOverlay } from '@component';
 import { ProjectItem } from '@component';
 import { PAGE_SIZE, PATHS } from '@constant';
-import { useProjectList } from '@hook';
+import { useDocumentTitle, useProjectList } from '@hook';
 
 import { EmptyStateContainer, EmptyStateContent } from './ProjectList.style';
 import { ProjectState } from './ProjectList.types';
 
 export const ProjectList = () => {
+    useDocumentTitle('All Projects');
     const navigate = useNavigate();
     const [view, setView] = useState<ProjectState>(ProjectState.ACTIVE);
 
@@ -72,7 +73,8 @@ export const ProjectList = () => {
             overflow="hidden"
         >
             {isLoading && <LoadingOverlay />}
-            {!isLoading && currentProjects.length === 0 ? (
+            {!isLoading &&
+            activeProjects.length + archivedProjects.length === 0 ? (
                 <EmptyStateContainer>
                     <EmptyStateContent>
                         <FolderOpenIcon
@@ -87,7 +89,7 @@ export const ProjectList = () => {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={void handleCreateProject}
+                        onClick={() => void handleCreateProject()}
                         size="medium"
                     >
                         Create your first project
@@ -106,7 +108,7 @@ export const ProjectList = () => {
                         </Typography>
                         <Tooltip title="Create Project">
                             <CustomIconButton
-                                onClick={void handleCreateProject}
+                                onClick={() => void handleCreateProject()}
                             >
                                 <AddIcon />
                             </CustomIconButton>
@@ -141,18 +143,30 @@ export const ProjectList = () => {
                         pr={1}
                         minHeight={0}
                     >
-                        {currentProjects.map((project) => (
-                            <Box key={project.id} flexShrink={0}>
-                                <ProjectItem
-                                    onClick={() =>
-                                        void navigate(
-                                            `${PATHS.PROJECTS}/${project.id}`,
-                                        )
-                                    }
-                                    project={project}
-                                />
-                            </Box>
-                        ))}
+                        {currentProjects.length > 0
+                            ? currentProjects.map((project) => (
+                                  <Box key={project.id} flexShrink={0}>
+                                      <ProjectItem
+                                          onClick={() =>
+                                              void navigate(
+                                                  `${PATHS.PROJECTS}/${project.id}`,
+                                              )
+                                          }
+                                          project={project}
+                                      />
+                                  </Box>
+                              ))
+                            : !isLoading && (
+                                  <Stack flexGrow={1} justifyContent="center">
+                                      <Typography
+                                          variant="body1"
+                                          color="text.secondary"
+                                          textAlign="center"
+                                      >
+                                          No {view} projects found.
+                                      </Typography>
+                                  </Stack>
+                              )}
                     </Stack>
 
                     {currentMeta && currentMeta.count > PAGE_SIZE && (

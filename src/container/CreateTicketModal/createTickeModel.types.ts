@@ -1,3 +1,5 @@
+import { TicketStatus } from '@constant';
+
 /**
  * Props for the CreateTicketModal component.
  */
@@ -10,4 +12,7 @@ export type CreateTicketModalProps = {
 
     /** The ID of the project for which this ticket will be created. */
     projectId: string;
+
+    /** Initial status for which the create ticket modal was targeted  */
+    initialStatus: TicketStatus | null;
 };

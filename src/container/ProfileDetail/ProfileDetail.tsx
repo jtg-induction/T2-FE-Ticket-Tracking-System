@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 
 import { FORM, USER_ROLE_OPTIONS } from '@constant';
-import { useProfileForm } from '@hook';
+import { useDocumentTitle, useProfileForm } from '@hook';
 import { convertIsoToDateYear } from '@util';
 
 import {
@@ -53,6 +53,10 @@ export const ProfileDetail = () => {
         formValues,
         isDirty,
     } = useProfileForm(id ?? '');
+
+    useDocumentTitle(
+        profile ? `${profile.first_name}'s Profile` : 'User Profile',
+    );
 
     if (loading && !profile) return <Typography>Loading Profile...</Typography>;
     if (fetchError || !profile)

@@ -41,4 +41,6 @@ export type EditProfileRequest = z.infer<typeof profileSchema>;
 export interface ProjectMember extends UserResponse {
     /** The specific role assigned to the user for this individual project. */
     projectRole: ProjectRole;
+    /** If the user is part of the project or not. */
+    is_project_member: boolean;
 }

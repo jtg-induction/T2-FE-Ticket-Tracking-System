@@ -1,11 +1,20 @@
-import { MouseEvent, useMemo, useState } from 'react';
-
-import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router';
-
-import { Logout as LogoutIcon, Send as SendIcon } from '@mui/icons-material';
+import {
+    ErrorSnackbar,
+    HighlightTextMatch,
+    ROLE_HIERARCHY,
+    UserAction,
+    UserCard,
+} from '@component';
+import { PAGE_SIZE, PATHS } from '@constant';
+import { useDebounce } from '@hook';
+import {
+    Done,
+    Logout as LogoutIcon,
+    Send as SendIcon,
+} from '@mui/icons-material';
 import {
     Alert,
+    Autocomplete,
     Box,
     Button,
     CircularProgress,
@@ -15,7 +24,6 @@ import {
     DialogTitle,
     Divider,
     IconButton,
-    InputAdornment,
     Pagination,
     Paper,
     Snackbar,
@@ -25,34 +33,27 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-
-import {
-    ErrorSnackbar,
-    ROLE_HIERARCHY,
-    UserAction,
-    UserCard,
-} from '@component';
-import { PAGE_SIZE, PATHS } from '@constant';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { inviteMemberSchema } from '@schema';
 import {
     useGetProjectMembersQuery,
     useInviteMemberMutation,
+    useListAllUsersQuery,
     useRemoveMemberMutation,
     useUpdateMemberRoleMutation,
 } from '@service';
-import {
-    ErrorResponse,
-    InviteMemberInput,
-    ProjectMember,
-    ProjectRole,
-} from '@type';
+import { ErrorResponse, ProjectMember, ProjectRole } from '@type';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 
 export const ProjectUsers = () => {
     const { spacing } = useTheme();
-    const { projectId } = useParams<{ projectId: string }>();
     const navigate = useNavigate();
+    const { projectId } = useParams<{ projectId: string }>();
 
+    const [searchValue, setSearchValue] = useState('');
+    const [nextCursor, setNextCursor] = useState<string | null>(null);
+    const [selectedUser, setSelectedUser] = useState<ProjectMember | null>(
+        null,
+    );
     const [menuAnchorEl, setMenuAnchorEl] = useState<{
         userId: string;
         el: HTMLElement;
@@ -62,72 +63,73 @@ export const ProjectUsers = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        setError,
-        formState: { errors },
-    } = useForm<InviteMemberInput>({
-        resolver: zodResolver(inviteMemberSchema),
-        defaultValues: { email: '' },
-    });
+    const debouncedSearch = useDebounce(searchValue, 500);
 
-    const handleCardClick = (userId: string) => {
-        void navigate(`${PATHS.PROFILE}/${userId}`);
-    };
-
-    const handleMenuOpen = (userId: string, event: MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setMenuAnchorEl({ userId, el: event.currentTarget });
-    };
-
-    const handleMenuClose = (event: MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setMenuAnchorEl(null);
-    };
-
-    if (!projectId || projectId === 'new') return null;
+    const { data: searchResponse, isFetching: isSearching } =
+        useListAllUsersQuery(
+            {
+                projectId: projectId!,
+                search: debouncedSearch,
+                cursor: nextCursor,
+            },
+            { skip: !projectId || debouncedSearch.length < 2 },
+        );
 
     const {
         data: response,
         isLoading,
         isFetching,
         error: fetchError,
-    } = useGetProjectMembersQuery({ id: projectId, page });
+    } = useGetProjectMembersQuery(
+        { id: projectId!, page },
+        { skip: !projectId || projectId === 'new' },
+    );
 
+    const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
     const [removeMember] = useRemoveMemberMutation();
     const [updateRole] = useUpdateMemberRoleMutation();
-    const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
 
-    const members: ProjectMember[] = response?.data || [];
+    const searchOptions = useMemo(() => {
+        if (isSearching && !nextCursor) return [];
+        if (debouncedSearch.length < 2) return [];
+        return searchResponse?.data || [];
+    }, [searchResponse, isSearching, nextCursor, debouncedSearch]);
+
+    const hasMore = debouncedSearch.length >= 2 && !!searchResponse?.meta?.next;
+    const members = response?.data || [];
     const meta = response?.meta ?? null;
-
     const totalPages = useMemo(
         () => (meta ? Math.ceil(meta.count / PAGE_SIZE) : 0),
         [meta],
     );
-
     const currentUser = useMemo(
         () => (page === 1 ? members[0] : null),
         [members, page],
     );
 
-    const handleInvite = async (data: InviteMemberInput) => {
+    useEffect(() => {
+        setNextCursor(null);
+    }, [debouncedSearch]);
+
+    const getCursorFromUrl = (url: string | null) => {
+        if (!url) return null;
+        return new URL(url).searchParams.get('cursor');
+    };
+
+    const handleInvite = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!selectedUser || !projectId) return;
         try {
-            const inviteResponse = await inviteMember({
-                id: projectId,
-                email: data.email,
+            const res = await inviteMember({
+                projectId,
+                userId: selectedUser.user_id,
+                email: selectedUser.email,
             }).unwrap();
-            setSuccessMessage(
-                inviteResponse.message || `Invitation sent to ${data.email}`,
-            );
-            reset();
+            setSuccessMessage(res.message || 'User added successfully');
+            setSelectedUser(null);
+            setSearchValue('');
         } catch (err) {
-            const error = err as ErrorResponse;
-            setError('email', {
-                message: error?.message || 'Failed to send invitation',
-            });
+            setActionError(err as ErrorResponse);
         }
     };
 
@@ -155,20 +157,17 @@ export const ProjectUsers = () => {
                 }
             }
         } catch (err) {
-            setActionError(
-                (err as ErrorResponse) ?? {
-                    success: false,
-                    message: 'An unexpected error occurred',
-                },
-            );
+            setActionError(err as ErrorResponse);
         }
     };
+
+    if (!projectId || projectId === 'new') return null;
 
     return (
         <Paper sx={{ height: '100%' }}>
             <Box p={spacing(4)}>
                 <Stack
-                    flexDirection="row"
+                    direction="row"
                     justifyContent="space-between"
                     alignItems="center"
                 >
@@ -182,7 +181,6 @@ export const ProjectUsers = () => {
                                 : `${meta?.count || 0} members total`}
                         </Typography>
                     </Stack>
-
                     <Tooltip title="Leave Project">
                         <IconButton
                             color="error"
@@ -193,45 +191,172 @@ export const ProjectUsers = () => {
                     </Tooltip>
                 </Stack>
 
-                <Box
-                    component="form"
-                    onSubmit={(e) => void handleSubmit(handleInvite)(e)}
-                    mt={1}
-                >
-                    <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="Invite by email..."
-                        {...register('email')}
-                        error={!!errors.email}
-                        helperText={errors.email?.message}
-                        disabled={isInviting}
-                        slotProps={{
-                            input: {
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <Tooltip title="Send invite">
-                                            <span>
-                                                <IconButton
-                                                    type="submit"
-                                                    disabled={isInviting}
-                                                    color="primary"
+                <Box component="form" onSubmit={handleInvite} mt={2}>
+                    <Stack direction="row" spacing={1}>
+                        <Autocomplete
+                            fullWidth
+                            size="small"
+                            forcePopupIcon={false}
+                            filterOptions={(options) => options}
+                            options={searchOptions}
+                            loading={isSearching}
+                            value={selectedUser}
+                            inputValue={searchValue}
+                            onInputChange={(_, val) => {
+                                setSearchValue(val);
+                                setNextCursor(null);
+                            }}
+                            onChange={(_, val) => {
+                                if (val?.is_project_member) {
+                                    setActionError({
+                                        success: false,
+                                        message: 'Already a member',
+                                    });
+                                    return;
+                                }
+                                setSelectedUser(val);
+                            }}
+                            getOptionLabel={(o) =>
+                                `${o.first_name} ${o.last_name}`
+                            }
+                            isOptionEqualToValue={(o, v) =>
+                                o.user_id === v.user_id
+                            }
+                            renderOption={(props, option, state) => {
+                                const { key, ...optionProps } = props;
+                                const isLast =
+                                    state.index === searchOptions.length - 1;
+                                const isMember = option.is_project_member;
+                                const content = (
+                                    <Box key={key}>
+                                        <Stack
+                                            direction="row"
+                                            component="li"
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                            {...optionProps}
+                                            sx={{
+                                                pointerEvents: isMember
+                                                    ? 'none'
+                                                    : 'auto',
+                                            }}
+                                        >
+                                            <Stack spacing={0.2}>
+                                                <Typography
+                                                    variant="body2"
+                                                    fontWeight={500}
                                                 >
-                                                    {isInviting ? (
-                                                        <CircularProgress
-                                                            size={20}
-                                                        />
-                                                    ) : (
-                                                        <SendIcon fontSize="small" />
+                                                    {HighlightTextMatch(
+                                                        `${option.first_name} ${option.last_name}`,
+                                                        searchValue,
                                                     )}
-                                                </IconButton>
-                                            </span>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                    />
+                                                </Typography>
+                                                <Typography
+                                                    variant="caption"
+                                                    color="textSecondary"
+                                                >
+                                                    {HighlightTextMatch(
+                                                        option.email,
+                                                        searchValue,
+                                                    )}
+                                                </Typography>
+                                            </Stack>
+                                            {isMember && (
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={0.5}
+                                                    alignItems="center"
+                                                >
+                                                    <Done
+                                                        color="success"
+                                                        sx={{
+                                                            fontSize: '1.5rem',
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        variant="caption"
+                                                        color="success.dark"
+                                                    >
+                                                        Member
+                                                    </Typography>
+                                                </Stack>
+                                            )}
+                                        </Stack>
+                                        {isLast && hasMore && (
+                                            <Button
+                                                fullWidth
+                                                size="small"
+                                                onMouseDown={(e) => {
+                                                    e.preventDefault();
+                                                    setNextCursor(
+                                                        getCursorFromUrl(
+                                                            searchResponse?.meta
+                                                                .next,
+                                                        ),
+                                                    );
+                                                }}
+                                            >
+                                                {isSearching
+                                                    ? 'Loading...'
+                                                    : 'Load More'}
+                                            </Button>
+                                        )}
+                                        <Divider />
+                                    </Box>
+                                );
+                                return isMember ? (
+                                    <Tooltip
+                                        key={key}
+                                        title="User is already in this project"
+                                        placement="left"
+                                        arrow
+                                    >
+                                        <div style={{ cursor: 'not-allowed' }}>
+                                            {content}
+                                        </div>
+                                    </Tooltip>
+                                ) : (
+                                    content
+                                );
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder="Search users to invite..."
+                                    slotProps={{
+                                        input: {
+                                            ...params.InputProps,
+                                            endAdornment: isSearching ? (
+                                                <CircularProgress size={20} />
+                                            ) : (
+                                                params.InputProps.endAdornment
+                                            ),
+                                        },
+                                    }}
+                                />
+                            )}
+                        />
+                        <Button
+                            variant="contained"
+                            disabled={isInviting || !selectedUser}
+                            type="submit"
+                        >
+                            {isInviting ? (
+                                <CircularProgress size={20} />
+                            ) : (
+                                <SendIcon />
+                            )}
+                        </Button>
+                    </Stack>
+                    {searchValue.length > 0 && searchValue.length < 2 && (
+                        <Typography
+                            variant="caption"
+                            color="textSecondary"
+                            sx={{ mt: 0.5, display: 'block' }}
+                        >
+                            Type at least 2 characters to search...
+                        </Typography>
+                    )}
                 </Box>
             </Box>
 
@@ -253,7 +378,6 @@ export const ProjectUsers = () => {
                             variant="body2"
                             color="error"
                             fontWeight={600}
-                            textAlign="center"
                         >
                             {'message' in fetchError
                                 ? fetchError.message
@@ -261,95 +385,79 @@ export const ProjectUsers = () => {
                         </Typography>
                     </Stack>
                 ) : (
-                    <>
+                    <Stack spacing={0}>
                         {isFetching && (
                             <Box display="flex" justifyContent="center">
                                 <CircularProgress size={24} />
                             </Box>
                         )}
-                        <Stack spacing={0}>
-                            {members.map((user) => {
-                                const myRole: ProjectRole =
-                                    currentUser?.projectRole ??
-                                    ProjectRole.Member;
-                                const userRole = user.projectRole;
-                                const myRoleValue = ROLE_HIERARCHY[myRole] ?? 0;
-                                const userRoleValue =
-                                    ROLE_HIERARCHY[userRole] ?? 0;
-                                const showMenu = myRoleValue > userRoleValue;
-                                const canMakeOwner =
-                                    myRole === ProjectRole.Owner;
-                                const canMakeAdmin =
-                                    ((myRole === ProjectRole.Owner ||
-                                        myRole === ProjectRole.Admin) &&
-                                        userRole !== ProjectRole.Admin) ||
-                                    (myRole === ProjectRole.Admin &&
-                                        userRole === ProjectRole.Member);
-                                const canRevokeAdmin =
-                                    myRole === ProjectRole.Owner &&
-                                    userRole === ProjectRole.Admin;
-
-                                return (
-                                    <UserCard
-                                        key={user.user_id}
-                                        userId={user.user_id}
-                                        firstName={user.first_name}
-                                        lastName={user.last_name}
-                                        email={user.email}
-                                        role={userRole}
-                                        showMenu={showMenu}
-                                        canMakeOwner={canMakeOwner}
-                                        canMakeAdmin={canMakeAdmin}
-                                        canRevokeAdmin={canRevokeAdmin}
-                                        anchorEl={
-                                            menuAnchorEl?.userId ===
-                                            user.user_id
-                                                ? menuAnchorEl.el
-                                                : null
-                                        }
-                                        onCardClick={() =>
-                                            handleCardClick(user.user_id)
-                                        }
-                                        onMenuOpen={(e) =>
-                                            handleMenuOpen(user.user_id, e)
-                                        }
-                                        onMenuClose={handleMenuClose}
-                                        onActionClick={(action, targetUserId) =>
-                                            void handleAction(
-                                                action,
-                                                targetUserId,
-                                            )
-                                        }
-                                    />
-                                );
-                            })}
-                        </Stack>
-                    </>
+                        {members.map((user) => {
+                            const myRole =
+                                currentUser?.projectRole ?? ProjectRole.Member;
+                            const myRoleVal = ROLE_HIERARCHY[myRole] ?? 0;
+                            const userRoleVal =
+                                ROLE_HIERARCHY[user.projectRole] ?? 0;
+                            return (
+                                <UserCard
+                                    key={user.user_id}
+                                    userId={user.user_id}
+                                    firstName={user.first_name}
+                                    lastName={user.last_name}
+                                    email={user.email}
+                                    role={user.projectRole}
+                                    showMenu={myRoleVal > userRoleVal}
+                                    canMakeOwner={myRole === ProjectRole.Owner}
+                                    canMakeAdmin={
+                                        (myRole === ProjectRole.Owner ||
+                                            myRole === ProjectRole.Admin) &&
+                                        user.projectRole !== ProjectRole.Admin
+                                    }
+                                    canRevokeAdmin={
+                                        myRole === ProjectRole.Owner &&
+                                        user.projectRole === ProjectRole.Admin
+                                    }
+                                    anchorEl={
+                                        menuAnchorEl?.userId === user.user_id
+                                            ? menuAnchorEl.el
+                                            : null
+                                    }
+                                    onCardClick={() =>
+                                        navigate(
+                                            `${PATHS.PROFILE}/${user.user_id}`,
+                                        )
+                                    }
+                                    onMenuOpen={(e) =>
+                                        setMenuAnchorEl({
+                                            userId: user.user_id,
+                                            el: e.currentTarget,
+                                        })
+                                    }
+                                    onMenuClose={() => setMenuAnchorEl(null)}
+                                    onActionClick={handleAction}
+                                />
+                            );
+                        })}
+                    </Stack>
                 )}
             </Box>
 
             {totalPages > 1 && (
-                <>
-                    <Divider />
-                    <Box display="flex" p={2} justifyContent="center">
-                        <Pagination
-                            count={totalPages}
-                            page={page}
-                            onChange={(_, v) => setPage(v)}
-                            size="small"
-                            color="primary"
-                            shape="rounded"
-                            siblingCount={0}
-                        />
-                    </Box>
-                </>
+                <Box display="flex" p={2} justifyContent="center">
+                    <Pagination
+                        count={totalPages}
+                        page={page}
+                        onChange={(_, v) => setPage(v)}
+                        size="small"
+                        color="primary"
+                        shape="rounded"
+                    />
+                </Box>
             )}
 
             <ErrorSnackbar
                 error={actionError}
                 onClose={() => setActionError(null)}
             />
-
             <Snackbar
                 open={Boolean(successMessage)}
                 autoHideDuration={4000}
@@ -376,7 +484,7 @@ export const ProjectUsers = () => {
                         Are you sure you want to leave this project?
                     </Typography>
                     <Typography variant="body2" color="error">
-                        You will lose to the project access unless re-invited.
+                        You will lose access unless re-invited.
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{ p: 4 }}>
@@ -388,12 +496,11 @@ export const ProjectUsers = () => {
                         variant="contained"
                         onClick={() => {
                             setLeaveDialogOpen(false);
-                            if (currentUser?.user_id) {
-                                void handleAction(
+                            if (currentUser?.user_id)
+                                handleAction(
                                     UserAction.RemoveUser,
                                     currentUser.user_id,
                                 );
-                            }
                         }}
                     >
                         Leave
