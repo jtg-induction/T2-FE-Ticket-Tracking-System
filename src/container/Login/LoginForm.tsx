@@ -5,6 +5,7 @@ import {
     Button,
     FormControl,
     FormLabel,
+    Snackbar,
     TextField,
     Typography,
 } from '@mui/material';
@@ -16,11 +17,26 @@ import { StyledFormWrapper, StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
     const navigate = useNavigate();
-    const { register, handleSubmit, formError, errors, isLoading } =
-        useLoginForm();
+    const {
+        redirectMessage,
+        register,
+        handleSubmit,
+        formError,
+        errors,
+        isLoading,
+    } = useLoginForm();
 
     return (
         <StyledLoginContainer>
+            <Snackbar
+                open={!!redirectMessage}
+                autoHideDuration={6000}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert severity="info" variant="filled" sx={{ width: '100%' }}>
+                    {redirectMessage}
+                </Alert>
+            </Snackbar>
             <StyledFormWrapper
                 component="form"
                 onSubmit={(e) => {

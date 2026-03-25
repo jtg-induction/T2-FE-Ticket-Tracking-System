@@ -45,7 +45,13 @@ const baseQueryWithReauth: BaseQueryFn<
 
     let result = await baseQuery(args, api, extraOptions);
 
-    if (result.error && result.error.status === 401) {
+    const requestUrl = typeof args === 'string' ? args : args.url;
+
+    if (
+        result.error &&
+        result.error.status === 401 &&
+        !requestUrl.includes(API_CONSTANTS.ENDPOINTS.LOGIN)
+    ) {
         if (!mutex.isLocked()) {
             const release = await mutex.acquire();
             try {
@@ -59,9 +65,9 @@ const baseQueryWithReauth: BaseQueryFn<
                     extraOptions,
                 );
 
-                const data =
+                const refreshData =
                     refreshResult.data as EntityResponse<RefreshResponse>;
-                const newToken = data.data.access;
+                const newToken = refreshData?.data?.access;
 
                 if (newToken) {
                     api.dispatch(setCredentials(newToken));

@@ -1,18 +1,19 @@
 import { useState } from 'react';
-
 import { useForm } from 'react-hook-form';
-
 import { useAppDispatch } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@schema';
-import { useLoginMutation } from '@service';
+import { useLoginMutation, useRefreshMutation } from '@service';
 import { setCredentials } from '@store';
 import { ErrorResponse, LoginRequest } from '@type';
 
 export function useLoginForm() {
     const dispatch = useAppDispatch();
-    const [loginTrigger, { isLoading }] = useLoginMutation();
-    const [formError, setFormError] = useState<string>('');
+    const [loginTrigger, { isLoading: isLoginLoading }] = useLoginMutation();
+    const [refreshTrigger, { isLoading: isCheckingAuth }] =
+        useRefreshMutation();
+    const [formError, setFormError] = useState('');
+    const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
 
     const {
         register,
@@ -26,11 +27,27 @@ export function useLoginForm() {
 
     const onSubmit = async (values: LoginRequest) => {
         setFormError('');
+
+        try {
+            const checkSession = await refreshTrigger().unwrap();
+
+            if (checkSession.data?.access) {
+                setTimeout(() => {
+                    dispatch(setCredentials(checkSession.data.access));
+                }, 3000);
+                setRedirectMessage(
+                    'Already logged in with other account. Redirecting to dashboard...',
+                );
+                return;
+            }
+        } catch (err) {}
+
         try {
             const response = await loginTrigger({
                 ...values,
                 password: btoa(values.password),
             }).unwrap();
+
             dispatch(setCredentials(response.data.access));
         } catch (err) {
             const apiError = err as ErrorResponse;
@@ -53,14 +70,17 @@ export function useLoginForm() {
                     });
                 });
             }
+
+            setFormError(apiError.message || 'Login failed');
         }
     };
 
     return {
+        redirectMessage,
         register,
         handleSubmit: handleSubmit(onSubmit),
         errors,
         formError,
-        isLoading,
+        isLoading: isLoginLoading || isCheckingAuth,
     };
 }
