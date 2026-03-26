@@ -85,11 +85,38 @@ export const ticketApi = baseApi.injectEndpoints({
 
         getMyTickets: builder.query<
             PaginatedResponse<Ticket>,
-            { page: number; pageSize: number }
+            {
+                page: number;
+                pageSize: number;
+                status?: string;
+                priority?: string;
+                reporter?: string;
+                assignee?: string;
+                search?: string;
+                ordering?: string;
+            }
         >({
-            query: ({ page, pageSize }) => ({
+            query: ({
+                page,
+                pageSize,
+                status,
+                priority,
+                reporter,
+                assignee,
+                search,
+                ordering,
+            }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.TICKET}`,
-                params: { page, pageSize },
+                params: {
+                    page,
+                    page_size: pageSize,
+                    ...(status && { status }),
+                    ...(priority && { priority }),
+                    ...(reporter && { reporter }),
+                    ...(assignee && { assignee }),
+                    ...(search && { search }),
+                    ...(ordering && { ordering }),
+                },
             }),
             providesTags: (result) =>
                 result?.success && Array.isArray(result.data)

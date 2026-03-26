@@ -27,6 +27,8 @@ export const ProjectDetail = () => {
     const {
         project,
         formValues,
+        isDirty,
+        isValid,
         errors,
         register,
         isEditing,
@@ -137,7 +139,7 @@ export const ProjectDetail = () => {
                                 color="primary"
                                 size="medium"
                                 startIcon={<SaveIcon />}
-                                disabled={loading}
+                                disabled={loading || !isDirty || !isValid}
                                 type="submit"
                                 form="project-form"
                             >

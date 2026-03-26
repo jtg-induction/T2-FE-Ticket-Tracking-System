@@ -1,9 +1,8 @@
-import { API_CONSTANTS } from '@constant';
+import { API_CONSTANTS, TicketPriority, TicketStatus } from '@constant';
 import { FilterFormValues } from '@schema';
 import { baseApi } from '@service';
-import { EntityResponse } from '@type';
-import { TicketStatsResponseData } from '@type';
-import { DonutItem, StackedItem } from '@type/report.types';
+import { EntityResponse, TicketStatsResponseData } from '@type';
+import { StackedItem } from '@type/report.types';
 
 export const reportsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -34,8 +33,16 @@ export const reportsApi = baseApi.injectEndpoints({
                 success: boolean;
                 message: string;
                 data: {
-                    status_stats: DonutItem[];
-                    priority_stats: DonutItem[];
+                    status_stats: Array<{
+                        name: string;
+                        count: number;
+                        status_key: TicketStatus;
+                    }>;
+                    priority_stats: Array<{
+                        name: string;
+                        count: number;
+                        priority_key: TicketPriority;
+                    }>;
                     efficiency_stats: StackedItem[];
                     timeline_stats: StackedItem[];
                 };
@@ -43,18 +50,16 @@ export const reportsApi = baseApi.injectEndpoints({
                 success: true,
                 message: response.message,
                 data: {
-                    statusStats: response.data.status_stats.map((s: any) => ({
+                    statusStats: response.data.status_stats.map((s) => ({
                         name: s.name,
                         count: s.count,
                         statusKey: s.status_key,
                     })),
-                    priorityStats: response.data.priority_stats.map(
-                        (p: any) => ({
-                            name: p.name,
-                            count: p.count,
-                            priorityKey: p.priority_key,
-                        }),
-                    ),
+                    priorityStats: response.data.priority_stats.map((p) => ({
+                        name: p.name,
+                        count: p.count,
+                        priorityKey: p.priority_key,
+                    })),
                     efficiencyStats: response.data.efficiency_stats,
                     timelineStats: response.data.timeline_stats,
                 },

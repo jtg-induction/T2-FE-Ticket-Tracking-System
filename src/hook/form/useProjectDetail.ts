@@ -37,9 +37,10 @@ export const useProjectForm = (projectId: string) => {
         reset,
         watch,
         setValue,
-        formState: { errors, dirtyFields },
+        formState: { errors, dirtyFields, isDirty, isValid },
     } = useForm({
         resolver: zodResolver(projectSchema),
+        mode: 'onChange',
         defaultValues: {
             title: '',
             description: '',
@@ -94,6 +95,8 @@ export const useProjectForm = (projectId: string) => {
     return {
         project: response?.data,
         formValues,
+        isValid,
+        isDirty,
         errors,
         register,
         isEditing,

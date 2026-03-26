@@ -46,3 +46,24 @@ export interface Ticket extends z.infer<typeof TicketBaseSchema> {
  * Input type for JQL search query.
  */
 export type JQLSearchInput = z.infer<typeof JQLSearchSchema>;
+
+/** Filter state for the My Tickets page. */
+export interface TicketFilters {
+    status: string;
+    priority: string;
+    reporter: string;
+    assignee: string;
+    search: string;
+}
+
+/** Column fields that support server-side sorting. */
+export type SortField =
+    | 'jira_id'
+    | 'name'
+    | 'status'
+    | 'priority'
+    | 'created_at'
+    | 'deadline';
+
+/** Sort direction for table columns. */
+export type SortDirection = 'asc' | 'desc';

@@ -10,5 +10,14 @@ export { DIMENSIONS } from './layoutConstant';
 export { USER_ROLE_OPTIONS } from './userConstant';
 export { FORM } from './formConstant';
 export { PAGE_SIZE, APP_NAME, JIRA_INFO } from './otherConstants';
-export { TicketPriority, TicketStatus } from './enumConstants';
+export {
+    TicketPriority,
+    TicketStatus,
+    STATUS_OPTIONS,
+    TICKET_PRIORITY_OPTIONS,
+    EMPTY_FILTERS,
+    MY_TICKETS_DEFAULTS,
+    MY_TICKETS_PARAMS,
+    VALID_SORT_FIELDS,
+} from './ticketConstants';
 export { PRIORITY_STACK_KEYS, getGraphColors } from './graphConstants';

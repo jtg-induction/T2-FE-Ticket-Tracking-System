@@ -2,21 +2,22 @@ import { useEffect, useState } from 'react';
 
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
-import { Header, LoadingOverlay } from '@component';
-import { PATHS, PUBLICPATHS } from '@constant';
+import { Header, HeroSection, LoadingOverlay } from '@component';
+import { APP_NAME, PATHS, PUBLICPATHS } from '@constant';
 import { Sidebar } from '@container';
-import { useAppSelector } from '@hook';
+import { useAppSelector, useDocumentTitle } from '@hook';
 
-import { StyledMainContent } from './ProtectedPage.style';
+import { StyledAuthLayout, StyledMainContent } from './AppShell.style';
 
-export const ProtectedPage = () => {
+export const AppShell = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const { accessToken, isLoading } = useAppSelector((state) => state.auth);
-
     const navigate = useNavigate();
     const location = useLocation();
 
     const isPublicPath = PUBLICPATHS.includes(location.pathname);
+
+    useDocumentTitle(isPublicPath ? `${APP_NAME}: Onboard` : APP_NAME);
 
     useEffect(() => {
         if (isLoading) return;
@@ -24,9 +25,22 @@ export const ProtectedPage = () => {
         if (!accessToken && !isPublicPath) {
             void navigate(PATHS.LOGIN);
         }
+
+        if (accessToken && (isPublicPath || location.pathname === '/')) {
+            void navigate(PATHS.PROJECTS);
+        }
     }, [accessToken, isLoading, location.pathname, navigate]);
 
     if (isLoading) return <LoadingOverlay />;
+
+    if (isPublicPath) {
+        return (
+            <StyledAuthLayout component="main">
+                <HeroSection />
+                <Outlet />
+            </StyledAuthLayout>
+        );
+    }
 
     return (
         <>

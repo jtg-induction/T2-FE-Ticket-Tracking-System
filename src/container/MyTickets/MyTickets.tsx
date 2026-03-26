@@ -1,9 +1,16 @@
+import { useState } from 'react';
+
+import { useMyTicketsPage } from 'hook/page/useMyTickets';
 import { Link } from 'react-router';
 
+import { Clear, FilterList, Refresh } from '@mui/icons-material';
 import {
     Avatar,
     Box,
+    Button,
     Chip,
+    Divider,
+    IconButton,
     Paper,
     Stack,
     Table,
@@ -12,12 +19,14 @@ import {
     TableHead,
     TablePagination,
     TableRow,
+    Tooltip,
     Typography,
     useTheme,
 } from '@mui/material';
 
-import { LoadingOverlay } from '@component';
-import { useMyTicketsPage } from '@hook';
+import { FilterBar, LoadingOverlay, SortableHeader } from '@component';
+import { MY_TICKETS_DEFAULTS } from '@constant';
+import { ErrorPage } from '@page';
 import {
     convertIsoToDateYear,
     getPriorityColor,
@@ -37,19 +46,38 @@ import {
 
 export const MyTickets = () => {
     const theme = useTheme();
+    const [filtersOpen, setFiltersOpen] = useState(false);
+
     const {
         tickets,
         totalCount,
         page,
-        setPage,
         rowsPerPage,
-        setRowsPerPage,
+        handlePageChange,
+        handleRowsPerPageChange,
         isLoading,
+        isError,
+        refetch,
+        filters,
+        activeFilterCount,
+        applyFilters,
+        clearFilters,
+        sortField,
+        sortDirection,
+        handleSort,
     } = useMyTicketsPage();
+
+    const sortProps = { sortField, sortDirection, onSort: handleSort };
 
     return (
         <StyledPageRoot>
-            <Stack mb={4}>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                mb={4}
+                flexWrap="wrap"
+                gap={2}
+            >
                 <Box>
                     <Typography variant="h5" fontWeight={800}>
                         My Tickets
@@ -59,10 +87,120 @@ export const MyTickets = () => {
                         you across all projects.
                     </Typography>
                 </Box>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <Tooltip title="Refresh">
+                        <IconButton
+                            size="small"
+                            onClick={() => void refetch()}
+                            disabled={isLoading}
+                        >
+                            <Refresh fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Button
+                        variant={
+                            filtersOpen || activeFilterCount > 0
+                                ? 'contained'
+                                : 'outlined'
+                        }
+                        disableElevation
+                        size="small"
+                        startIcon={<FilterList />}
+                        onClick={() => setFiltersOpen((p) => !p)}
+                        endIcon={
+                            activeFilterCount > 0 ? (
+                                <Chip
+                                    label={activeFilterCount}
+                                    size="small"
+                                    sx={{
+                                        color: 'primary.contrastText',
+                                    }}
+                                />
+                            ) : undefined
+                        }
+                    >
+                        Filters
+                    </Button>
+                </Stack>
             </Stack>
 
             <StyledTableContainer component={Paper} elevation={4}>
+                {!filtersOpen && activeFilterCount > 0 && (
+                    <Box
+                        sx={{
+                            px: 2,
+                            py: 1.5,
+                            borderBottom: (t) =>
+                                `1px solid ${t.palette.divider}`,
+                        }}
+                    >
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            flexWrap="wrap"
+                            alignItems="center"
+                        >
+                            <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                mr={0.5}
+                            >
+                                Active filters:
+                            </Typography>
+                            {filters.search && (
+                                <Chip
+                                    size="small"
+                                    label={`"${filters.search}"`}
+                                />
+                            )}
+                            {filters.status && (
+                                <Chip
+                                    size="small"
+                                    label={`Status: ${filters.status}`}
+                                />
+                            )}
+                            {filters.priority && (
+                                <Chip
+                                    size="small"
+                                    label={`Priority: ${filters.priority}`}
+                                />
+                            )}
+                            {filters.reporter && (
+                                <Chip
+                                    size="small"
+                                    label={`Reporter: ${filters.reporter}`}
+                                />
+                            )}
+                            {filters.assignee && (
+                                <Chip
+                                    size="small"
+                                    label={`Assignee: ${filters.assignee}`}
+                                />
+                            )}
+                            <Chip
+                                size="small"
+                                label="Clear all"
+                                variant="outlined"
+                                onClick={clearFilters}
+                                onDelete={clearFilters}
+                                deleteIcon={<Clear />}
+                            />
+                        </Stack>
+                    </Box>
+                )}
+
+                <FilterBar
+                    open={filtersOpen}
+                    committedFilters={filters}
+                    onApply={applyFilters}
+                    onClear={clearFilters}
+                    activeFilterCount={activeFilterCount}
+                />
+
                 {isLoading && <LoadingOverlay />}
+
                 <StyledTableScrollArea>
                     <Table
                         stickyHeader
@@ -70,36 +208,46 @@ export const MyTickets = () => {
                     >
                         <TableHead>
                             <TableRow>
-                                <StyledHeaderCell
+                                <SortableHeader
+                                    field="jira_id"
+                                    label="KEY"
                                     align="center"
-                                    sx={{ width: '8%' }}
-                                >
-                                    KEY
-                                </StyledHeaderCell>
-                                <StyledHeaderCell sx={{ width: '20%' }}>
-                                    TITLE
-                                </StyledHeaderCell>
-                                <StyledHeaderCell
+                                    width="8%"
+                                    {...sortProps}
+                                />
+                                <SortableHeader
+                                    field="name"
+                                    label="TITLE"
+                                    width="20%"
+                                    {...sortProps}
+                                />
+                                <SortableHeader
+                                    field="status"
+                                    label="STATUS"
                                     align="center"
-                                    sx={{ width: '10%' }}
-                                >
-                                    STATUS
-                                </StyledHeaderCell>
-                                <StyledHeaderCell sx={{ width: '10%' }}>
-                                    PRIORITY
-                                </StyledHeaderCell>
-                                <StyledHeaderCell
+                                    width="10%"
+                                    {...sortProps}
+                                />
+                                <SortableHeader
+                                    field="priority"
+                                    label="PRIORITY"
+                                    width="10%"
+                                    {...sortProps}
+                                />
+                                <SortableHeader
+                                    field="created_at"
+                                    label="CREATED"
                                     align="center"
-                                    sx={{ width: '12%' }}
-                                >
-                                    CREATED
-                                </StyledHeaderCell>
-                                <StyledHeaderCell
+                                    width="12%"
+                                    {...sortProps}
+                                />
+                                <SortableHeader
+                                    field="deadline"
+                                    label="DEADLINE"
                                     align="center"
-                                    sx={{ width: '12%' }}
-                                >
-                                    DEADLINE
-                                </StyledHeaderCell>
+                                    width="12%"
+                                    {...sortProps}
+                                />
                                 <StyledHeaderCell
                                     align="center"
                                     sx={{ width: '13%' }}
@@ -114,15 +262,36 @@ export const MyTickets = () => {
                                 </StyledHeaderCell>
                             </TableRow>
                         </TableHead>
+
                         <TableBody>
-                            {tickets.length === 0 ? (
+                            {isError ? (
+                                <ErrorPage />
+                            ) : !isLoading && tickets.length === 0 ? (
                                 <TableRow>
                                     <TableCell
                                         colSpan={8}
                                         align="center"
                                         sx={{ py: 10 }}
                                     >
-                                        No tickets found.
+                                        <Stack alignItems="center" spacing={1}>
+                                            <Typography
+                                                variant="body1"
+                                                fontWeight={600}
+                                            >
+                                                {activeFilterCount > 0
+                                                    ? 'No tickets match your filters'
+                                                    : 'No tickets found'}
+                                            </Typography>
+                                            {activeFilterCount > 0 && (
+                                                <Button
+                                                    size="small"
+                                                    variant="text"
+                                                    onClick={clearFilters}
+                                                >
+                                                    Clear filters
+                                                </Button>
+                                            )}
+                                        </Stack>
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -132,6 +301,10 @@ export const MyTickets = () => {
                                         to={`/projects/${ticket.project}/tickets/${ticket.id}`}
                                         key={ticket.id}
                                         hover
+                                        sx={{
+                                            opacity: isLoading ? 0.5 : 1,
+                                            transition: 'opacity 0.2s',
+                                        }}
                                     >
                                         <TableCell align="center">
                                             <StyledTicketKey variant="body2">
@@ -143,11 +316,7 @@ export const MyTickets = () => {
                                             <Typography
                                                 variant="body2"
                                                 fontWeight={600}
-                                                sx={{
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'nowrap',
-                                                }}
+                                                noWrap
                                                 title={ticket.name}
                                             >
                                                 {ticket.name}
@@ -164,11 +333,11 @@ export const MyTickets = () => {
                                             />
                                         </TableCell>
 
-                                        <TableCell align="center">
+                                        <TableCell>
                                             <Stack
                                                 direction="row"
                                                 alignItems="center"
-                                                spacing={2}
+                                                gap={1}
                                             >
                                                 <StyledPriorityIndicator
                                                     priorityColor={getPriorityColor(
@@ -193,7 +362,14 @@ export const MyTickets = () => {
                                         </TableCell>
 
                                         <TableCell align="center">
-                                            <Typography variant="body2">
+                                            <Typography
+                                                variant="body2"
+                                                color={
+                                                    !ticket.deadline
+                                                        ? 'textDisabled'
+                                                        : undefined
+                                                }
+                                            >
                                                 {ticket.deadline
                                                     ? convertIsoToDateYear(
                                                           ticket.deadline,
@@ -205,7 +381,7 @@ export const MyTickets = () => {
                                         <TableCell align="center">
                                             <Stack
                                                 direction="row"
-                                                spacing={1}
+                                                gap={1}
                                                 alignItems="center"
                                                 justifyContent="center"
                                             >
@@ -293,15 +469,16 @@ export const MyTickets = () => {
                         </TableBody>
                     </Table>
                 </StyledTableScrollArea>
+
+                <Divider />
                 <TablePagination
                     component="div"
                     count={totalCount}
                     page={page}
-                    onPageChange={(_, newPage) => setPage(newPage)}
+                    onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={(e) =>
-                        setRowsPerPage(parseInt(e.target.value, 10))
-                    }
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    rowsPerPageOptions={MY_TICKETS_DEFAULTS.PAGE_SIZE_OPTIONS}
                 />
             </StyledTableContainer>
         </StyledPageRoot>

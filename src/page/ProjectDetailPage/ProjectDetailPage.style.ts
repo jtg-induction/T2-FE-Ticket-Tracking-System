@@ -5,7 +5,7 @@ export const StyledDashboardLayout = styled(Stack)(
         height: '100%',
         padding: spacing(3),
         boxSizing: 'border-box',
-
+        alignContent: 'center',
         backgroundColor: palette.background.default,
     }),
 );

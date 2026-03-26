@@ -31,6 +31,9 @@ export type {
     TicketRole,
     CreateTicketInput,
     JQLSearchInput,
+    TicketFilters,
+    SortDirection,
+    SortField,
 } from './ticket.types';
 
 export type { Comment, CommentInput } from './comment.types';

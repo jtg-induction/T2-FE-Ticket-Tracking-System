@@ -20,3 +20,5 @@ export type { StackedBarDataItem } from './StackedBarCard';
 export { PasswordCheckBox } from './PasswordCheckBox';
 export { LoadingOverlay } from './LoadingOverlay';
 export { HighlightTextMatch } from './HighlightTextMatch';
+export { FilterBar } from './FilterBar';
+export { SortableHeader } from './SortableHeader';

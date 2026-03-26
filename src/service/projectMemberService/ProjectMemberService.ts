@@ -12,7 +12,8 @@ export const projectUserApi = baseApi.injectEndpoints({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/list-all-users/`,
                 params: { search, cursor: cursor || undefined },
             }),
-            serializeQueryArgs: ({ queryArgs }) => `search-members-${queryArgs.projectId}`,
+            serializeQueryArgs: ({ queryArgs }) =>
+                `search-members-${queryArgs.projectId}`,
             merge: (currentCache, newItems, { arg }) => {
                 if (!arg.cursor) {
                     return newItems;
@@ -31,7 +32,11 @@ export const projectUserApi = baseApi.injectEndpoints({
         >({
             query: ({ id, page, search }) => ({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${id}/members/`,
-                params: { page, page_size: 5, search: search || undefined },
+                params: {
+                    page,
+                    page_size: 5,
+                    ...(search?.trim() ? { search: search.trim() } : {}),
+                },
             }),
             providesTags: (result, _error, { id }) =>
                 result && 'data' in result && Array.isArray(result.data)

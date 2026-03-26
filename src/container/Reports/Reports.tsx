@@ -14,7 +14,6 @@ import {
     Button,
     Chip,
     CircularProgress,
-    Divider,
     Grid2 as Grid,
     Paper,
     Stack,
@@ -72,7 +71,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                 skip:
                     !projectId ||
                     !userFilter ||
-                    debouncedSearch.trim().length <= 1,
+                    debouncedSearch.trim().length <= 2,
             },
         );
 
@@ -187,20 +186,21 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                         <Stack spacing={2}>
                                             <Autocomplete
                                                 fullWidth
-                                                size="small"
                                                 forcePopupIcon={false}
-                                                filterOptions={(options) =>
-                                                    options
-                                                }
+                                                filterOptions={(x) => x}
                                                 options={userOptions}
                                                 getOptionLabel={(option) =>
-                                                    option.name
+                                                    option.name || ''
                                                 }
                                                 inputValue={searchTerm}
                                                 onInputChange={(_, newVal) =>
                                                     setSearchTerm(newVal)
                                                 }
                                                 loading={membersFetching}
+                                                open={
+                                                    searchTerm.length > 1 &&
+                                                    userOptions.length > 0
+                                                }
                                                 onChange={(_, newValue) => {
                                                     if (
                                                         newValue &&
@@ -218,28 +218,26 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                 isOptionEqualToValue={(
                                                     option,
                                                     v,
-                                                ) => option.id === v.id}
+                                                ) => option.id === v?.id}
                                                 renderOption={(
                                                     props,
                                                     option,
-                                                    state,
                                                 ) => {
                                                     const {
                                                         key,
                                                         ...optionProps
                                                     } = props;
-                                                    const isLast =
-                                                        state.index ===
-                                                        userOptions.length - 1;
-
                                                     return (
-                                                        <Box key={key}>
+                                                        <Box
+                                                            component="li"
+                                                            key={option.id}
+                                                            {...optionProps}
+                                                        >
                                                             <Stack
                                                                 direction="row"
-                                                                component="li"
                                                                 justifyContent="space-between"
                                                                 alignItems="center"
-                                                                {...optionProps}
+                                                                width="100%"
                                                                 sx={{
                                                                     py: 1,
                                                                     px: 2,
@@ -256,7 +254,6 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                                         searchTerm,
                                                                     )}
                                                                 </Typography>
-
                                                                 {value.includes(
                                                                     option.id,
                                                                 ) && (
@@ -273,12 +270,6 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                                     />
                                                                 )}
                                                             </Stack>
-                                                            {!isLast && (
-                                                                <Divider
-                                                                    variant="middle"
-                                                                    component="li"
-                                                                />
-                                                            )}
                                                         </Box>
                                                     );
                                                 }}
@@ -287,8 +278,23 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                         {...params}
                                                         label="Search and Add Users"
                                                         placeholder="Type name..."
+                                                        helperText={
+                                                            searchTerm.length >
+                                                                0 &&
+                                                            searchTerm.length <=
+                                                                2
+                                                                ? 'Please enter at least 3 characters'
+                                                                : ''
+                                                        }
+                                                        error={
+                                                            searchTerm.length >
+                                                                0 &&
+                                                            searchTerm.length <=
+                                                                2
+                                                        }
                                                         slotProps={{
                                                             input: {
+                                                                ...params.InputProps,
                                                                 endAdornment: (
                                                                     <>
                                                                         {membersFetching ? (

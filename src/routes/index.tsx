@@ -1,12 +1,10 @@
-import { ProtectedPage } from 'page/ProtectedPage';
 import { createBrowserRouter, Navigate } from 'react-router';
 
 import { PATHS } from '@constant';
 import { LoginForm, RegisterForm, SignupForm } from '@container';
-import { RootLayout } from '@layout';
+import { AppShell, RootLayout } from '@layout';
 import {
     AcceptInvitePage,
-    AuthPage,
     ErrorPage,
     MyTicketsPage,
     ProfilePage,
@@ -28,26 +26,11 @@ export const router = createBrowserRouter([
                 element: <Navigate to={PATHS.PROJECTS} replace />,
             },
             {
-                element: <AuthPage />,
-
+                element: <AppShell />,
                 children: [
-                    {
-                        path: PATHS.LOGIN,
-                        element: <LoginForm />,
-                    },
-                    {
-                        path: PATHS.SIGNUP,
-                        element: <SignupForm />,
-                    },
-                    {
-                        path: PATHS.REGISTER,
-                        element: <RegisterForm />,
-                    },
-                ],
-            },
-            {
-                element: <ProtectedPage />,
-                children: [
+                    { path: PATHS.LOGIN, element: <LoginForm /> },
+                    { path: PATHS.SIGNUP, element: <SignupForm /> },
+                    { path: PATHS.REGISTER, element: <RegisterForm /> },
                     { path: PATHS.PROJECTS, element: <ProjectPage /> },
                     { path: PATHS.TICKET, element: <MyTicketsPage /> },
                     { path: PATHS.PROFILE, element: <ProfilePage /> },
@@ -68,7 +51,6 @@ export const router = createBrowserRouter([
                         path: PATHS.ACCEPT_INVITE,
                         element: <AcceptInvitePage />,
                     },
-
                     {
                         path: `${PATHS.PROJECTS}/:projectId/insights`,
                         element: <ReportsPage />,

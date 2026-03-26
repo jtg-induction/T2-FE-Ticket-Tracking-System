@@ -47,16 +47,16 @@ export const StyledPriorityIndicator = styled(Box, {
     backgroundColor: priorityColor,
 }));
 
-export const StyledTableRow = styled(TableRow)<LinkProps & TableRowProps>({
-    cursor: 'pointer',
-    textDecoration: 'none',
-});
+export const StyledTicketKey = styled(Typography)(({ theme: { palette } }) => ({
+    fontWeight: 800,
+    color: palette.primary.main,
+}));
 
 export const StyledHeaderCell = styled(TableCell)({
     fontWeight: 700,
 });
 
-export const StyledTicketKey = styled(Typography)(({ theme: { palette } }) => ({
-    fontWeight: 800,
-    color: palette.primary.main,
-}));
+export const StyledTableRow = styled(TableRow)<LinkProps & TableRowProps>({
+    cursor: 'pointer',
+    textDecoration: 'none',
+});
