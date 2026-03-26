@@ -1,5 +1,6 @@
-import { APP_NAME } from '@constant';
 import { useEffect } from 'react';
+
+import { APP_NAME } from '@constant';
 
 export const useDocumentTitle = (pageTitle: string) => {
     useEffect(() => {

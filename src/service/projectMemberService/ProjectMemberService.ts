@@ -12,9 +12,7 @@ export const projectUserApi = baseApi.injectEndpoints({
                 url: `${API_CONSTANTS.ENDPOINTS.PROJECT}${projectId}/members/list-all-users/`,
                 params: { search, cursor: cursor || undefined },
             }),
-            serializeQueryArgs: ({ queryArgs }) => {
-                return `search-members-${queryArgs.projectId}`;
-            },
+            serializeQueryArgs: ({ queryArgs }) => `search-members-${queryArgs.projectId}`,
             merge: (currentCache, newItems, { arg }) => {
                 if (!arg.cursor) {
                     return newItems;

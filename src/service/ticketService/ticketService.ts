@@ -133,28 +133,9 @@ export const ticketApi = baseApi.injectEndpoints({
                     ...(cursor && { cursor }),
                 },
             }),
-            serializeQueryArgs: ({ queryArgs }) =>
-                `jql-search-${queryArgs.projectId}-${queryArgs.query}`,
-            forceRefetch({ currentArg, previousArg }) {
-                return (
-                    currentArg?.cursor !== previousArg?.cursor ||
-                    currentArg?.query !== previousArg?.query
-                );
-            },
-            merge: (currentCache, newItems) => {
-                if (newItems.data) {
-                    if (!currentCache.data) currentCache.data = [];
-
-                    const existingIds = new Set(
-                        currentCache.data.map((t) => t.jira_id),
-                    );
-                    const uniqueTickets = newItems.data.filter(
-                        (t) => !existingIds.has(t.jira_id),
-                    );
-
-                    currentCache.data.push(...uniqueTickets);
-                    currentCache.meta = newItems.meta;
-                }
+            keepUnusedDataFor: 0,
+            forceRefetch() {
+                return true;
             },
         }),
 

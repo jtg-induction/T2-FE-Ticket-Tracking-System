@@ -1,15 +1,20 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
-import { ArrowBack, Download as DownloadIcon } from '@mui/icons-material';
+import {
+    ArrowBack,
+    BarChart,
+    Download as DownloadIcon,
+} from '@mui/icons-material';
 import {
     Autocomplete,
     Box,
     Button,
     Chip,
     CircularProgress,
+    Divider,
     Grid2 as Grid,
     Paper,
     Stack,
@@ -22,10 +27,12 @@ import {
     DonutCard,
     ErrorSnackbar,
     HighlightTextMatch,
+    LoadingOverlay,
     StackedBarCard,
 } from '@component';
-import { useDebounce, useReport } from '@hook';
+import { useDebounce, useDocumentTitle, useReport } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ErrorPage } from '@page';
 import { FilterFormValues, filterSchema } from '@schema';
 import {
     useGetProjectMembersQuery,
@@ -58,25 +65,30 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
         defaultValues: { userIds: [], startDate: '', endDate: '' },
     });
 
-    const { data: membersResponse } = useGetProjectMembersQuery(
-        { id: projectId!, page: 1, search: debouncedSearch },
-        {
-            skip:
-                !projectId || !userFilter || debouncedSearch.trim().length <= 1,
-        },
+    const { data: membersResponse, isFetching: membersFetching } =
+        useGetProjectMembersQuery(
+            { id: projectId!, page: 1, search: debouncedSearch },
+            {
+                skip:
+                    !projectId ||
+                    !userFilter ||
+                    debouncedSearch.trim().length <= 1,
+            },
+        );
+
+    const userOptions = useMemo(
+        () =>
+            membersResponse?.data?.map((m) => ({
+                id: m.user_id,
+                name: `${m.first_name} ${m.last_name}`,
+            })) || [],
+        [membersResponse],
     );
 
-    const userOptions =
-        membersResponse?.data?.map((m) => ({
-            id: m.user_id,
-            name: `${m.first_name} ${m.last_name}`,
-        })) || [];
+    const { data, loading, isFetching, priorityKeys, reportSubject, error } =
+        useReport(projectId, userId, submittedFilters);
 
-    const { data, loading, priorityKeys } = useReport(
-        projectId,
-        userId,
-        submittedFilters,
-    );
+    useDocumentTitle(`${reportSubject?.name} | Reports`);
 
     const handleCloseError = () => setApiError(null);
 
@@ -98,23 +110,21 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
         });
     };
 
-    if (loading || !data) {
-        return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="100vh"
-            >
-                <CircularProgress />
-            </Box>
-        );
+    if (loading && !data) {
+        return <LoadingOverlay />;
+    }
+
+    if (error || (!data && !loading)) {
+        return <ErrorPage />;
     }
 
     return (
-        <Paper>
+        <Paper sx={{ position: 'relative' }}>
+            {isFetching && <LoadingOverlay />}
+
             <Stack spacing={4} p={4}>
                 <ErrorSnackbar error={apiError} onClose={handleCloseError} />
+
                 <Stack
                     direction="row"
                     alignItems="center"
@@ -127,9 +137,24 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                         >
                             <ArrowBack />
                         </CustomIconButton>
-                        <Typography variant="h4" fontWeight="bold">
-                            Insights
-                        </Typography>
+                        {reportSubject ? (
+                            <>
+                                <Chip
+                                    label={reportSubject.details}
+                                    size="small"
+                                    color="primary"
+                                    sx={{ fontWeight: 800, borderRadius: 1 }}
+                                />
+                                <Typography variant="h5" fontWeight="bold">
+                                    / {reportSubject.name}
+                                </Typography>
+                            </>
+                        ) : (
+                            <Typography variant="h5" fontWeight="bold">
+                                Insights
+                            </Typography>
+                        )}
+                        <BarChart />
                     </Stack>
 
                     <Button
@@ -161,8 +186,13 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                     }) => (
                                         <Stack spacing={2}>
                                             <Autocomplete
+                                                fullWidth
+                                                size="small"
+                                                forcePopupIcon={false}
+                                                filterOptions={(options) =>
+                                                    options
+                                                }
                                                 options={userOptions}
-                                                // getOptionLabel MUST return a string
                                                 getOptionLabel={(option) =>
                                                     option.name
                                                 }
@@ -170,6 +200,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                 onInputChange={(_, newVal) =>
                                                     setSearchTerm(newVal)
                                                 }
+                                                loading={membersFetching}
                                                 onChange={(_, newValue) => {
                                                     if (
                                                         newValue &&
@@ -184,29 +215,69 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                         setSearchTerm('');
                                                     }
                                                 }}
+                                                isOptionEqualToValue={(
+                                                    option,
+                                                    v,
+                                                ) => option.id === v.id}
                                                 renderOption={(
                                                     props,
                                                     option,
+                                                    state,
                                                 ) => {
                                                     const {
                                                         key,
                                                         ...optionProps
                                                     } = props;
+                                                    const isLast =
+                                                        state.index ===
+                                                        userOptions.length - 1;
+
                                                     return (
-                                                        <Box
-                                                            component="li"
-                                                            key={key}
-                                                            {...optionProps}
-                                                            sx={{
-                                                                display: 'flex',
-                                                                alignItems:
-                                                                    'center',
-                                                                gap: 0.5,
-                                                            }}
-                                                        >
-                                                            {HighlightTextMatch(
-                                                                option.name,
-                                                                searchTerm,
+                                                        <Box key={key}>
+                                                            <Stack
+                                                                direction="row"
+                                                                component="li"
+                                                                justifyContent="space-between"
+                                                                alignItems="center"
+                                                                {...optionProps}
+                                                                sx={{
+                                                                    py: 1,
+                                                                    px: 2,
+                                                                }}
+                                                            >
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    fontWeight={
+                                                                        500
+                                                                    }
+                                                                >
+                                                                    {HighlightTextMatch(
+                                                                        option.name,
+                                                                        searchTerm,
+                                                                    )}
+                                                                </Typography>
+
+                                                                {value.includes(
+                                                                    option.id,
+                                                                ) && (
+                                                                    <Chip
+                                                                        label="Selected"
+                                                                        size="small"
+                                                                        color="primary"
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            height: 20,
+                                                                            fontSize:
+                                                                                '0.65rem',
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </Stack>
+                                                            {!isLast && (
+                                                                <Divider
+                                                                    variant="middle"
+                                                                    component="li"
+                                                                />
                                                             )}
                                                         </Box>
                                                     );
@@ -215,6 +286,28 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                     <TextField
                                                         {...params}
                                                         label="Search and Add Users"
+                                                        placeholder="Type name..."
+                                                        slotProps={{
+                                                            input: {
+                                                                endAdornment: (
+                                                                    <>
+                                                                        {membersFetching ? (
+                                                                            <CircularProgress
+                                                                                color="inherit"
+                                                                                size={
+                                                                                    20
+                                                                                }
+                                                                            />
+                                                                        ) : null}
+                                                                        {
+                                                                            params
+                                                                                .InputProps
+                                                                                .endAdornment
+                                                                        }
+                                                                    </>
+                                                                ),
+                                                            },
+                                                        }}
                                                     />
                                                 )}
                                                 value={null}
@@ -235,9 +328,11 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                             key={id}
                                                             label={
                                                                 user?.name ||
-                                                                'Unknown'
+                                                                'Selected User'
                                                             }
-                                                            onDelete={() => {
+                                                            size="small"
+                                                            color="primary"
+                                                            onDelete={() =>
                                                                 onChange(
                                                                     value.filter(
                                                                         (
@@ -246,7 +341,11 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                                                             v !==
                                                                             id,
                                                                     ),
-                                                                );
+                                                                )
+                                                            }
+                                                            sx={{
+                                                                borderRadius: 1,
+                                                                fontWeight: 600,
                                                             }}
                                                         />
                                                     );
@@ -257,6 +356,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 />
                             </Grid>
                         )}
+
                         <Grid
                             size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}
                         >
@@ -268,7 +368,6 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 slotProps={{ inputLabel: { shrink: true } }}
                             />
                         </Grid>
-
                         <Grid
                             size={{ xs: 12, sm: 6, md: userFilter ? 2.5 : 5 }}
                         >
@@ -288,56 +387,70 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 fullWidth
                                 variant="contained"
                                 type="submit"
+                                disabled={isFetching}
                                 sx={{ height: 56, fontWeight: 'bold' }}
                             >
-                                {loading ? 'Loading..' : 'Filter'}
+                                {isFetching ? (
+                                    <CircularProgress
+                                        size={24}
+                                        color="inherit"
+                                    />
+                                ) : (
+                                    'Filter'
+                                )}
                             </Button>
                         </Grid>
                     </Grid>
                 </Box>
 
-                <Grid container spacing={8}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Paper sx={{ p: 4 }}>
-                            <DonutCard
-                                title="Tickets by Status"
-                                chartData={data.statusData}
-                                total={data.totalStatus}
-                                label="TICKETS"
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Paper sx={{ p: 4 }}>
-                            <DonutCard
-                                title="Tickets by Priority"
-                                chartData={data.priorityData}
-                                total={data.totalPriority}
-                                label="TICKETS"
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Paper sx={{ p: 4 }}>
-                            <StackedBarCard
-                                title="Efficiency: Success vs. Failure"
-                                data={data.successFailureData}
-                                dataKeys={priorityKeys}
-                                colors={data.priorityColors}
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Paper sx={{ p: 4 }}>
-                            <StackedBarCard
-                                title="Timeline: Deadline Trends"
-                                data={data.deadlineData}
-                                dataKeys={priorityKeys}
-                                colors={data.priorityColors}
-                            />
-                        </Paper>
-                    </Grid>
-                </Grid>
+                {data ? (
+                    <>
+                        <Grid container spacing={8}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Paper sx={{ p: 4 }}>
+                                    <DonutCard
+                                        title="Tickets by Status"
+                                        chartData={data.statusData}
+                                        total={data.totalStatus}
+                                        label="TICKETS"
+                                    />
+                                </Paper>
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Paper sx={{ p: 4 }}>
+                                    <DonutCard
+                                        title="Tickets by Priority"
+                                        chartData={data.priorityData}
+                                        total={data.totalPriority}
+                                        label="TICKETS"
+                                    />
+                                </Paper>
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Paper sx={{ p: 4 }}>
+                                    <StackedBarCard
+                                        title="Efficiency: Success vs. Failure"
+                                        data={data.successFailureData}
+                                        dataKeys={priorityKeys}
+                                        colors={data.priorityColors}
+                                    />
+                                </Paper>
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Paper sx={{ p: 4 }}>
+                                    <StackedBarCard
+                                        title="Timeline: Deadline Trends"
+                                        data={data.deadlineData}
+                                        dataKeys={priorityKeys}
+                                        colors={data.priorityColors}
+                                    />
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                    </>
+                ) : (
+                    <Box>No report to show</Box>
+                )}
             </Stack>
         </Paper>
     );

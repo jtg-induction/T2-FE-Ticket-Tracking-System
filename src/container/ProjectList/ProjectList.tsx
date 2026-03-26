@@ -1,6 +1,6 @@
-import { MouseEvent, useState } from 'react';
+import { MouseEvent } from 'react';
 
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import {
     Add as AddIcon,
@@ -19,8 +19,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { CustomIconButton, LoadingOverlay } from '@component';
-import { ProjectItem } from '@component';
+import { CustomIconButton, LoadingOverlay, ProjectItem } from '@component';
 import { PAGE_SIZE, PATHS } from '@constant';
 import { useDocumentTitle, useProjectList } from '@hook';
 
@@ -30,7 +29,9 @@ import { ProjectState } from './ProjectList.types';
 export const ProjectList = () => {
     useDocumentTitle('All Projects');
     const navigate = useNavigate();
-    const [view, setView] = useState<ProjectState>(ProjectState.ACTIVE);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const view =
+        (searchParams.get('tab') as ProjectState) || ProjectState.ACTIVE;
 
     const {
         activeProjects,
@@ -48,7 +49,9 @@ export const ProjectList = () => {
         _: MouseEvent<HTMLElement>,
         nextView: ProjectState,
     ) => {
-        if (nextView !== null) setView(nextView);
+        if (nextView !== null) {
+            setSearchParams({ tab: nextView });
+        }
     };
 
     const isShowingActive = view === ProjectState.ACTIVE;
@@ -123,14 +126,20 @@ export const ProjectList = () => {
                             size="small"
                             color="primary"
                         >
-                            <ToggleButton value="active" sx={{ px: 2 }}>
-                                <ListIcon sx={{ mr: 1, fontSize: '1.2rem' }} />{' '}
+                            <ToggleButton
+                                value={ProjectState.ACTIVE}
+                                sx={{ px: 2 }}
+                            >
+                                <ListIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
                                 Active
                             </ToggleButton>
-                            <ToggleButton value="archived" sx={{ px: 2 }}>
+                            <ToggleButton
+                                value={ProjectState.ARCHIVED}
+                                sx={{ px: 2 }}
+                            >
                                 <ArchiveIcon
                                     sx={{ mr: 1, fontSize: '1.2rem' }}
-                                />{' '}
+                                />
                                 Archived
                             </ToggleButton>
                         </ToggleButtonGroup>

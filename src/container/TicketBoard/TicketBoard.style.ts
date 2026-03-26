@@ -37,7 +37,7 @@ export const StyledTicketColumn = styled(Box)(
         backgroundColor: palette.grey[200],
         borderRadius: shape.borderRadius * 2,
         padding: spacing(2),
-        minHeight: '180px',
+        minHeight: '200px',
     }),
 );
 

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+
 import { useForm } from 'react-hook-form';
+
 import { useAppDispatch } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@schema';
@@ -40,7 +42,7 @@ export function useLoginForm() {
                 );
                 return;
             }
-        } catch (err) {}
+        } catch {}
 
         try {
             const response = await loginTrigger({

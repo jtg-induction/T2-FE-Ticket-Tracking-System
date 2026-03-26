@@ -67,7 +67,10 @@ export const UserCard = ({
                 <Box>
                     <IconButton
                         size="small"
-                        onClick={onMenuOpen}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onMenuOpen(e);
+                        }}
                         aria-label="settings"
                         sx={{ ml: 1 }}
                     >

@@ -1,3 +1,4 @@
+import { ProtectedPage } from 'page/ProtectedPage';
 import { createBrowserRouter, Navigate } from 'react-router';
 
 import { PATHS } from '@constant';
@@ -15,7 +16,6 @@ import {
     ReportsPage,
     TicketDetailPage,
 } from '@page';
-import { ProtectedPage } from 'page/ProtectedPage';
 
 export const router = createBrowserRouter([
     {

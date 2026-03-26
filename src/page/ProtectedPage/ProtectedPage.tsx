@@ -1,11 +1,13 @@
-import { Header, LoadingOverlay } from '@component';
-import { Sidebar } from '@container';
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
-import { StyledMainContent } from './ProtectedPage.style';
 
+import { Outlet, useLocation, useNavigate } from 'react-router';
+
+import { Header, LoadingOverlay } from '@component';
 import { PATHS, PUBLICPATHS } from '@constant';
+import { Sidebar } from '@container';
 import { useAppSelector } from '@hook';
+
+import { StyledMainContent } from './ProtectedPage.style';
 
 export const ProtectedPage = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -19,10 +21,8 @@ export const ProtectedPage = () => {
     useEffect(() => {
         if (isLoading) return;
 
-        if (!accessToken) {
-            if (!isPublicPath) {
-                void navigate(PATHS.LOGIN);
-            }
+        if (!accessToken && !isPublicPath) {
+            void navigate(PATHS.LOGIN);
         }
     }, [accessToken, isLoading, location.pathname, navigate]);
 

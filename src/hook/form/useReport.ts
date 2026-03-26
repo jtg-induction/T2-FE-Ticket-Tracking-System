@@ -2,11 +2,14 @@ import { useMemo } from 'react';
 
 import { useTheme } from '@mui/material';
 
-import { getGraphColors } from '@constant';
-import { TicketPriority, TicketStatus } from '@constant';
+import { getGraphColors, TicketPriority, TicketStatus } from '@constant';
 import { TicketStatsData } from '@container';
 import { FilterFormValues } from '@schema';
-import { useGetTicketReportsQuery } from '@service';
+import {
+    useGetProjectByIdQuery,
+    useGetTicketReportsQuery,
+    useGetUserByIdQuery,
+} from '@service';
 
 export const useReport = (
     projectId?: string,
@@ -18,8 +21,9 @@ export const useReport = (
 
     const {
         data: response,
-        isLoading: loading,
-        error,
+        isLoading: reportsLoading,
+        error: reportsError,
+        isFetching: reportsFetching,
     } = useGetTicketReportsQuery({
         projectId,
         userId,
@@ -27,6 +31,18 @@ export const useReport = (
         startDate: filters?.startDate || '',
         endDate: filters?.endDate || '',
     });
+
+    const {
+        data: projectRes,
+        isLoading: projectLoading,
+        error: projectError,
+    } = useGetProjectByIdQuery(projectId!, { skip: !projectId || !!userId });
+
+    const {
+        data: userRes,
+        isLoading: userLoading,
+        error: userError,
+    } = useGetUserByIdQuery(userId!, { skip: !userId });
 
     const PRIORITY_KEYS = useMemo(
         () => [
@@ -38,6 +54,24 @@ export const useReport = (
         ],
         [],
     );
+
+    const reportSubject = useMemo(() => {
+        if (userId && userRes?.data) {
+            return {
+                type: 'User',
+                name: `${userRes.data.first_name} ${userRes.data.last_name}`,
+                details: userRes.data.role,
+            };
+        }
+        if (projectId && projectRes?.data) {
+            return {
+                type: 'Project',
+                name: projectRes.data.title,
+                details: projectRes.data.jira_project_key,
+            };
+        }
+        return null;
+    }, [userRes, projectRes, userId, projectId]);
 
     const transformedData = useMemo((): TicketStatsData | null => {
         if (!response?.data) return null;
@@ -67,12 +101,14 @@ export const useReport = (
             priorityColors: colors.priority,
             statusColors: colors.status,
         };
-    }, [response]);
+    }, [response, colors]);
 
     return {
         data: transformedData,
-        loading,
+        reportSubject,
+        loading: reportsLoading || projectLoading || userLoading,
+        isFetching: reportsFetching,
+        error: reportsError || projectError || userError,
         priorityKeys: PRIORITY_KEYS,
-        error,
     };
 };

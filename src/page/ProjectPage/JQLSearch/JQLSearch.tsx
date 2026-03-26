@@ -1,15 +1,18 @@
-import { Form } from 'react-router';
+import { Form, Link } from 'react-router';
 
+import { InfoOutlined } from '@mui/icons-material';
 import {
     Button,
     CircularProgress,
     Snackbar,
     Stack,
     TextField,
+    Tooltip,
     Typography,
 } from '@mui/material';
 
 import { ErrorSnackbar } from '@component';
+import { JIRA_INFO } from '@constant';
 import { useJQLSearch } from '@hook';
 
 import {
@@ -67,6 +70,23 @@ export const JQLSearch = () => {
                                 ? searchError.message
                                 : undefined) ?? errors.query?.message
                         }
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <Tooltip title="Online guide on JQL advanced search">
+                                        <Link
+                                            to={JIRA_INFO}
+                                            target="blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <InfoOutlined
+                                                sx={{ fontSize: '2rem' }}
+                                            />
+                                        </Link>
+                                    </Tooltip>
+                                ),
+                            },
+                        }}
                     />
 
                     <Button

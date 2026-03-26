@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react';
+
+import { useNavigate, useParams } from 'react-router';
+
 import { UserAction } from '@component';
 import { useDebounce } from '@hook';
 import {
@@ -8,8 +12,6 @@ import {
     useUpdateMemberRoleMutation,
 } from '@service';
 import { ErrorResponse, ProjectMember } from '@type';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
 
 export const useProjectUsers = () => {
     const { projectId } = useParams<{ projectId: string }>();
@@ -48,8 +50,10 @@ export const useProjectUsers = () => {
     } = useGetProjectMembersQuery({ id: projectId!, page: 1 });
 
     const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
-    const [removeMember] = useRemoveMemberMutation();
-    const [updateRole] = useUpdateMemberRoleMutation();
+    const [removeMember, { isLoading: removeLoading }] =
+        useRemoveMemberMutation();
+    const [updateRole, { isLoading: updateLoading }] =
+        useUpdateMemberRoleMutation();
 
     const searchOptions =
         debouncedSearch.length >= 2 ? searchResponse?.data || [] : [];
@@ -86,7 +90,7 @@ export const useProjectUsers = () => {
                     userId: targetUserId,
                 }).unwrap();
             } else {
-                const roleMap: any = {
+                const roleMap = {
                     [UserAction.MakeOwner]: 'owner',
                     [UserAction.MakeAdmin]: 'admin',
                     [UserAction.RevokeAdmin]: 'member',
@@ -118,6 +122,7 @@ export const useProjectUsers = () => {
         members,
         membersLoading,
         membersFetching,
+        memberActionLoading: updateLoading || removeLoading,
         fetchError,
         actionError,
         setActionError,

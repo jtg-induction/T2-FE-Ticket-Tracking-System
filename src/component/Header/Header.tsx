@@ -22,7 +22,7 @@ import Logo from '@assets/logo/logo-light.webp';
 import { CustomIconButton, ErrorSnackbar } from '@component';
 import { PATHS, USER_ROLE_OPTIONS } from '@constant';
 import { useAppDispatch } from '@hook';
-import { useGetUserByIdQuery, useLogoutMutation } from '@service';
+import { baseApi, useGetUserByIdQuery, useLogoutMutation } from '@service';
 import { logOut } from '@store';
 import { ErrorResponse } from '@type';
 import { stringToColor } from '@util';
@@ -58,6 +58,7 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
     const handleLogout = async () => {
         try {
             await logoutApi().unwrap();
+            dispatch(baseApi.util.resetApiState());
             dispatch(logOut());
         } catch (err) {
             setError(err as ErrorResponse);

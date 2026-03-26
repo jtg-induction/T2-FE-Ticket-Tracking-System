@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router';
 
-import { StyledLayoutRoot } from './RootLayout.style';
-import { useAppSelector } from '@hook';
 import { LoadingOverlay } from '@component';
+import { useAppSelector } from '@hook';
+
+import { StyledLayoutRoot } from './RootLayout.style';
 
 export const RootLayout = () => {
     const { isLoading } = useAppSelector((state) => state.auth);

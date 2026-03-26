@@ -44,37 +44,34 @@ export const AcceptInvite = () => {
     );
 
     const handleError = (err: unknown) => {
-        const errorObj = err as { data: ErrorResponse };
-        setActiveError(
-            errorObj.data || {
-                message: 'Invalid or expired invitation token.',
-                success: false,
-                errors: {},
-            },
-        );
+        const errorObj = err as ErrorResponse;
+        setActiveError({
+            message: errorObj?.message || 'An unexpected error occurred.',
+            success: false,
+        });
     };
 
     const handleAction = async (action: InviteAction) => {
         if (!token) return;
+
         try {
             setActiveError(null);
+
             const response =
                 action === InviteAction.ACCEPT
                     ? await acceptInvite(token).unwrap()
                     : await rejectInvite(token).unwrap();
 
-            setSuccessMessage(
+            const message =
                 response?.message ||
-                    (action === InviteAction.ACCEPT
-                        ? 'Successfully joined!'
-                        : 'Invitation declined.'),
-            );
+                (action === InviteAction.ACCEPT
+                    ? 'Successfully joined the project!'
+                    : 'Invitation declined successfully.');
+            setSuccessMessage(message);
 
-            if (action === InviteAction.ACCEPT) {
-                timeoutRef.current = setTimeout(() => {
-                    void navigate(PATHS.PROJECTS);
-                }, 2000);
-            }
+            timeoutRef.current = setTimeout(() => {
+                void navigate(PATHS.PROJECTS);
+            }, 2000);
         } catch (err: unknown) {
             handleError(err);
         }
@@ -89,7 +86,9 @@ export const AcceptInvite = () => {
                     <StyledActionArea>
                         <CircularProgress size={40} sx={{ mb: 2 }} />
                         <Typography variant="h6">
-                            Processing Invitation
+                            {isLoadingAccept
+                                ? 'Accepting Invitation...'
+                                : 'Rejecting Invitation...'}
                         </Typography>
                     </StyledActionArea>
                 ) : successMessage ? (
@@ -103,6 +102,12 @@ export const AcceptInvite = () => {
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                             {successMessage}
+                        </Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{ mt: 2, display: 'block' }}
+                        >
+                            Redirecting to projects...
                         </Typography>
                     </StyledActionArea>
                 ) : (
@@ -118,6 +123,7 @@ export const AcceptInvite = () => {
                         >
                             <Button
                                 variant="contained"
+                                disabled={isProcessing}
                                 onClick={() =>
                                     void handleAction(InviteAction.ACCEPT)
                                 }
@@ -127,6 +133,7 @@ export const AcceptInvite = () => {
                             <Button
                                 variant="outlined"
                                 color="error"
+                                disabled={isProcessing}
                                 onClick={() =>
                                     void handleAction(InviteAction.REJECT)
                                 }

@@ -10,17 +10,17 @@ import {
     Box,
     Button,
     Checkbox,
-    CircularProgress,
     Grid2 as Grid,
-    Paper,
     Stack,
     TextField,
     Tooltip,
     Typography,
 } from '@mui/material';
 
-import { CustomIconButton, ErrorSnackbar } from '@component';
+import { CustomIconButton, ErrorSnackbar, LoadingOverlay } from '@component';
 import { useDocumentTitle, useProjectForm } from '@hook';
+
+import { StyledMainContent } from './ProjectDetail.style';
 
 export const ProjectDetail = () => {
     const { projectId } = useParams<{ projectId: string }>();
@@ -42,7 +42,7 @@ export const ProjectDetail = () => {
     useDocumentTitle(
         !loading && project
             ? `${project.title} (${project.jira_project_key})`
-            : 'Loading Project...',
+            : 'Create Project',
     );
 
     const pageTitle = isNew
@@ -52,20 +52,11 @@ export const ProjectDetail = () => {
           : project?.title;
 
     if (loading) {
-        return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100%"
-            >
-                <CircularProgress />
-            </Box>
-        );
+        return <LoadingOverlay />;
     }
 
     return (
-        <Paper sx={{ p: 4 }}>
+        <StyledMainContent>
             <Stack
                 direction="row"
                 alignItems={{ xs: 'flex-start', sm: 'center' }}
@@ -246,6 +237,6 @@ export const ProjectDetail = () => {
                 onClose={() => {}}
                 autoHideDuration={6000}
             />
-        </Paper>
+        </StyledMainContent>
     );
 };

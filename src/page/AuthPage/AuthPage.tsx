@@ -1,13 +1,12 @@
-import { HeroSection, LoadingOverlay } from '@component';
-
-import { StyledAuthLayout } from './AuthPage.style';
-
 import { useEffect } from 'react';
 
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
+import { HeroSection, LoadingOverlay } from '@component';
 import { APP_NAME, PATHS, PUBLICPATHS } from '@constant';
 import { useAppSelector, useDocumentTitle } from '@hook';
+
+import { StyledAuthLayout } from './AuthPage.style';
 
 export const AuthPage = () => {
     document.title = 'new one';
