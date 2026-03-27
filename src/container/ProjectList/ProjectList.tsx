@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 
 import { CustomIconButton, LoadingOverlay, ProjectItem } from '@component';
-import { PAGE_SIZE, PATHS } from '@constant';
+import { PATHS, PROJECT_PAGE_SIZE } from '@constant';
 import { useDocumentTitle, useProjectList } from '@hook';
 
 import { EmptyStateContainer, EmptyStateContent } from './ProjectList.style';
@@ -50,7 +50,10 @@ export const ProjectList = () => {
         nextView: ProjectState,
     ) => {
         if (nextView !== null) {
-            setSearchParams({ tab: nextView });
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('tab', nextView);
+            if (nextView === ProjectState.ACTIVE) newParams.set('page', '1');
+            setSearchParams(newParams);
         }
     };
 
@@ -77,7 +80,8 @@ export const ProjectList = () => {
         >
             {isLoading && <LoadingOverlay />}
             {!isLoading &&
-            activeProjects.length + archivedProjects.length === 0 ? (
+            activeProjects.length + archivedProjects.length === 0 &&
+            currentPage == 0 ? (
                 <EmptyStateContainer>
                     <EmptyStateContent>
                         <FolderOpenIcon
@@ -145,28 +149,43 @@ export const ProjectList = () => {
                         </ToggleButtonGroup>
                     </Box>
 
-                    <Stack
-                        gap={2}
+                    <Box
+                        display="grid"
+                        gridTemplateColumns={{
+                            xs: '1fr',
+                            sm: 'repeat(2, 1fr)',
+                            md: 'repeat(3, 1fr)',
+                        }}
+                        gap={3}
                         flexGrow={1}
-                        overflow="auto"
-                        pr={1}
                         minHeight={0}
+                        sx={{
+                            overflowY: 'auto',
+                            alignContent: 'start',
+                            pr: 1,
+                            gridAutoRows: 'max-content',
+                        }}
                     >
                         {currentProjects.length > 0
                             ? currentProjects.map((project) => (
-                                  <Box key={project.id} flexShrink={0}>
-                                      <ProjectItem
-                                          onClick={() =>
-                                              void navigate(
-                                                  `${PATHS.PROJECTS}/${project.id}`,
-                                              )
-                                          }
-                                          project={project}
-                                      />
-                                  </Box>
+                                  <ProjectItem
+                                      key={project.id}
+                                      onClick={() =>
+                                          void navigate(
+                                              `${PATHS.PROJECTS}/${project.id}`,
+                                          )
+                                      }
+                                      project={project}
+                                  />
                               ))
                             : !isLoading && (
-                                  <Stack flexGrow={1} justifyContent="center">
+                                  <Box
+                                      gridColumn="1 / -1"
+                                      display="flex"
+                                      justifyContent="center"
+                                      alignItems="center"
+                                      minHeight="200px"
+                                  >
                                       <Typography
                                           variant="body1"
                                           color="text.secondary"
@@ -174,11 +193,11 @@ export const ProjectList = () => {
                                       >
                                           No {view} projects found.
                                       </Typography>
-                                  </Stack>
+                                  </Box>
                               )}
-                    </Stack>
+                    </Box>
 
-                    {currentMeta && currentMeta.count > PAGE_SIZE && (
+                    {currentMeta && currentMeta.count > PROJECT_PAGE_SIZE && (
                         <Box
                             marginTop="auto"
                             marginLeft="auto"
@@ -186,7 +205,9 @@ export const ProjectList = () => {
                             flexShrink={0}
                         >
                             <Pagination
-                                count={Math.ceil(currentMeta.count / PAGE_SIZE)}
+                                count={Math.ceil(
+                                    currentMeta.count / PROJECT_PAGE_SIZE,
+                                )}
                                 page={currentPage}
                                 onChange={(_, v) => setCurrentPage(v)}
                                 color="primary"

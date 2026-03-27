@@ -9,7 +9,12 @@ export { PUBLICPATHS, PATHS } from './pathConstants';
 export { DIMENSIONS } from './layoutConstant';
 export { USER_ROLE_OPTIONS } from './userConstant';
 export { FORM } from './formConstant';
-export { PAGE_SIZE, APP_NAME, JIRA_INFO } from './otherConstants';
+export {
+    PAGE_SIZE,
+    APP_NAME,
+    JIRA_INFO,
+    PROJECT_PAGE_SIZE,
+} from './otherConstants';
 export {
     TicketPriority,
     TicketStatus,

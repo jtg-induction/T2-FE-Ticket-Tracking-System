@@ -50,6 +50,7 @@ export const CreateTicketModal = ({
     useEffect(() => {
         if (open) {
             reset({
+                project: projectId,
                 priority: TicketPriority.Medium,
                 category: 'Development',
                 status: initialStatus ?? TicketStatus.ToDo,

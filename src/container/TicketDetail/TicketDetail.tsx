@@ -1,5 +1,4 @@
 import { Form, useNavigate } from 'react-router';
-
 import {
     ArrowBack,
     Edit,
@@ -29,6 +28,7 @@ import { ErrorSnackbar, UserDetailBlock } from '@component';
 import { TicketPriority, TicketStatus } from '@constant';
 import { useDocumentTitle, useTicketDetail } from '@hook';
 import { ErrorPage, LoadingPage } from '@page';
+import { Project } from '@type';
 import { ErrorResponse } from '@type/standard.types';
 import { getStatusColor, toDateTimeLocalValue } from '@util';
 
@@ -42,6 +42,11 @@ export const TicketDetail = () => {
     const { shadows, zIndex } = useTheme();
     const navigate = useNavigate();
     const {
+        projects,
+        isSearchingProjects,
+        setProjectSearch,
+        selectedProject,
+        setSelectedProject,
         ticket,
         isEditing,
         setIsEditing,
@@ -64,7 +69,9 @@ export const TicketDetail = () => {
     } = useTicketDetail();
 
     useDocumentTitle(
-        ticket ? `${ticket.jira_id}: ${ticket.name}` : 'Loading Ticket...',
+        ticket
+            ? `${ticket.jira_id}: ${ticket.name} | ${ticket.project_details?.jira_project_key}`
+            : 'Loading Ticket...',
     );
 
     const {
@@ -179,6 +186,9 @@ export const TicketDetail = () => {
                         alignItems="center"
                         mb={1}
                     >
+                        <Typography variant="h6">
+                            {`${ticket.project_details?.jira_project_key} / `}
+                        </Typography>
                         <Chip
                             label={ticket.jira_id}
                             size="small"
@@ -255,6 +265,97 @@ export const TicketDetail = () => {
                     >
                         TICKET DETAILS
                     </Typography>
+
+                    <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mb={3}
+                    >
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            color="textSecondary"
+                        >
+                            Project
+                        </Typography>
+                        {!isEditing ? (
+                            <Stack
+                                direction="row"
+                                spacing={2}
+                                alignItems="center"
+                            >
+                                <Chip
+                                    label={
+                                        ticket.project_details?.jira_project_key
+                                    }
+                                    size="small"
+                                    variant="outlined"
+                                />
+                            </Stack>
+                        ) : (
+                            <Autocomplete<Project>
+                                sx={{ width: 400 }}
+                                size="small"
+                                options={projects}
+                                loading={isSearchingProjects}
+                                value={selectedProject}
+                                isOptionEqualToValue={(option, value) =>
+                                    option.id === value?.id
+                                }
+                                getOptionLabel={(option) =>
+                                    option
+                                        ? `[${option.jira_project_key}] ${option.title}`
+                                        : ''
+                                }
+                                onInputChange={(_, val) =>
+                                    setProjectSearch(val)
+                                }
+                                onChange={(_, val) => {
+                                    const fallbackProject =
+                                        val || ticket.project_details;
+
+                                    setValue(
+                                        'project',
+                                        fallbackProject?.id ?? '',
+                                        {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                        },
+                                    );
+                                    setSelectedProject(fallbackProject);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Move to project..."
+                                    />
+                                )}
+                                renderOption={(props, option) => {
+                                    const { key, ...optionProps } = props;
+                                    return (
+                                        <MenuItem key={key} {...optionProps}>
+                                            <Stack>
+                                                <Typography
+                                                    variant="body2"
+                                                    fontWeight={600}
+                                                >
+                                                    {option.title}
+                                                </Typography>
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                >
+                                                    {option.jira_project_key} •{' '}
+                                                    {option.site_url}
+                                                </Typography>
+                                            </Stack>
+                                        </MenuItem>
+                                    );
+                                }}
+                            />
+                        )}
+                    </Stack>
 
                     <Stack
                         direction="row"
@@ -349,7 +450,6 @@ export const TicketDetail = () => {
                     </Stack>
 
                     <Divider sx={{ my: 3 }} />
-
                     <UserDetailBlock
                         label="Assignee"
                         user={displayUser ?? null}
@@ -417,7 +517,6 @@ export const TicketDetail = () => {
                         user={ticket.reporter}
                         icon={<Security fontSize="inherit" />}
                     />
-
                     <Divider sx={{ my: 3 }} />
 
                     <Box sx={{ mb: 3 }}>
@@ -441,11 +540,7 @@ export const TicketDetail = () => {
                                 type="datetime-local"
                                 fullWidth
                                 size="small"
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    },
-                                }}
+                                slotProps={{ inputLabel: { shrink: true } }}
                                 {...register('deadline')}
                                 defaultValue={
                                     ticket.deadline

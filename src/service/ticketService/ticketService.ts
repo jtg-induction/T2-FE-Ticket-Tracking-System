@@ -77,10 +77,25 @@ export const ticketApi = baseApi.injectEndpoints({
                 method: API_CONSTANTS.METHODS.PATCH,
                 body,
             }),
-            invalidatesTags: (_result, _error, { ticketId, projectId }) => [
-                { type: 'Ticket', id: ticketId },
-                { type: 'Ticket', id: `LIST-${projectId}` },
-            ],
+            invalidatesTags: (
+                _result,
+                _error,
+                { ticketId, projectId, body },
+            ) => {
+                const tags = [
+                    { type: 'Ticket' as const, id: ticketId },
+                    { type: 'Ticket' as const, id: `LIST-${projectId}` },
+                ];
+
+                if (body.project && body.project !== projectId) {
+                    tags.push({
+                        type: 'Ticket' as const,
+                        id: `LIST-${body.project}`,
+                    });
+                }
+
+                return tags;
+            },
         }),
 
         getMyTickets: builder.query<

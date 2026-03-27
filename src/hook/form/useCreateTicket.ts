@@ -34,6 +34,11 @@ export const useCreateTicket = (
             priority: TicketPriority.Medium,
             category: 'Development',
             status: initialStatus,
+            project: projectId,
+            name: '',
+            description: '',
+            assignee: '',
+            deadline: '',
         },
     });
 

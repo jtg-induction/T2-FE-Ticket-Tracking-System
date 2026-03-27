@@ -4,6 +4,7 @@ import { TicketStatus } from '@constant';
 import { CreateTicketSchema, JQLSearchSchema, TicketBaseSchema } from '@schema';
 
 import { UserResponse } from './user.types';
+import { Project } from './project.types';
 
 /**
  * Functional department or area the ticket belongs to.
@@ -38,6 +39,7 @@ export interface Ticket extends z.infer<typeof TicketBaseSchema> {
     reporter: UserResponse;
     assignee?: UserResponse | null;
     project: string;
+    project_details: Project;
     is_subscribed?: boolean;
     is_imported?: boolean;
 }

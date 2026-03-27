@@ -17,6 +17,9 @@ export const TicketBaseSchema = z.object({
     category: z.enum(['Development', 'Design', 'QA', 'Research']),
     status: z.enum(TicketStatus).optional(),
     deadline: z.string().nullish().or(z.literal('')),
+    project: z
+        .uuid('Invalid project ID format')
+        .nonempty('A ticket must belong to a project'),
 });
 
 export const CreateTicketSchema = TicketBaseSchema.extend({

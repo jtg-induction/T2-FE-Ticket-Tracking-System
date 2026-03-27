@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router'; // Added useNavigate
 
 import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTicketSchema } from '@schema';
 import {
+    useGetProjectsQuery,
     useSubscribeToTicketMutation,
     useUnsubscribeFromTicketMutation,
 } from '@service';
@@ -15,7 +15,7 @@ import {
     useGetTicketByIdQuery,
     useUpdateTicketMutation,
 } from '@service';
-import { ErrorResponse } from '@type';
+import { ErrorResponse, Project } from '@type';
 import { CreateTicketInput } from '@type/ticket.types';
 
 export const useTicketDetail = () => {
@@ -23,10 +23,31 @@ export const useTicketDetail = () => {
         projectId: string;
         ticketId: string;
     }>();
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [updateError, setUpdateError] = useState<ErrorResponse | null>(null);
     const debouncedSearch = useDebounce(searchTerm, 500);
+
+    const [projectSearch, setProjectSearch] = useState('');
+    const debouncedProjectSearch = useDebounce(projectSearch, 500);
+
+    const [selectedProject, setSelectedProject] = useState<Project | null>(
+        null,
+    );
+
+    const { data: projectsRes, isFetching: isSearchingProjects } =
+        useGetProjectsQuery(
+            {
+                page: 1,
+                search: debouncedProjectSearch,
+                archived: false,
+                pageSize: 5,
+            },
+            { skip: !isEditing },
+        );
+
+    const projects = projectsRes?.success ? projectsRes.data : [];
 
     const {
         data: response,
@@ -71,6 +92,7 @@ export const useTicketDetail = () => {
                 ? new Date(ticket.deadline).toISOString().slice(0, 16)
                 : null,
             assignee: ticket?.assignee?.user_id ?? '',
+            project: ticket?.project_details?.id ?? '',
         },
     });
 
@@ -78,18 +100,24 @@ export const useTicketDetail = () => {
     const { setError, reset } = form;
 
     useEffect(() => {
-        if (ticket && isEditing) {
-            reset({
-                name: ticket.name ?? '',
-                description: ticket.description ?? '',
-                priority: ticket.priority,
-                category: ticket.category,
-                status: ticket.status,
-                deadline: ticket.deadline
-                    ? new Date(ticket.deadline).toISOString().slice(0, 16)
-                    : null,
-                assignee: ticket.assignee?.user_id ?? '',
-            });
+        if (ticket) {
+            const initialProject = ticket.project_details ?? null;
+            setSelectedProject(initialProject);
+
+            if (isEditing) {
+                reset({
+                    name: ticket.name ?? '',
+                    description: ticket.description ?? '',
+                    priority: ticket.priority,
+                    category: ticket.category,
+                    status: ticket.status,
+                    deadline: ticket.deadline
+                        ? new Date(ticket.deadline).toISOString().slice(0, 16)
+                        : null,
+                    assignee: ticket.assignee?.user_id ?? '',
+                    project: initialProject?.id ?? '',
+                });
+            }
         }
     }, [ticket, isEditing, reset]);
 
@@ -119,10 +147,11 @@ export const useTicketDetail = () => {
         }
         try {
             setUpdateError(null);
-            const { assignee, deadline, ...rest } = data;
+            const { assignee, deadline, project, ...rest } = data;
 
             const body = {
                 ...rest,
+                project,
                 name: rest.name.trim(),
                 description: rest.description?.trim() ?? '',
                 assignee: assignee ?? '',
@@ -138,6 +167,12 @@ export const useTicketDetail = () => {
                 ticketId: ticketId!,
                 body,
             }).unwrap();
+
+            if (project !== projectId) {
+                navigate(`/projects/${project}/tickets/${ticketId}`, {
+                    replace: true,
+                });
+            }
 
             setIsEditing(false);
             form.reset(data);
@@ -158,6 +193,12 @@ export const useTicketDetail = () => {
     };
 
     return {
+        projects,
+        isSearchingProjects,
+        setProjectSearch,
+        projectSearch,
+        selectedProject,
+        setSelectedProject,
         ticket,
         isEditing,
         setIsEditing,

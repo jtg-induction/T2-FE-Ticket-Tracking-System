@@ -1,4 +1,4 @@
-import { API_CONSTANTS, PAGE_SIZE } from '@constant';
+import { API_CONSTANTS, PROJECT_PAGE_SIZE } from '@constant';
 import { baseApi } from '@service';
 import { EntityResponse, PaginatedResponse, Project } from '@type';
 
@@ -35,11 +35,23 @@ export const projectApi = baseApi.injectEndpoints({
 
         getProjects: builder.query<
             PaginatedResponse<Project>,
-            { page: number; archived: boolean }
+            {
+                page: number;
+                archived?: boolean;
+                search?: string;
+                site_url?: string;
+                pageSize?: number;
+            }
         >({
-            query: ({ page, archived }) => ({
+            query: ({ page, archived, search, site_url, pageSize }) => ({
                 url: API_CONSTANTS.ENDPOINTS.PROJECT,
-                params: { page, archived, page_size: PAGE_SIZE },
+                params: {
+                    page,
+                    page_size: pageSize ?? PROJECT_PAGE_SIZE,
+                    ...(archived !== undefined && { is_archived: archived }),
+                    ...(search && { search }),
+                    ...(site_url && { site_url }),
+                },
             }),
             providesTags: (result) => {
                 if (result?.data && Array.isArray(result.data)) {
