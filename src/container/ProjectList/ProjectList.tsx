@@ -70,7 +70,7 @@ export const ProjectList = () => {
             position="relative"
             minHeight="100%"
             width="100%"
-            maxWidth="md"
+            maxWidth="lg"
             marginInline="auto"
             padding={4}
             boxSizing="border-box"

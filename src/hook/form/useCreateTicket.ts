@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 
-import { TicketPriority, TicketStatus } from '@constant';
+import { TicketCategory, TicketPriority, TicketStatus } from '@constant';
 import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTicketSchema } from '@schema';
@@ -30,9 +30,10 @@ export const useCreateTicket = (
 
     const form = useForm<CreateTicketInput>({
         resolver: zodResolver(CreateTicketSchema),
+        mode: 'all',
         defaultValues: {
             priority: TicketPriority.Medium,
-            category: 'Development',
+            category: TicketCategory.DEVELOPMENT,
             status: initialStatus,
             project: projectId,
             name: '',

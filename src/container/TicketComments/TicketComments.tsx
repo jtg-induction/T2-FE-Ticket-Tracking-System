@@ -10,7 +10,12 @@ import {
     Typography,
 } from '@mui/material';
 
-import { CommentInput, CommentItem, ErrorSnackbar } from '@component';
+import {
+    CommentInput,
+    CommentItem,
+    ErrorSnackbar,
+    LoadingOverlay,
+} from '@component';
 import { DIMENSIONS } from '@constant';
 import { useTicketComments } from '@hook';
 import { ErrorPage } from '@page';
@@ -32,14 +37,10 @@ export const TicketComments = () => {
         clearActionError,
     } = useTicketComments(ticketId);
 
-    if (fetchError) return <ErrorPage></ErrorPage>;
+    if (fetchError) return <ErrorPage />;
 
     if (isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" p={4}>
-                <CircularProgress size={24} />
-            </Box>
-        );
+        return <LoadingOverlay />;
     }
 
     return (

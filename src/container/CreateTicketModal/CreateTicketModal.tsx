@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 
 import { ErrorSnackbar } from '@component';
-import { TicketPriority, TicketStatus } from '@constant';
+import { TicketCategory, TicketPriority, TicketStatus } from '@constant';
 import { useCreateTicket } from '@hook';
 
 import { CreateTicketModalProps } from './createTickeModel.types';
@@ -52,7 +52,7 @@ export const CreateTicketModal = ({
             reset({
                 project: projectId,
                 priority: TicketPriority.Medium,
-                category: 'Development',
+                category: TicketCategory.DEVELOPMENT,
                 status: initialStatus ?? TicketStatus.ToDo,
                 name: '',
                 description: '',
@@ -114,19 +114,19 @@ export const CreateTicketModal = ({
                             <TextField
                                 select
                                 fullWidth
-                                // style={{ width: '50%' }}
                                 label="Category"
                                 {...register('category')}
                                 error={!!errors.category}
                                 helperText={errors.category?.message}
                             >
-                                {[
-                                    'Development',
-                                    'Design',
-                                    'QA',
-                                    'Research',
-                                ].map((opt) => (
-                                    <MenuItem key={opt} value={opt}>
+                                {Object.values(TicketCategory).map((opt) => (
+                                    <MenuItem
+                                        key={opt}
+                                        value={opt}
+                                        defaultValue={
+                                            TicketCategory.DEVELOPMENT
+                                        }
+                                    >
                                         {opt}
                                     </MenuItem>
                                 ))}

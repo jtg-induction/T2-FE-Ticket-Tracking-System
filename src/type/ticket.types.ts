@@ -1,15 +1,10 @@
 import { z } from 'zod';
 
-import { TicketStatus } from '@constant';
+import { TicketCategory, TicketStatus } from '@constant';
 import { CreateTicketSchema, JQLSearchSchema, TicketBaseSchema } from '@schema';
 
-import { UserResponse } from './user.types';
 import { Project } from './project.types';
-
-/**
- * Functional department or area the ticket belongs to.
- */
-export type TicketCategory = 'Development' | 'Design' | 'QA' | 'Research';
+import { UserResponse } from './user.types';
 
 /**
  * User permissions/relationship relative to a specific ticket.

@@ -18,6 +18,7 @@ export {
 export {
     TicketPriority,
     TicketStatus,
+    TicketCategory,
     STATUS_OPTIONS,
     TICKET_PRIORITY_OPTIONS,
     EMPTY_FILTERS,

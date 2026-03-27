@@ -22,6 +22,16 @@ export enum TicketStatus {
 }
 
 /**
+ * Category or type of a ticket.
+ */
+export enum TicketCategory {
+    DEVELOPMENT = 'Development',
+    DESIGN = 'Design',
+    QA = 'QA',
+    RESEARCH = 'Research',
+}
+
+/**
  * Ordered list of available ticket statuses for UI selection.
  */
 export const STATUS_OPTIONS: TicketStatus[] = [

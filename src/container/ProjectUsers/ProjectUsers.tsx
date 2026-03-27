@@ -88,7 +88,7 @@ export const ProjectUsers = () => {
     };
 
     return (
-        <Paper sx={{ height: '100%', position: 'relative' }}>
+        <Paper sx={{ height: '100%', minWidth: '420px' }}>
             {memberActionLoading && <LoadingOverlay />}
 
             <Box p={spacing(4)}>

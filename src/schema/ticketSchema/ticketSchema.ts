@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { TicketPriority, TicketStatus } from '@constant';
+import { TicketCategory, TicketPriority, TicketStatus } from '@constant';
 
 export const TicketBaseSchema = z.object({
     name: z
@@ -13,8 +13,14 @@ export const TicketBaseSchema = z.object({
         .trim()
         .max(255, 'Description must be less than 255 characters')
         .optional(),
-    priority: z.enum(TicketPriority),
-    category: z.enum(['Development', 'Design', 'QA', 'Research']),
+    priority: z.enum(
+        TicketPriority,
+        'Invalid priority option, select from the options',
+    ),
+    category: z.enum(
+        TicketCategory,
+        'Invalid category, select from the options',
+    ),
     status: z.enum(TicketStatus).optional(),
     deadline: z.string().nullish().or(z.literal('')),
     project: z

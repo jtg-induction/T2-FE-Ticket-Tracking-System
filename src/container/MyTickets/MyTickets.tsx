@@ -105,7 +105,6 @@ export const MyTickets = () => {
                                 ? 'contained'
                                 : 'outlined'
                         }
-                        disableElevation
                         size="small"
                         startIcon={<FilterList />}
                         onClick={() => setFiltersOpen((p) => !p)}
@@ -165,18 +164,6 @@ export const MyTickets = () => {
                                 <Chip
                                     size="small"
                                     label={`Priority: ${filters.priority}`}
-                                />
-                            )}
-                            {filters.reporter && (
-                                <Chip
-                                    size="small"
-                                    label={`Reporter: ${filters.reporter}`}
-                                />
-                            )}
-                            {filters.assignee && (
-                                <Chip
-                                    size="small"
-                                    label={`Assignee: ${filters.assignee}`}
                                 />
                             )}
                             <Chip

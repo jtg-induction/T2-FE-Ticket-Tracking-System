@@ -27,7 +27,6 @@ export type {
 
 export type {
     Ticket,
-    TicketCategory,
     TicketRole,
     CreateTicketInput,
     JQLSearchInput,

@@ -45,23 +45,8 @@ export const FilterBar = ({
 
     return (
         <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box
-                sx={{
-                    px: 3,
-                    py: 2,
-                    borderBottom: (t) => `1px solid ${t.palette.divider}`,
-                    bgcolor: (t) =>
-                        t.palette.mode === 'dark'
-                            ? 'rgba(255,255,255,0.03)'
-                            : 'rgba(0,0,0,0.02)',
-                }}
-            >
-                <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    gap={2}
-                    flexWrap="wrap"
-                    alignItems="flex-end"
-                >
+            <Box px={3} py={2}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} gap={2}>
                     <TextField
                         size="small"
                         placeholder="Search by title or key…"
@@ -123,24 +108,6 @@ export const FilterBar = ({
                             </MenuItem>
                         ))}
                     </Select>
-
-                    <TextField
-                        size="small"
-                        placeholder="Reporter name…"
-                        value={pending.reporter}
-                        onChange={(e) => setField('reporter')(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && onApply(pending)}
-                        sx={{ minWidth: 160 }}
-                    />
-
-                    <TextField
-                        size="small"
-                        placeholder="Assignee name…"
-                        value={pending.assignee}
-                        onChange={(e) => setField('assignee')(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && onApply(pending)}
-                        sx={{ minWidth: 160 }}
-                    />
 
                     <Stack direction="row" gap={1} ml="auto">
                         {activeFilterCount > 0 && (
