@@ -1,5 +1,7 @@
 export {
     useGetTicketReportsQuery,
     reportsApi,
-    useLazyDownloadTicketReportQuery,
+    useGenerateTicketReportMutation,
+    useLazyGetReportTaskStatusQuery,
+    useLazyDownloadReportQuery,
 } from './reportsService';

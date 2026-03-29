@@ -33,10 +33,7 @@ import { useDebounce, useDocumentTitle, useReport } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ErrorPage } from '@page';
 import { FilterFormValues, filterSchema } from '@schema';
-import {
-    useGetProjectMembersQuery,
-    useLazyDownloadTicketReportQuery,
-} from '@service';
+import { useGetProjectMembersQuery } from '@service';
 import { ErrorResponse } from '@type/standard.types';
 
 import { ReportsProps } from './reports.types';
@@ -84,29 +81,30 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
         [membersResponse],
     );
 
-    const { data, loading, isFetching, priorityKeys, reportSubject, error } =
-        useReport(projectId, userId, submittedFilters);
+    const {
+        data,
+        loading,
+        isFetching,
+        priorityKeys,
+        reportSubject,
+        error,
+        handleDownload,
+        isDownloading,
+        downloadError,
+        clearDownloadError,
+    } = useReport(projectId, userId, submittedFilters);
 
     useDocumentTitle(`${reportSubject?.name} | Reports`);
 
     const handleCloseError = () => setApiError(null);
 
-    const onFilterSubmit = (values: FilterFormValues) => {
-        setSubmittedFilters(values);
+    const onExportClick = () => {
+        const values = getValues();
+        void handleDownload(values);
     };
 
-    const [triggerDownload, { isFetching: isDownloading }] =
-        useLazyDownloadTicketReportQuery();
-
-    const handleDownload = () => {
-        const values = getValues();
-        void triggerDownload({
-            projectId,
-            userId,
-            userIds: values.userIds,
-            startDate: values.startDate,
-            endDate: values.endDate,
-        });
+    const onFilterSubmit = (values: FilterFormValues) => {
+        setSubmittedFilters(values);
     };
 
     if (loading && !data) {
@@ -122,7 +120,10 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
             {isFetching && <LoadingOverlay />}
 
             <Stack spacing={4} p={4}>
-                <ErrorSnackbar error={apiError} onClose={handleCloseError} />
+                <ErrorSnackbar
+                    error={downloadError}
+                    onClose={clearDownloadError}
+                />
 
                 <Stack
                     direction="row"
@@ -165,7 +166,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                 <DownloadIcon />
                             )
                         }
-                        onClick={handleDownload}
+                        onClick={onExportClick}
                         disabled={isDownloading}
                         sx={{ fontWeight: 'bold' }}
                     >

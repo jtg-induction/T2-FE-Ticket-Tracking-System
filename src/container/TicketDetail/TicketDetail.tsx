@@ -31,7 +31,7 @@ import { useDocumentTitle, useTicketDetail } from '@hook';
 import { ErrorPage, LoadingPage } from '@page';
 import { Project } from '@type';
 import { ErrorResponse } from '@type/standard.types';
-import { getPriorityColor,getStatusColor, toDateTimeLocalValue } from '@util';
+import { getPriorityColor, getStatusColor, toDateTimeLocalValue } from '@util';
 
 import {
     StyledDescriptionContainer,

@@ -6,8 +6,8 @@ import {
 import { DashboardLayoutProps } from './DashboardLayout.types';
 
 export const DashboardLayout = ({ main, sidebar }: DashboardLayoutProps) => (
-        <StyledLayoutRoot>
-            <StyledMainSlot>{main}</StyledMainSlot>
-            <StyledSidebarSlot>{sidebar}</StyledSidebarSlot>
-        </StyledLayoutRoot>
-    );
+    <StyledLayoutRoot>
+        <StyledMainSlot>{main}</StyledMainSlot>
+        <StyledSidebarSlot>{sidebar}</StyledSidebarSlot>
+    </StyledLayoutRoot>
+);

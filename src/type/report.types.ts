@@ -50,3 +50,15 @@ export interface TicketStatsResponseData {
     /** Time-series data showing ticket distribution over a specific deadline period */
     timelineStats: StackedItem[];
 }
+
+export interface TaskResponse {
+    task_id: string;
+    message: string;
+}
+
+export interface TaskStatusResponse {
+    task_id: string;
+    status: 'PENDING' | 'STARTED' | 'SUCCESS' | 'FAILURE';
+    download_url?: string;
+    error?: string;
+}

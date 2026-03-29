@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useTheme } from '@mui/material';
 
@@ -6,10 +6,14 @@ import { getGraphColors, TicketPriority, TicketStatus } from '@constant';
 import { TicketStatsData } from '@container';
 import { FilterFormValues } from '@schema';
 import {
+    useGenerateTicketReportMutation,
     useGetProjectByIdQuery,
     useGetTicketReportsQuery,
     useGetUserByIdQuery,
+    useLazyDownloadReportQuery,
+    useLazyGetReportTaskStatusQuery,
 } from '@service';
+import { ErrorResponse } from '@type/standard.types';
 
 export const useReport = (
     projectId?: string,
@@ -18,6 +22,10 @@ export const useReport = (
 ) => {
     const theme = useTheme();
     const colors = getGraphColors(theme);
+    const [downloadError, setDownloadError] = useState<ErrorResponse | null>(
+        null,
+    );
+    const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const {
         data: response,
@@ -43,6 +51,20 @@ export const useReport = (
         isLoading: userLoading,
         error: userError,
     } = useGetUserByIdQuery(userId!, { skip: !userId });
+
+    const [generateReport, { isLoading: isStarting }] =
+        useGenerateTicketReportMutation();
+    const [checkStatus, { isFetching: isPolling }] =
+        useLazyGetReportTaskStatusQuery();
+
+    const clearPolling = useCallback(() => {
+        if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+        }
+    }, []);
+
+    useEffect(() => () => clearPolling(), [clearPolling]);
 
     const PRIORITY_KEYS = useMemo(
         () => [
@@ -103,6 +125,75 @@ export const useReport = (
         };
     }, [response, colors]);
 
+    const [triggerDownload] = useLazyDownloadReportQuery();
+
+    const handleDownload = async (exportFilters: FilterFormValues) => {
+        setDownloadError(null);
+        clearPolling();
+
+        try {
+            const taskResponse = await generateReport({
+                projectId,
+                userId,
+                userIds: exportFilters.userIds,
+                startDate: exportFilters.startDate,
+                endDate: exportFilters.endDate,
+            }).unwrap();
+
+            const taskId = taskResponse.task_id;
+            if (!taskId) throw new Error('Task ID not found');
+
+            const pollStatus = async () => {
+                try {
+                    const statusResult = await checkStatus(taskId).unwrap();
+
+                    if (
+                        statusResult.status === 'SUCCESS' &&
+                        statusResult.download_url
+                    ) {
+                        clearPolling();
+
+                        const filename = statusResult.download_url
+                            .split('/')
+                            .filter(Boolean)
+                            .pop();
+
+                        if (!filename)
+                            throw new Error('Could not parse filename');
+
+                        const blob = await triggerDownload(filename).unwrap();
+
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.setAttribute('download', filename);
+                        document.body.appendChild(link);
+                        link.click();
+
+                        link.remove();
+                        window.URL.revokeObjectURL(blobUrl);
+                    } else if (statusResult.status === 'FAILURE') {
+                        clearPolling();
+                        setDownloadError({
+                            message: 'Server failed to generate report',
+                        } as ErrorResponse);
+                    }
+                } catch (err) {
+                    clearPolling();
+                    setDownloadError(err as ErrorResponse);
+                }
+            };
+
+            void pollStatus();
+
+            pollingRef.current = setInterval(() => {
+                void pollStatus();
+            }, 2000);
+        } catch (err) {
+            setDownloadError(err as ErrorResponse);
+        }
+    };
+
     return {
         data: transformedData,
         reportSubject,
@@ -110,5 +201,9 @@ export const useReport = (
         isFetching: reportsFetching,
         error: reportsError || projectError || userError,
         priorityKeys: PRIORITY_KEYS,
+        handleDownload,
+        isDownloading: isStarting || isPolling,
+        downloadError,
+        clearDownloadError: () => setDownloadError(null),
     };
 };

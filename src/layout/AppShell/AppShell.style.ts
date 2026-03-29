@@ -1,4 +1,4 @@
-import { Box, BoxProps,Stack, StackProps, styled } from '@mui/material';
+import { Box, BoxProps, Stack, StackProps, styled } from '@mui/material';
 
 export const StyledAuthLayout = styled(Stack)<StackProps>(() => ({
     height: '100%',

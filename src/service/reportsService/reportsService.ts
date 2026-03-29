@@ -2,7 +2,11 @@ import { API_CONSTANTS, TicketPriority, TicketStatus } from '@constant';
 import { FilterFormValues } from '@schema';
 import { baseApi } from '@service';
 import { EntityResponse, TicketStatsResponseData } from '@type';
-import { StackedItem } from '@type/report.types';
+import {
+    StackedItem,
+    TaskResponse,
+    TaskStatusResponse,
+} from '@type/report.types';
 
 export const reportsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -66,8 +70,8 @@ export const reportsApi = baseApi.injectEndpoints({
             }),
         }),
 
-        downloadTicketReport: builder.query<
-            void,
+        generateTicketReport: builder.mutation<
+            TaskResponse,
             { projectId?: string; userId?: string } & FilterFormValues
         >({
             query: ({ projectId, userId, userIds, startDate, endDate }) => {
@@ -76,37 +80,43 @@ export const reportsApi = baseApi.injectEndpoints({
                     user: userId,
                 };
 
-                if (userIds && userIds.length > 0) {
-                    params.users = userIds.join(',');
-                }
-
+                if (userIds?.length) params.users = userIds.join(',');
                 if (startDate) params.start_date = startDate;
                 if (endDate) params.end_date = endDate;
 
                 return {
-                    url: `${API_CONSTANTS.ENDPOINTS.REPORTS}download/`,
+                    url: `${API_CONSTANTS.ENDPOINTS.REPORTS}download/generate/`,
+                    method: 'GET',
                     params,
-                    responseHandler: async (response) => {
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-
-                        const filename = `Ticket_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-                        link.setAttribute('download', filename);
-
-                        document.body.appendChild(link);
-                        link.click();
-
-                        link.parentNode?.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-                    },
-                    cache: 'no-cache',
                 };
             },
+            transformResponse: (response: EntityResponse<TaskResponse>) =>
+                response.data,
+        }),
+
+        getReportTaskStatus: builder.query<TaskStatusResponse, string>({
+            query: (taskId) => ({
+                url: `${API_CONSTANTS.ENDPOINTS.REPORTS}download/${taskId}/status/`,
+            }),
+            providesTags: [],
+            transformResponse: (response: EntityResponse<TaskStatusResponse>) =>
+                response.data,
+        }),
+
+        downloadReport: builder.query<Blob, string>({
+            query: (filename) => ({
+                url: `${API_CONSTANTS.ENDPOINTS.REPORTS}download/fetch/${filename}/`,
+                method: 'GET',
+
+                responseHandler: (response) => response.blob(),
+            }),
         }),
     }),
 });
 
-export const { useGetTicketReportsQuery, useLazyDownloadTicketReportQuery } =
-    reportsApi;
+export const {
+    useGetTicketReportsQuery,
+    useGenerateTicketReportMutation,
+    useLazyGetReportTaskStatusQuery,
+    useLazyDownloadReportQuery,
+} = reportsApi;

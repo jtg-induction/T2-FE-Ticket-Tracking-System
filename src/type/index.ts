@@ -37,4 +37,9 @@ export type {
 
 export type { Comment, CommentInput } from './comment.types';
 
-export type { TicketStatsResponseData, StackedItem } from './report.types';
+export type {
+    TicketStatsResponseData,
+    StackedItem,
+    TaskResponse,
+    TaskStatusResponse,
+} from './report.types';

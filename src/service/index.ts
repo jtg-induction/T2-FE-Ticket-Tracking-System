@@ -48,5 +48,8 @@ export {
 
 export {
     useGetTicketReportsQuery,
-    useLazyDownloadTicketReportQuery,
+    reportsApi,
+    useGenerateTicketReportMutation,
+    useLazyGetReportTaskStatusQuery,
+    useLazyDownloadReportQuery,
 } from './reportsService';
