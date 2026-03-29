@@ -113,22 +113,26 @@ export const CommentItem = ({
 
                     {canEdit && !isEditing && (
                         <Stack direction="row" spacing={0.5} ml="auto">
-                            <CustomIconButton
-                                variant="standard"
-                                size="small"
-                                onClick={() => setIsEditing(true)}
-                                disabled={isUpdating}
-                            >
-                                <EditOutlined fontSize="inherit" />
-                            </CustomIconButton>
-                            <CustomIconButton
-                                variant="standard"
-                                size="small"
-                                color="error"
-                                onClick={() => onDelete(commentId)}
-                            >
-                                <DeleteOutline fontSize="inherit" />
-                            </CustomIconButton>
+                            <Tooltip title="Edit Comment" arrow>
+                                <CustomIconButton
+                                    variant="standard"
+                                    size="small"
+                                    onClick={() => setIsEditing(true)}
+                                    disabled={isUpdating}
+                                >
+                                    <EditOutlined fontSize="inherit" />
+                                </CustomIconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete Comment" arrow>
+                                <CustomIconButton
+                                    variant="standard"
+                                    size="small"
+                                    color="error"
+                                    onClick={() => onDelete(commentId)}
+                                >
+                                    <DeleteOutline fontSize="inherit" />
+                                </CustomIconButton>
+                            </Tooltip>
                         </Stack>
                     )}
                 </Stack>

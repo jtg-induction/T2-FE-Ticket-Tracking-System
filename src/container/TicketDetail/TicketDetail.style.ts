@@ -2,7 +2,6 @@ import { Paper, styled } from '@mui/material';
 
 export const StyledTicketSurface = styled(Paper)(
     ({ theme: { breakpoints } }) => ({
-        padding: 16,
         height: '100%',
         width: '100%',
         maxWidth: breakpoints.values.lg,
@@ -24,6 +23,7 @@ export const StyledDescriptionContainer = styled(Paper)(
 
 export const StyledDetailView = styled(Paper)(
     ({ theme: { spacing, shape, palette } }) => ({
+        margin: spacing(4),
         padding: spacing(4),
         borderRadius: shape.borderRadius * 4,
         border: '1px solid',

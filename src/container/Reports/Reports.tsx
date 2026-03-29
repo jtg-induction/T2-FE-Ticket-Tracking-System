@@ -432,7 +432,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                     />
                                 </Paper>
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 12 }}>
                                 <Paper sx={{ p: 4 }}>
                                     <StackedBarCard
                                         title="Efficiency: Success vs. Failure"
@@ -442,7 +442,7 @@ export const Reports = ({ userFilter, projectId, userId }: ReportsProps) => {
                                     />
                                 </Paper>
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 12 }}>
                                 <Paper sx={{ p: 4 }}>
                                     <StackedBarCard
                                         title="Timeline: Deadline Trends"

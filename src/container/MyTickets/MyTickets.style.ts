@@ -1,5 +1,3 @@
-import { LinkProps } from 'react-router';
-
 import {
     Box,
     Paper,
@@ -56,7 +54,7 @@ export const StyledHeaderCell = styled(TableCell)({
     fontWeight: 700,
 });
 
-export const StyledTableRow = styled(TableRow)<LinkProps & TableRowProps>({
-    cursor: 'pointer',
+export const StyledTableRow = styled(TableRow)<TableRowProps>({
+    cursor: 'default',
     textDecoration: 'none',
 });

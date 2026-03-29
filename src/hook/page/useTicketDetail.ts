@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
-import { useNavigate,useParams } from 'react-router'; // Added useNavigate
+import { useNavigate, useParams } from 'react-router'; // Added useNavigate
 
 import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -170,7 +170,7 @@ export const useTicketDetail = () => {
             }).unwrap();
 
             if (project !== projectId) {
-                navigate(`/projects/${project}/tickets/${ticketId}`, {
+                void navigate(`/projects/${project}/tickets/${ticketId}`, {
                     replace: true,
                 });
             }

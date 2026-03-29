@@ -18,7 +18,6 @@ export const CustomIconButton = styled(IconButton, {
         backgroundColor: 'transparent',
         '&:hover': {
             backgroundColor: palette.action.hover,
-            color: palette.primary.main,
         },
     }),
 }));

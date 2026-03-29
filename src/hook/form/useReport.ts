@@ -46,11 +46,11 @@ export const useReport = (
 
     const PRIORITY_KEYS = useMemo(
         () => [
-            TicketPriority.Highest,
-            TicketPriority.High,
-            TicketPriority.Medium,
-            TicketPriority.Low,
             TicketPriority.Lowest,
+            TicketPriority.Low,
+            TicketPriority.Medium,
+            TicketPriority.High,
+            TicketPriority.Highest,
         ],
         [],
     );

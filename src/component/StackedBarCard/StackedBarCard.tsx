@@ -3,14 +3,13 @@ import {
     BarChart,
     CartesianGrid,
     Label,
-    Legend,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from 'recharts';
 
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Stack, Typography, useTheme } from '@mui/material';
 
 import type { StackedBarCardProps } from './StackedBarCard.types';
 
@@ -23,6 +22,7 @@ export const StackedBarCard = ({
     const { palette, zIndex } = useTheme();
     return (
         <Box>
+            <Box height={'100'} width={'100'} color={'black'}></Box>
             <Typography variant="h6" mb={3} fontWeight={600} textAlign="center">
                 {title}
             </Typography>
@@ -66,12 +66,7 @@ export const StackedBarCard = ({
                             cursor={{ fill: palette.grey[200] }}
                             wrapperStyle={{ zIndex: zIndex.tooltip }}
                         />
-                        <Legend
-                            verticalAlign="bottom"
-                            align="center"
-                            iconType="circle"
-                            wrapperStyle={{ paddingTop: 16 }}
-                        />
+
                         {dataKeys.map((key, index) => (
                             <Bar
                                 key={key}
@@ -88,6 +83,41 @@ export const StackedBarCard = ({
                     </BarChart>
                 </ResponsiveContainer>
             </Box>
+            <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                flexWrap="wrap"
+                gap={3}
+                mt={4}
+            >
+                {[...dataKeys].reverse().map((key) => (
+                    <Stack
+                        key={key}
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
+                    >
+                        <Box
+                            width={12}
+                            height={12}
+                            borderRadius="50%"
+                            bgcolor={colors[key]}
+                        />
+                        <Typography
+                            variant="caption"
+                            fontWeight={700}
+                            color="text.secondary"
+                            sx={{
+                                textTransform: 'uppercase',
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            {key}
+                        </Typography>
+                    </Stack>
+                ))}
+            </Stack>
         </Box>
     );
 };

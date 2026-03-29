@@ -284,19 +284,25 @@ export const MyTickets = () => {
                             ) : (
                                 tickets.map((ticket) => (
                                     <StyledTableRow
-                                        component={Link}
-                                        to={`/projects/${ticket.project}/tickets/${ticket.id}`}
                                         key={ticket.id}
                                         hover
+                                        component="tr"
                                         sx={{
                                             opacity: isLoading ? 0.5 : 1,
                                             transition: 'opacity 0.2s',
                                         }}
                                     >
                                         <TableCell align="center">
-                                            <StyledTicketKey variant="body2">
-                                                {ticket.jira_id}
-                                            </StyledTicketKey>
+                                            <Link
+                                                to={`/projects/${ticket.project}/tickets/${ticket.id}`}
+                                                style={{
+                                                    textDecoration: 'none',
+                                                }}
+                                            >
+                                                <StyledTicketKey variant="body2">
+                                                    {ticket.jira_id}
+                                                </StyledTicketKey>
+                                            </Link>
                                         </TableCell>
 
                                         <TableCell>

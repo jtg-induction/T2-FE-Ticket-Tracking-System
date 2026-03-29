@@ -10,7 +10,7 @@ export const getStatusColor = (
 ): Pick<ChipProps, 'color' | 'variant'> => {
     switch (status) {
         case TicketStatus.ToDo:
-            return { color: 'error', variant: 'outlined' as const };
+            return { color: 'info', variant: 'filled' as const };
         case TicketStatus.InProgress:
             return { color: 'warning', variant: 'filled' as const };
         case TicketStatus.Done:

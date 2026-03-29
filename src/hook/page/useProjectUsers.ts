@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router';
 
@@ -39,7 +39,7 @@ export const useProjectUsers = () => {
                 search: debouncedSearch,
                 cursor: nextCursor,
             },
-            { skip: !projectId || debouncedSearch.length < 2 },
+            { skip: !projectId },
         );
 
     const {
@@ -55,9 +55,17 @@ export const useProjectUsers = () => {
     const [updateRole, { isLoading: updateLoading }] =
         useUpdateMemberRoleMutation();
 
-    const searchOptions =
-        debouncedSearch.length >= 2 ? searchResponse?.data || [] : [];
-    const hasMore = debouncedSearch.length >= 2 && !!searchResponse?.meta?.next;
+    const searchOptions = useMemo(() => {
+        if (!debouncedSearch) return [];
+
+        if (isSearching && !nextCursor) {
+            return [];
+        }
+
+        return searchResponse?.data || [];
+    }, [searchResponse, isSearching, debouncedSearch, nextCursor]);
+
+    const hasMore = !!searchResponse?.meta?.next;
     const members = memberResponse?.data || [];
     const currentUser = members[0];
 

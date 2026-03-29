@@ -1,6 +1,6 @@
 import { Form, Link } from 'react-router';
 
-import { InfoOutlined } from '@mui/icons-material';
+import { HelpOutline } from '@mui/icons-material';
 import {
     Button,
     CircularProgress,
@@ -78,9 +78,19 @@ export const JQLSearch = () => {
                                             to={JIRA_INFO}
                                             target="blank"
                                             rel="noopener noreferrer"
+                                            style={{
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                            }}
                                         >
-                                            <InfoOutlined
-                                                sx={{ fontSize: '2rem' }}
+                                            <HelpOutline
+                                                sx={{
+                                                    fontSize: '2rem',
+                                                    color: 'text.primary',
+                                                    '&:hover': {
+                                                        color: 'primary.main',
+                                                    },
+                                                }}
                                             />
                                         </Link>
                                     </Tooltip>
@@ -89,14 +99,26 @@ export const JQLSearch = () => {
                         }}
                     />
 
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSearching}
-                        sx={{ height: 40, flexShrink: 0 }}
+                    <Tooltip
+                        title={
+                            isSearching ? 'Searching...' : 'Execute JQL search'
+                        }
+                        placement="top"
+                        arrow
                     >
-                        Search
-                    </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={isSearching}
+                            sx={{ height: 40, flexShrink: 0 }}
+                        >
+                            {isSearching ? (
+                                <CircularProgress size={20} color="inherit" />
+                            ) : (
+                                'Search'
+                            )}
+                        </Button>
+                    </Tooltip>
                 </Stack>
             </Form>
 

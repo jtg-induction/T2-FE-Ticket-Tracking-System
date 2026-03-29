@@ -31,7 +31,7 @@ import { useDocumentTitle, useTicketDetail } from '@hook';
 import { ErrorPage, LoadingPage } from '@page';
 import { Project } from '@type';
 import { ErrorResponse } from '@type/standard.types';
-import { getStatusColor, toDateTimeLocalValue } from '@util';
+import { getPriorityColor,getStatusColor, toDateTimeLocalValue } from '@util';
 
 import {
     StyledDescriptionContainer,
@@ -74,6 +74,8 @@ export const TicketDetail = () => {
             ? `${ticket.jira_id}: ${ticket.name} | ${ticket.project_details?.jira_project_key}`
             : 'Loading Ticket...',
     );
+
+    const theme = useTheme();
 
     const {
         register,
@@ -118,68 +120,94 @@ export const TicketDetail = () => {
                 boxShadow={shadows[2]}
                 zIndex={zIndex.fab}
             >
-                <Button
-                    startIcon={<ArrowBack />}
-                    onClick={() => void navigate(-1)}
-                    sx={{ color: 'text.secondary' }}
-                >
-                    Back
-                </Button>
-                <Stack direction="row" gap={2}>
+                <Tooltip title="Back to list">
                     <Button
-                        variant="outlined"
-                        startIcon={
-                            isSubscribing ? (
-                                <CircularProgress size={16} />
-                            ) : isSubscribed ? (
-                                <NotificationsOff />
-                            ) : (
-                                <Notifications />
-                            )
-                        }
-                        onClick={() => void handleSubscriptionToggle()}
-                        disabled={isSubscribing}
-                        color={isSubscribed ? 'error' : 'primary'}
+                        startIcon={<ArrowBack />}
+                        onClick={() => void navigate(-1)}
+                        sx={{ color: 'text.secondary' }}
                     >
-                        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+                        Back
                     </Button>
+                </Tooltip>
+                <Stack direction="row" gap={2}>
+                    <Tooltip
+                        title={
+                            isSubscribed
+                                ? 'Stop watching this ticket'
+                                : 'Watch this ticket for updates'
+                        }
+                    >
+                        <Button
+                            variant="outlined"
+                            startIcon={
+                                isSubscribing ? (
+                                    <CircularProgress size={16} />
+                                ) : isSubscribed ? (
+                                    <NotificationsOff />
+                                ) : (
+                                    <Notifications />
+                                )
+                            }
+                            onClick={() => void handleSubscriptionToggle()}
+                            disabled={isSubscribing}
+                            color={isSubscribed ? 'error' : 'primary'}
+                        >
+                            {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+                        </Button>
+                    </Tooltip>
 
                     {isEditing && (
                         <Stack direction="row" spacing={2}>
-                            <Button
-                                fullWidth
-                                variant="outlined"
-                                color="error"
-                                onClick={() => setIsEditing(false)}
+                            <Tooltip title="Cancel changes">
+                                <Button
+                                    fullWidth
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() => setIsEditing(false)}
+                                >
+                                    Cancel
+                                </Button>
+                            </Tooltip>
+                            <Tooltip
+                                title={
+                                    !isValid
+                                        ? 'Fix errors'
+                                        : !isDirty
+                                          ? 'No changes'
+                                          : 'Save changes'
+                                }
                             >
-                                Cancel
-                            </Button>
-                            <Button
-                                fullWidth
-                                type="submit"
-                                form="ticket-detail-form"
-                                variant="contained"
-                                disabled={!isDirty || isUpdating || !isValid}
-                            >
-                                Save
-                            </Button>
+                                <Button
+                                    fullWidth
+                                    type="submit"
+                                    form="ticket-detail-form"
+                                    variant="contained"
+                                    disabled={
+                                        !isDirty || isUpdating || !isValid
+                                    }
+                                >
+                                    Save
+                                </Button>
+                            </Tooltip>
                         </Stack>
                     )}
 
                     {!isEditing && permissions.canViewEditButton && (
-                        <Button
-                            variant="contained"
-                            startIcon={<Edit />}
-                            onClick={() => setIsEditing(true)}
-                            sx={{ borderRadius: 2, px: 3 }}
-                        >
-                            Edit Ticket
-                        </Button>
+                        <Tooltip title="Modify ticket details">
+                            <Button
+                                variant="contained"
+                                startIcon={<Edit />}
+                                onClick={() => setIsEditing(true)}
+                                sx={{ borderRadius: 2, px: 3 }}
+                            >
+                                Edit Ticket
+                            </Button>
+                        </Tooltip>
                     )}
                 </Stack>
             </Stack>
 
-            <Stack pb={4}>
+            <Stack px={4}>
                 <Box sx={{ mb: 4 }}>
                     <Stack
                         direction="row"
@@ -187,22 +215,40 @@ export const TicketDetail = () => {
                         alignItems="center"
                         mb={1}
                     >
-                        <Typography variant="h6">
-                            {`${ticket.project_details?.jira_project_key} / `}
-                        </Typography>
-                        <Chip
-                            label={ticket.jira_id}
-                            size="small"
-                            color="primary"
-                            sx={{ fontWeight: 800, borderRadius: 1 }}
-                        />
-                        <Typography
-                            variant="h6"
-                            color="text.secondary"
-                            fontWeight={400}
-                        >
-                            {`/ ${ticket.category}`}
-                        </Typography>
+                        <Tooltip title="Project Key" arrow>
+                            <Typography
+                                variant="h6"
+                                color="text.secondary"
+                                fontWeight={400}
+                                sx={{ cursor: 'default' }}
+                            >
+                                {`${ticket.project_details?.jira_project_key} / `}
+                            </Typography>
+                        </Tooltip>
+
+                        <Tooltip title="Unique Ticket Identifier" arrow>
+                            <Chip
+                                label={ticket.jira_id}
+                                size="small"
+                                color="primary"
+                                sx={{
+                                    fontWeight: 800,
+                                    borderRadius: 1,
+                                    cursor: 'pointer',
+                                }}
+                            />
+                        </Tooltip>
+
+                        <Tooltip title="Issue Category" arrow>
+                            <Typography
+                                variant="h6"
+                                color="text.secondary"
+                                fontWeight={400}
+                                sx={{ cursor: 'default' }}
+                            >
+                                {`/ ${ticket.category}`}
+                            </Typography>
+                        </Tooltip>
                     </Stack>
 
                     {isEditing && permissions.canEditFields ? (
@@ -218,9 +264,14 @@ export const TicketDetail = () => {
                             sx={{ mt: 2 }}
                         />
                     ) : (
-                        <Typography variant="h4" fontWeight={700} mb={2}>
-                            {ticket.name}
-                        </Typography>
+                        <Tooltip
+                            title="Click 'Edit Ticket' to change title"
+                            disableHoverListener={permissions.canViewEditButton}
+                        >
+                            <Typography variant="h4" fontWeight={700} mb={2}>
+                                {ticket.name}
+                            </Typography>
+                        </Tooltip>
                     )}
                 </Box>
 
@@ -268,194 +319,219 @@ export const TicketDetail = () => {
                     </Typography>
 
                     <Stack
-                        direction="row"
+                        direction={{ xs: 'column', md: 'row' }}
                         justifyContent="space-between"
-                        alignItems="center"
-                        mb={3}
+                        gap={4}
                     >
-                        <Typography
-                            variant="body2"
-                            fontWeight={600}
-                            color="textSecondary"
+                        <Stack
+                            direction={{ xs: 'row', md: 'column' }}
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap={4}
                         >
-                            Project
-                        </Typography>
-                        {!isEditing ? (
-                            <Stack
-                                direction="row"
-                                spacing={2}
-                                alignItems="center"
+                            <Typography
+                                variant="body2"
+                                fontWeight={600}
+                                color="textSecondary"
                             >
-                                <Chip
-                                    label={
-                                        ticket.project_details?.jira_project_key
-                                    }
-                                    size="small"
-                                    variant="outlined"
-                                />
-                            </Stack>
-                        ) : (
-                            <Autocomplete<Project>
-                                sx={{ width: 400 }}
-                                size="small"
-                                options={projects}
-                                loading={isSearchingProjects}
-                                value={selectedProject}
-                                isOptionEqualToValue={(option, value) =>
-                                    option.id === value?.id
-                                }
-                                getOptionLabel={(option) =>
-                                    option
-                                        ? `[${option.jira_project_key}] ${option.title}`
-                                        : ''
-                                }
-                                onInputChange={(_, val) =>
-                                    setProjectSearch(val)
-                                }
-                                onChange={(_, val) => {
-                                    const fallbackProject =
-                                        val || ticket.project_details;
-
-                                    setValue(
-                                        'project',
-                                        fallbackProject?.id ?? '',
-                                        {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        },
-                                    );
-                                    setSelectedProject(fallbackProject);
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        placeholder="Move to project..."
-                                    />
-                                )}
-                                renderOption={(props, option) => {
-                                    const { key, ...optionProps } = props;
-                                    return (
-                                        <MenuItem key={key} {...optionProps}>
-                                            <Stack>
-                                                <Typography
-                                                    variant="body2"
-                                                    fontWeight={600}
-                                                >
-                                                    {option.title}
-                                                </Typography>
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    {option.jira_project_key} •{' '}
-                                                    {option.site_url}
-                                                </Typography>
-                                            </Stack>
-                                        </MenuItem>
-                                    );
-                                }}
-                            />
-                        )}
-                    </Stack>
-
-                    <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        mb={2}
-                    >
-                        <Typography
-                            variant="body2"
-                            fontWeight={600}
-                            color="text.secondary"
-                        >
-                            Status
-                        </Typography>
-                        {isEditing && permissions.canEditStatus ? (
-                            <TextField
-                                select
-                                size="small"
-                                {...register('status')}
-                                defaultValue={ticket.status}
-                                sx={{ minWidth: 140 }}
-                                error={!!errors.status}
-                                helperText={errors.status?.message}
-                            >
-                                {statusOptions.map((opt) => (
-                                    <MenuItem key={opt} value={opt}>
-                                        {opt}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        ) : (
-                            <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={1}
-                            >
-                                <Chip
-                                    label={ticket.status}
-                                    {...getStatusColor(ticket.status)}
-                                    size="small"
-                                    sx={{ fontWeight: 700 }}
-                                />
-                                {ticket.status !== TicketStatus.Closed &&
-                                    permissions.role !== 'reporter' && (
-                                        <Tooltip title="Only the Reporter can close this ticket">
-                                            <InfoOutlined
-                                                sx={{
-                                                    fontSize: 16,
-                                                    color: 'text.disabled',
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    )}
-                            </Stack>
-                        )}
-                    </Stack>
-
-                    <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        mb={3}
-                    >
-                        <Typography
-                            variant="body2"
-                            fontWeight={600}
-                            color="text.secondary"
-                        >
-                            Priority
-                        </Typography>
-                        {isEditing && permissions.canEditFields ? (
-                            <TextField
-                                select
-                                size="small"
-                                {...register('priority')}
-                                defaultValue={ticket.priority}
-                                error={!!errors.priority}
-                                helperText={errors.priority?.message}
-                                sx={{ minWidth: 140 }}
-                            >
-                                {Object.values(TicketPriority).map((opt) => (
-                                    <MenuItem key={opt} value={opt}>
-                                        {opt}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        ) : (
-                            <Typography variant="body2" fontWeight={700}>
-                                {ticket.priority}
+                                Project
                             </Typography>
-                        )}
+                            {!isEditing ? (
+                                <Stack
+                                    direction="row"
+                                    spacing={2}
+                                    alignItems="center"
+                                >
+                                    <Chip
+                                        label={
+                                            ticket.project_details
+                                                ?.jira_project_key
+                                        }
+                                        size="small"
+                                        variant="outlined"
+                                    />
+                                </Stack>
+                            ) : (
+                                <Autocomplete<Project>
+                                    sx={{ width: 250 }}
+                                    size="small"
+                                    options={projects}
+                                    loading={isSearchingProjects}
+                                    value={selectedProject}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.id === value?.id
+                                    }
+                                    getOptionLabel={(option) =>
+                                        option
+                                            ? `[${option.jira_project_key}] ${option.title}`
+                                            : ''
+                                    }
+                                    onInputChange={(_, val) =>
+                                        setProjectSearch(val)
+                                    }
+                                    onChange={(_, val) => {
+                                        const fallbackProject =
+                                            val || ticket.project_details;
+
+                                        setValue(
+                                            'project',
+                                            fallbackProject?.id ?? '',
+                                            {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                            },
+                                        );
+                                        setSelectedProject(fallbackProject);
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            placeholder="Move to project..."
+                                        />
+                                    )}
+                                    renderOption={(props, option) => {
+                                        const { key, ...optionProps } = props;
+                                        return (
+                                            <MenuItem
+                                                key={key}
+                                                {...optionProps}
+                                            >
+                                                <Stack>
+                                                    <Typography
+                                                        variant="body2"
+                                                        fontWeight={600}
+                                                    >
+                                                        {option.title}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="caption"
+                                                        color="text.secondary"
+                                                    >
+                                                        {
+                                                            option.jira_project_key
+                                                        }{' '}
+                                                        • {option.site_url}
+                                                    </Typography>
+                                                </Stack>
+                                            </MenuItem>
+                                        );
+                                    }}
+                                />
+                            )}
+                        </Stack>
+
+                        <Stack
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap={4}
+                            direction={{ xs: 'row', md: 'column' }}
+                        >
+                            <Typography
+                                variant="body2"
+                                fontWeight={600}
+                                color="text.secondary"
+                            >
+                                Status
+                            </Typography>
+                            {isEditing && permissions.canEditStatus ? (
+                                <TextField
+                                    select
+                                    size="small"
+                                    {...register('status')}
+                                    defaultValue={ticket.status}
+                                    sx={{ minWidth: 140 }}
+                                    error={!!errors.status}
+                                    helperText={errors.status?.message}
+                                >
+                                    {statusOptions.map((opt) => (
+                                        <MenuItem key={opt} value={opt}>
+                                            {opt}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            ) : (
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={1}
+                                >
+                                    <Chip
+                                        label={ticket.status}
+                                        {...getStatusColor(ticket.status)}
+                                        size="small"
+                                        sx={{ fontWeight: 700 }}
+                                    />
+                                    {ticket.status !== TicketStatus.Closed &&
+                                        permissions.role !== 'reporter' && (
+                                            <Tooltip title="Only the Reporter can close this ticket">
+                                                <InfoOutlined
+                                                    sx={{
+                                                        fontSize: 16,
+                                                        color: 'text.disabled',
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        )}
+                                </Stack>
+                            )}
+                        </Stack>
+
+                        <Stack
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap={4}
+                            direction={{ xs: 'row', md: 'column' }}
+                        >
+                            <Typography
+                                variant="body2"
+                                fontWeight={600}
+                                color="text.secondary"
+                            >
+                                Priority
+                            </Typography>
+                            {isEditing && permissions.canEditFields ? (
+                                <TextField
+                                    select
+                                    size="small"
+                                    {...register('priority')}
+                                    defaultValue={ticket.priority}
+                                    error={!!errors.priority}
+                                    helperText={errors.priority?.message}
+                                    sx={{ minWidth: 140 }}
+                                >
+                                    {Object.values(TicketPriority).map(
+                                        (opt) => (
+                                            <MenuItem key={opt} value={opt}>
+                                                {opt}
+                                            </MenuItem>
+                                        ),
+                                    )}
+                                </TextField>
+                            ) : (
+                                <Typography
+                                    variant="body2"
+                                    fontWeight={700}
+                                    style={{
+                                        color: getPriorityColor(
+                                            ticket.priority,
+                                            theme,
+                                        ),
+                                    }}
+                                >
+                                    {ticket.priority}
+                                </Typography>
+                            )}
+                        </Stack>
                     </Stack>
 
                     <Divider sx={{ my: 3 }} />
-                    <UserDetailBlock
-                        label="Assignee"
-                        user={displayUser ?? null}
-                        icon={<Person fontSize="inherit" />}
-                    />
+                    {!isEditing && (
+                        <UserDetailBlock
+                            label="Assignee"
+                            user={displayUser ?? null}
+                            icon={<Person fontSize="inherit" />}
+                        />
+                    )}
 
                     {isEditing && permissions.canEditFields && (
                         <Autocomplete
