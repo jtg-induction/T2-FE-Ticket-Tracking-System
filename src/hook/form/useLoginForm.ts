@@ -23,6 +23,7 @@ export function useLoginForm() {
         setError,
         formState: { errors },
     } = useForm<LoginRequest>({
+        mode: 'onTouched',
         resolver: zodResolver(loginSchema),
         defaultValues: { email: '', password: '' },
     });

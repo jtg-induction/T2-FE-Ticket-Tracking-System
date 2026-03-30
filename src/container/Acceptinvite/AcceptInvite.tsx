@@ -103,10 +103,7 @@ export const AcceptInvite = () => {
                         <Typography variant="body2" color="text.secondary">
                             {successMessage}
                         </Typography>
-                        <Typography
-                            variant="caption"
-                            sx={{ mt: 2, display: 'block' }}
-                        >
+                        <Typography display="block" mt={2} variant="caption">
                             Redirecting to projects...
                         </Typography>
                     </StyledActionArea>

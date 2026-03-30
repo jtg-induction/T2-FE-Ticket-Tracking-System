@@ -12,6 +12,7 @@ export const StyledSignupForm = styled(Stack)<StackProps<'form'>>(
     ({ theme: { spacing, typography } }) => ({
         padding: spacing(8),
         marginInline: 'auto',
+        justifyItems: 'center',
         minHeight: '100%',
         maxWidth: typography.pxToRem(500),
         justifyContent: 'center',

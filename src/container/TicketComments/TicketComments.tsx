@@ -13,12 +13,11 @@ import {
 import {
     CommentInput,
     CommentItem,
+    ErrorOverlay,
     ErrorSnackbar,
     LoadingOverlay,
 } from '@component';
-import { DIMENSIONS } from '@constant';
 import { useTicketComments } from '@hook';
-import { ErrorPage } from '@page';
 
 export const TicketComments = () => {
     const { ticketId = '' } = useParams<{ ticketId: string }>();
@@ -28,6 +27,7 @@ export const TicketComments = () => {
         isLoading,
         isFetching,
         fetchError,
+        refetch,
         actionError,
         isCreating,
         isDeleting,
@@ -37,20 +37,24 @@ export const TicketComments = () => {
         clearActionError,
     } = useTicketComments(ticketId);
 
-    if (fetchError) return <ErrorPage />;
-
-    if (isLoading) {
-        return <LoadingOverlay />;
-    }
-
     return (
         <Stack
+            position="relative"
             component={Paper}
-            height={`calc(100vh - ${DIMENSIONS.HEADER_HEIGHT + 48}px)`}
+            height="100%"
+            minWidth={500}
             padding={4}
             direction="column"
             overflow="hidden"
         >
+            {(isLoading || isFetching) && <LoadingOverlay size={60} />}
+            {fetchError && (
+                <ErrorOverlay
+                    actionLabel="Retry"
+                    action={refetch}
+                    error="Failed to load comments"
+                />
+            )}
             <Typography variant="h6" fontWeight={700} gutterBottom>
                 Comments
             </Typography>
@@ -68,7 +72,7 @@ export const TicketComments = () => {
                         <CircularProgress size={32} />
                         <Typography
                             variant="caption"
-                            sx={{ mt: 1 }}
+                            mt={1}
                             color="textSecondary"
                         >
                             Loading...

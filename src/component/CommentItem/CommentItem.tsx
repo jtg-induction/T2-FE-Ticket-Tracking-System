@@ -68,7 +68,7 @@ export const CommentItem = ({
     };
 
     return (
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" maxWidth={520} spacing={2}>
             <Tooltip title={commentator.email}>
                 <Avatar
                     component={Link}
@@ -83,7 +83,7 @@ export const CommentItem = ({
                 </Avatar>
             </Tooltip>
 
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ flex: 1 }}>
                 <Stack
                     direction="row"
                     alignItems="center"

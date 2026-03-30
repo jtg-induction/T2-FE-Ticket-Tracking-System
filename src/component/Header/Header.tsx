@@ -122,7 +122,7 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
                             vertical: 'bottom',
                         }}
                         slotProps={{
-                            paper: { sx: { width: 260, borderRadius: 2 } },
+                            paper: { sx: { width: 320 } },
                         }}
                     >
                         <Stack p={2}>
@@ -183,7 +183,7 @@ export const Header = ({ onSidebarToggle }: HeaderProps) => {
                             <ListItemIcon>
                                 <LogoutIcon fontSize="small" color="error" />
                             </ListItemIcon>
-                            <ListItemText sx={{ color: 'error.main' }}>
+                            <ListItemText color="error.main">
                                 Logout
                             </ListItemText>
                         </MenuItem>

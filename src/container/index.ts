@@ -14,3 +14,4 @@ export { MyTickets } from './MyTickets';
 export { TicketComments } from './TicketComments';
 export { Reports } from './Reports';
 export type { TicketStatsData } from './Reports';
+export { CreateProjectModal } from './CreateProjectModal';

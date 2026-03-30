@@ -9,6 +9,7 @@ export const StyledAuthLayout = styled(Stack)<StackProps>(() => ({
 }));
 
 export const StyledMainContent = styled(Box)<BoxProps>(() => ({
+    position: 'relative',
     flexGrow: 1,
     height: '100%',
     overflowY: 'auto',

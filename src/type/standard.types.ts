@@ -11,6 +11,8 @@ export type FieldErrors = Record<string, string[]>;
 export interface PaginationMetadata {
     /** Total number of items in the database */
     count: number;
+    /** Current page of the response */
+    page: number;
     /** URL for the next page */
     next: string | null;
     /** URL for the previous page */

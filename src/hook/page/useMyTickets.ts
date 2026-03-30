@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSearchParams } from 'react-router';
 
@@ -37,7 +37,10 @@ const parsePageSize = (value: string | null): number => {
 export const useMyTicketsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const page = parsePageNum(searchParams.get(MY_TICKETS_PARAMS.PAGE));
+    const rawUrlPage = searchParams.get(MY_TICKETS_PARAMS.PAGE);
+
+    const page = parsePageNum(rawUrlPage);
+    const [queryPage, setQueryPage] = useState(page);
     const rowsPerPage = parsePageSize(
         searchParams.get(MY_TICKETS_PARAMS.PAGE_SIZE),
     );
@@ -86,6 +89,7 @@ export const useMyTicketsPage = () => {
 
     const handlePageChange = useCallback(
         (_: unknown, newPage: number) => {
+            setQueryPage(newPage);
             updateParams({
                 [MY_TICKETS_PARAMS.PAGE]: newPage === 0 ? null : newPage,
             });
@@ -154,10 +158,10 @@ export const useMyTicketsPage = () => {
         data: myTickets,
         isLoading,
         isFetching,
-        isError,
+        error,
         refetch,
     } = useGetMyTicketsQuery({
-        page: page + 1,
+        page: queryPage + 1,
         pageSize: rowsPerPage,
         ...(filters.status && { status: filters.status }),
         ...(filters.priority && { priority: filters.priority }),
@@ -166,6 +170,15 @@ export const useMyTicketsPage = () => {
         ...(filters.search && { search: filters.search }),
         ordering: sortDirection === 'desc' ? `-${sortField}` : sortField,
     });
+
+    useEffect(() => {
+        if (!myTickets?.meta?.page) return;
+        const backendPage = myTickets.meta.page;
+        updateParams({
+            [MY_TICKETS_PARAMS.PAGE]:
+                backendPage === 1 ? null : backendPage - 1,
+        });
+    }, [myTickets]);
 
     return {
         tickets: myTickets?.data ?? [],
@@ -182,7 +195,7 @@ export const useMyTicketsPage = () => {
         applyFilters,
         clearFilters,
         isLoading: isLoading || isFetching,
-        isError,
+        error,
         refetch,
     };
 };

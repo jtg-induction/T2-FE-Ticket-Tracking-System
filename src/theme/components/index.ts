@@ -7,6 +7,11 @@ const globalCss = `
        html {
         font-size: 62.5%;
       } 
+
+      * {
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+      }
+
       *::-webkit-scrollbar {
         width: 4px;
         height: 4px;
@@ -80,6 +85,30 @@ export const components: Components<Theme> = {
                 fontSize: '1.5rem',
                 backgroundColor: palette.primary.main,
                 color: palette.primary.contrastText,
+            }),
+        },
+    },
+    MuiFormHelperText: {
+        styleOverrides: {
+            root: {
+                marginTop: '-4px',
+            },
+        },
+    },
+    MuiOutlinedInput: {
+        styleOverrides: {
+            root: {
+                borderRadius: 8,
+            },
+        },
+    },
+    MuiPopover: {
+        styleOverrides: {
+            paper: ({ theme: { spacing, palette } }) => ({
+                padding: spacing(2),
+                borderRadius: spacing(2),
+                border: '1px solid',
+                borderColor: palette.divider,
             }),
         },
     },

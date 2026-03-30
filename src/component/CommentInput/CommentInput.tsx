@@ -20,13 +20,13 @@ export const CommentInput = ({ onSubmit, isSubmitting }: CommentInputProps) => {
     };
 
     return (
-        <Box sx={{ mt: 2 }}>
+        <Box mt={2}>
             <RichTextEditor
                 value={message}
                 onChange={setMessage}
                 placeholder="Add a comment..."
             />
-            <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+            <Stack direction="row" justifyContent="flex-end" mt={1}>
                 <Button
                     variant="contained"
                     size="small"

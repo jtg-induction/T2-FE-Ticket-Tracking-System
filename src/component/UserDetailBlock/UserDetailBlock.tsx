@@ -8,7 +8,7 @@ import { stringToColor } from '@util';
 import { UserDetailProps } from './UserDetail.types';
 
 export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
-    <Box sx={{ my: 4 }}>
+    <Box my={4}>
         <Stack direction="row" alignItems="center" spacing={1} mb={1}>
             {icon}
             <Typography
@@ -50,7 +50,7 @@ export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
                         </Avatar>
                     </Tooltip>
                 )}
-                <Box sx={{ minWidth: 0 }}>
+                <Box minWidth={0}>
                     <Typography
                         title={
                             user

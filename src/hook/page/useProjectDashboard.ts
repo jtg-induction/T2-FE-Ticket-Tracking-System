@@ -106,11 +106,22 @@ export const useProjectDashboard = (projectId: string) => {
         isLoading: isProjectLoading,
         setModalOpen,
         pageSize: PAGE_SIZE,
-        fetchError:
-            !!projectFetchError ||
-            !!todoQuery.error ||
-            !!progressQuery.error ||
-            !!doneQuery.error ||
-            !!closedQuery.error,
+        projectFetchError,
+        error:
+            todoQuery.error ||
+            progressQuery.error ||
+            doneQuery.error ||
+            closedQuery.error,
+        refetch: () => {
+            if (todoQuery.error) todoQuery.refetch();
+            if (progressQuery.error) progressQuery.refetch();
+            if (doneQuery.error) doneQuery.refetch();
+            if (closedQuery.error) closedQuery.refetch();
+        },
+        isFetchingTicket:
+            todoQuery.isFetching ||
+            progressQuery.isFetching ||
+            doneQuery.isFetching ||
+            closedQuery.isFetching,
     };
 };

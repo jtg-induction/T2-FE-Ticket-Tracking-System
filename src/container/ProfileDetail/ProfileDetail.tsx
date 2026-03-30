@@ -5,6 +5,7 @@ import {
     ChevronRight,
     Close as CloseIcon,
     Edit as EditIcon,
+    InfoOutlined,
     Save as SaveIcon,
 } from '@mui/icons-material';
 import {
@@ -23,8 +24,10 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { FORM, USER_ROLE_OPTIONS } from '@constant';
+import { LoadingOverlay } from '@component';
+import { FORM, PATHS, USER_ROLE_OPTIONS } from '@constant';
 import { useDocumentTitle, useProfileForm } from '@hook';
+import { ErrorPage } from '@page';
 import { convertIsoToDateYear } from '@util';
 
 import {
@@ -45,6 +48,7 @@ export const ProfileDetail = () => {
         canUserEdit,
         loading,
         fetchError,
+        refetch,
         saveError,
         handleToggleEdit,
         handleSave,
@@ -58,9 +62,14 @@ export const ProfileDetail = () => {
         profile ? `${profile.first_name}'s Profile` : 'User Profile',
     );
 
-    if (loading && !profile) return <Typography>Loading Profile...</Typography>;
     if (fetchError || !profile)
-        return <Typography color="error">Error loading profile</Typography>;
+        return (
+            <ErrorPage
+                action={refetch}
+                actionLabel="Retry"
+                error={fetchError?.message || 'Failed to load profile'}
+            />
+        );
 
     const fullName = `${profile.first_name} ${profile.last_name}`;
     const roleLabel =
@@ -76,6 +85,7 @@ export const ProfileDetail = () => {
             noValidate
             sx={{ padding: 4 }}
         >
+            {loading && <LoadingOverlay size={80} />}
             <StyledHeaderBox>
                 <Box overflow="hidden">
                     <Typography title={fullName} variant="h3" fontWeight={700}>
@@ -208,7 +218,18 @@ export const ProfileDetail = () => {
                             fullWidth
                             sx={getTextFieldStyle(theme)}
                             placeholder={FORM.MASK_PLACEHOLDER}
-                            slotProps={{ inputLabel: { shrink: true } }}
+                            slotProps={{
+                                inputLabel: { shrink: true },
+                                input: {
+                                    endAdornment: (
+                                        <Tooltip title="Reference key of the project on external Jira site">
+                                            <InfoOutlined
+                                                sx={{ fontSize: '2rem' }}
+                                            />
+                                        </Tooltip>
+                                    ),
+                                },
+                            }}
                         />
                     </StyledFullWidthItem>
                 )}
@@ -235,7 +256,11 @@ export const ProfileDetail = () => {
                             variant="outlined"
                             color="primary"
                             startIcon={<BarChartIcon />}
-                            onClick={() => void navigate(`/profile/insights`)}
+                            onClick={() =>
+                                void navigate(
+                                    `${PATHS.PROFILE}${PATHS.INSIGHTS}`,
+                                )
+                            }
                             endIcon={<ChevronRight />}
                             sx={{ borderRadius: 2 }}
                         >

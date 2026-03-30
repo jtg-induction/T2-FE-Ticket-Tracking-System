@@ -18,8 +18,6 @@ export const SortableHeader = ({
             direction={sortField === field ? sortDirection : 'asc'}
             onClick={() => onSort(field)}
             sx={{
-                width: '100%',
-                justifyContent: align === 'center' ? 'center' : 'flex-start',
                 '& .MuiTableSortLabel-icon': {
                     opacity: sortField === field ? 1 : 0.3,
                 },

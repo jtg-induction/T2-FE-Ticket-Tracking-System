@@ -1,13 +1,4 @@
-import {
-    Box,
-    Card,
-    CardContent,
-    Fab,
-    Paper,
-    Stack,
-    styled,
-    Typography,
-} from '@mui/material';
+import { Box, Fab, Paper, Stack, styled } from '@mui/material';
 
 export const StyledMainContent = styled(Paper)(({ theme: { spacing } }) => ({
     position: 'relative',
@@ -38,37 +29,6 @@ export const StyledTicketColumn = styled(Box)(
         borderRadius: shape.borderRadius * 2,
         padding: spacing(2),
         minHeight: '200px',
-    }),
-);
-
-export const StyledTicketCard = styled(Card, {
-    shouldForwardProp: (prop) => prop !== 'priorityColor',
-})<{ priorityColor: string }>(({ priorityColor }) => ({
-    minWidth: 220,
-    maxWidth: 220,
-    height: '100%',
-    cursor: 'pointer',
-    borderTop: `4px solid ${priorityColor}`,
-    transition: 'all 0.2s',
-    '&:hover': {
-        border: `1px solid ${priorityColor}`,
-    },
-}));
-
-export const StyledTicketCardContent = styled(CardContent)(() => ({
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-}));
-
-export const StyledTicketTitle = styled(Typography)(
-    ({ theme: { spacing } }) => ({
-        marginTop: spacing(0.5),
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
     }),
 );
 

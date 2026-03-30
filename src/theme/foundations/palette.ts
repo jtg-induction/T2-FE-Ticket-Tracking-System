@@ -1,8 +1,8 @@
 import {
     blue,
     blueGrey,
+    green,
     grey,
-    lightGreen,
     orange,
     red,
     yellow,
@@ -24,9 +24,9 @@ export const palette: PaletteOptions = {
         dark: yellow[700],
     },
     text: {
-        primary: blueGrey[900],
-        secondary: blueGrey[800],
-        disabled: blueGrey[600],
+        primary: blueGrey[800],
+        secondary: blueGrey[600],
+        disabled: blueGrey[400],
     },
     background: {
         default: grey[200],
@@ -42,9 +42,9 @@ export const palette: PaletteOptions = {
         dark: orange[600],
     },
     success: {
-        main: lightGreen[400],
-        light: lightGreen[200],
-        dark: lightGreen[600],
+        main: green[400],
+        light: green[200],
+        dark: green[600],
     },
     grey: {
         A100: blueGrey[400],

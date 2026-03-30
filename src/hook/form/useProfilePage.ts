@@ -15,6 +15,7 @@ export const useProfileForm = (id: string) => {
         data: response,
         isLoading,
         error: fetchError,
+        refetch,
     } = useGetUserByIdQuery(id);
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
@@ -88,6 +89,7 @@ export const useProfileForm = (id: string) => {
         isDirty,
         loading: isLoading || isUpdating,
         fetchError,
+        refetch,
         saveError,
         handleToggleEdit: () => {
             if (isEditing) reset();

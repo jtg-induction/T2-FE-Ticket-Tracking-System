@@ -28,6 +28,7 @@ import {
 } from '@mui/material';
 
 import {
+    ErrorOverlay,
     ErrorSnackbar,
     HighlightTextMatch,
     LoadingOverlay,
@@ -59,6 +60,7 @@ export const ProjectUsers = () => {
         memberActionLoading,
         fetchError,
         actionError,
+        refetch,
         setActionError,
         successMessage,
         setSuccessMessage,
@@ -88,8 +90,18 @@ export const ProjectUsers = () => {
     };
 
     return (
-        <Paper sx={{ height: '100%', minWidth: '420px' }}>
-            {memberActionLoading && <LoadingOverlay />}
+        <Paper sx={{ height: '100%', minWidth: '480px', position: 'relative' }}>
+            {(memberActionLoading || membersFetching || membersLoading) && (
+                <LoadingOverlay size={60} />
+            )}
+
+            {fetchError && (
+                <ErrorOverlay
+                    error={fetchError?.message || 'Unable to load members'}
+                    action={refetch}
+                    actionLabel={'retry'}
+                />
+            )}
 
             <Box p={spacing(4)}>
                 <Stack
@@ -276,21 +288,17 @@ export const ProjectUsers = () => {
 
             <Divider />
 
-            <Box flexGrow={1}>
-                {membersLoading ? (
-                    <Stack alignItems="center" py={6}>
-                        <CircularProgress size={28} />
-                    </Stack>
-                ) : fetchError ? (
+            <Box flexGrow={1} height="100%">
+                {fetchError ? (
                     <Stack alignItems="center" py={6} px={3}>
                         <Typography color="error">
                             Failed to load members
                         </Typography>
                     </Stack>
                 ) : (
-                    <Stack spacing={0}>
-                        {membersFetching && (
-                            <CircularProgress size={20} sx={{ m: '0 auto' }} />
+                    <Stack position="relative">
+                        {(membersFetching || membersLoading) && (
+                            <LoadingOverlay size={40} />
                         )}
                         {members.map((user) => {
                             const myRole =

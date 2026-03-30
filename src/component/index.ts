@@ -22,3 +22,6 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { HighlightTextMatch } from './HighlightTextMatch';
 export { FilterBar } from './FilterBar';
 export { SortableHeader } from './SortableHeader';
+export { TicketCard } from './TicketCard';
+export type { ErrorOverlayProps } from './ErrorOverlay';
+export { ErrorOverlay } from './ErrorOverlay';

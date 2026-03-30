@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
                         element: <ProjectDashboardPage />,
                     },
                     {
-                        path: `${PATHS.PROJECTS}/:projectId/detail`,
+                        path: `${PATHS.PROJECTS}/:projectId${PATHS.DETAIL}`,
                         element: <ProjectDetailPage />,
                     },
                     {
@@ -52,15 +52,15 @@ export const router = createBrowserRouter([
                         element: <AcceptInvitePage />,
                     },
                     {
-                        path: `${PATHS.PROJECTS}/:projectId/insights`,
+                        path: `${PATHS.PROJECTS}/:projectId${PATHS.INSIGHTS}`,
                         element: <ReportsPage />,
                     },
                     {
-                        path: `${PATHS.PROFILE}/insights`,
+                        path: `${PATHS.PROFILE}${PATHS.INSIGHTS}`,
                         element: <ReportsPage />,
                     },
                     {
-                        path: `${PATHS.PROFILE}/:userId/insights`,
+                        path: `${PATHS.PROFILE}/:userId${PATHS.INSIGHTS}`,
                         element: <ReportsPage />,
                     },
                 ],

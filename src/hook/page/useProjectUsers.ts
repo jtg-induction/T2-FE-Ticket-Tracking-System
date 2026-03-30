@@ -47,6 +47,7 @@ export const useProjectUsers = () => {
         isLoading: membersLoading,
         isFetching: membersFetching,
         error: fetchError,
+        refetch,
     } = useGetProjectMembersQuery({ id: projectId!, page: 1 });
 
     const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
@@ -132,6 +133,7 @@ export const useProjectUsers = () => {
         membersFetching,
         memberActionLoading: updateLoading || removeLoading,
         fetchError,
+        refetch,
         actionError,
         setActionError,
         successMessage,

@@ -1,11 +1,13 @@
-import { useNavigate } from 'react-router';
+import { Link as ReactLink } from 'react-router';
 
 import {
     Alert,
     Button,
     FormControl,
     FormLabel,
+    Link,
     Snackbar,
+    Stack,
     TextField,
     Typography,
 } from '@mui/material';
@@ -16,7 +18,6 @@ import { useLoginForm } from '@hook';
 import { StyledFormWrapper, StyledLoginContainer } from './LoginForm.style';
 
 export const LoginForm = () => {
-    const navigate = useNavigate();
     const {
         redirectMessage,
         register,
@@ -44,6 +45,9 @@ export const LoginForm = () => {
                 }}
                 noValidate
             >
+                <Typography variant="h4" fontWeight={600} color="primary">
+                    Welcome Back
+                </Typography>
                 {formError && <Alert severity="error">{formError}</Alert>}
 
                 <FormControl fullWidth>
@@ -60,7 +64,6 @@ export const LoginForm = () => {
                     />
                 </FormControl>
 
-                {/* Password */}
                 <FormControl>
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <TextField
@@ -84,12 +87,14 @@ export const LoginForm = () => {
                 >
                     {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Typography textAlign="center">
-                    Don&apos;t have an account?{' '}
-                    <Button onClick={() => void navigate(PATHS.SIGNUP)}>
+                <Stack direction="row" spacing={1} justifyContent="center">
+                    <Typography color="textSecondary">
+                        Don't have an account?
+                    </Typography>
+                    <Link component={ReactLink} to={PATHS.SIGNUP}>
                         Sign up
-                    </Button>
-                </Typography>
+                    </Link>
+                </Stack>
             </StyledFormWrapper>
         </StyledLoginContainer>
     );

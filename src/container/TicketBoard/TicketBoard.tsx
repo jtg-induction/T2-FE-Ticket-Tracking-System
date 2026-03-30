@@ -9,60 +9,63 @@ import {
     BarChart,
     ChevronLeft,
     ChevronRight,
+    Circle,
+    HelpOutlined,
     Settings,
 } from '@mui/icons-material';
 import {
-    Avatar,
     Box,
     Chip,
     CircularProgress,
     IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
     Stack,
     Tooltip,
     Typography,
     useTheme,
 } from '@mui/material';
 
-import { CustomIconButton } from '@component';
-import { PAGE_SIZE, TicketStatus } from '@constant';
+import {
+    CustomIconButton,
+    ErrorOverlay,
+    LoadingOverlay,
+    TicketCard,
+} from '@component';
+import {
+    PAGE_SIZE,
+    PATHS,
+    TICKET_PRIORITY_OPTIONS,
+    TicketStatus,
+} from '@constant';
 import { CreateTicketModal } from '@container';
 import { useDocumentTitle, useProjectDashboard } from '@hook';
 import { ErrorPage } from '@page';
-import { convertIsoToDateYear, getPriorityColor, stringToColor } from '@util';
+import { getPriorityColor } from '@util';
 
 import {
     StyledColumnHeader,
     StyledFab,
     StyledMainContent,
     StyledScrollableArea,
-    StyledTicketCard,
-    StyledTicketCardContent,
     StyledTicketColumn,
-    StyledTicketTitle,
 } from './TicketBoard.style';
 
 export const TicketBoard = () => {
+    const theme = useTheme();
     const statuses: TicketStatus[] = [
         TicketStatus.ToDo,
         TicketStatus.InProgress,
         TicketStatus.Done,
         TicketStatus.Closed,
     ];
-    const theme = useTheme();
     const navigate = useNavigate();
     const { projectId } = useParams<{ projectId: string }>();
     const [selectedStatus, setSelectedStatus] = useState<TicketStatus | null>(
         TicketStatus.ToDo,
     );
-
-    const handleOpenModal = (status: TicketStatus) => {
-        setSelectedStatus(status);
-        setModalOpen(true);
-    };
-
-    if (!projectId) {
-        return <ErrorPage></ErrorPage>;
-    }
 
     const {
         project,
@@ -70,45 +73,132 @@ export const TicketBoard = () => {
         isModalOpen,
         setModalOpen,
         pageSize,
-        fetchError,
-    } = useProjectDashboard(projectId);
+        isLoading,
+        projectFetchError,
+        error,
+        refetch,
+        isFetchingTicket,
+    } = useProjectDashboard(projectId ?? '');
 
     useDocumentTitle(project ? `${project.title} Board` : 'Kanban Board');
 
-    if (fetchError) return <ErrorPage></ErrorPage>;
+    const handleOpenModal = (status: TicketStatus) => {
+        setSelectedStatus(status);
+        setModalOpen(true);
+    };
+
+    if (!projectId)
+        return (
+            <ErrorPage
+                error="Project not found"
+                actionLabel="Go back home"
+                action={() => void navigate('/')}
+            />
+        );
+
+    if (projectFetchError)
+        return (
+            <ErrorPage
+                error={projectFetchError?.message || 'Unable to load project'}
+                actionLabel="Go back home"
+                action={() => void navigate('/')}
+            />
+        );
 
     return (
         <StyledMainContent>
-            <Stack direction="row" alignItems="center" mb={2}>
-                <IconButton onClick={() => void navigate(-1)} sx={{ ml: -1 }}>
-                    <ArrowBack />
-                </IconButton>
-                <Typography
-                    title={project?.title}
-                    variant="h5"
-                    fontWeight={700}
-                    noWrap
-                    flex={1}
-                    ml={1}
-                >
-                    {project?.title || 'Loading...'}
-                </Typography>
-                <Tooltip title="Project Report">
-                    <CustomIconButton
-                        variant="standard"
-                        onClick={() => void navigate(`insights`)}
+            {(isLoading || isFetchingTicket) && <LoadingOverlay size={120} />}
+            {error && (
+                <ErrorOverlay
+                    error={error?.message || 'Unable to load tickets'}
+                    actionLabel="Retry"
+                    action={refetch}
+                />
+            )}
+            <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                mb={2}
+            >
+                <Stack direction="row" alignItems="center">
+                    <IconButton
+                        onClick={() => void navigate(-1)}
+                        sx={{ ml: -1 }}
                     >
-                        <BarChart />
-                    </CustomIconButton>
-                </Tooltip>
-                <Tooltip title="Project settings">
-                    <CustomIconButton
-                        variant="standard"
-                        onClick={() => void navigate(`detail`)}
+                        <ArrowBack />
+                    </IconButton>
+                    <Tooltip title={project?.title}>
+                        <Typography variant="h5" fontWeight={700} noWrap ml={1}>
+                            {project?.title || 'Loading...'}
+                        </Typography>
+                    </Tooltip>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                    <Tooltip
+                        title={
+                            <List disablePadding>
+                                <ListItem disablePadding disableGutters>
+                                    <ListItemText
+                                        primary="Colors map to priority as:"
+                                        disableTypography
+                                    />
+                                </ListItem>
+                                {TICKET_PRIORITY_OPTIONS.map((p) => (
+                                    <ListItem
+                                        key={p}
+                                        disablePadding
+                                        disableGutters
+                                    >
+                                        <ListItemIcon
+                                            sx={{
+                                                minWidth: 24,
+                                            }}
+                                        >
+                                            <Circle
+                                                sx={{
+                                                    color: getPriorityColor(
+                                                        p,
+                                                        theme,
+                                                    ),
+                                                    fontSize: '1.2rem',
+                                                }}
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={p}
+                                            disableTypography
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        }
                     >
-                        <Settings />
-                    </CustomIconButton>
-                </Tooltip>
+                        <HelpOutlined
+                            color="action"
+                            sx={{
+                                mr: 2,
+                                transform: 'scale(0.8)',
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Project Report">
+                        <CustomIconButton
+                            variant="standard"
+                            onClick={() => void navigate(`insights`)}
+                        >
+                            <BarChart />
+                        </CustomIconButton>
+                    </Tooltip>
+                    <Tooltip title="Project settings">
+                        <CustomIconButton
+                            variant="standard"
+                            onClick={() => void navigate(`detail`)}
+                        >
+                            <Settings />
+                        </CustomIconButton>
+                    </Tooltip>
+                </Stack>
             </Stack>
 
             <StyledScrollableArea>
@@ -136,21 +226,33 @@ export const TicketBoard = () => {
                                     >
                                         {status}
                                     </Typography>
-                                    <Chip
-                                        label={total}
-                                        size="small"
-                                        sx={{
-                                            height: 20,
-                                            fontSize: 10,
-                                        }}
-                                    />
-                                    <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handleOpenModal(status)}
+                                    <Tooltip
+                                        title={`Total tickets in ${status}: ${total}`}
                                     >
-                                        <AddCircleIcon fontSize="small" />
-                                    </IconButton>
+                                        <Chip
+                                            label={total}
+                                            size="small"
+                                            sx={{
+                                                height: 20,
+                                                fontSize: 10,
+                                            }}
+                                        />
+                                    </Tooltip>
+                                    {project?.can_edit && (
+                                        <Tooltip
+                                            title={`Create ticket in ${status} status`}
+                                        >
+                                            <IconButton
+                                                size="small"
+                                                color="primary"
+                                                onClick={() =>
+                                                    handleOpenModal(status)
+                                                }
+                                            >
+                                                <AddCircleIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
                                     {loading && <CircularProgress size={14} />}
                                 </Stack>
 
@@ -194,103 +296,19 @@ export const TicketBoard = () => {
                             >
                                 {tickets.length > 0
                                     ? tickets.map((ticket) => (
-                                          <StyledTicketCard
-                                              key={ticket.id}
+                                          <TicketCard
+                                              ticket={ticket}
                                               onClick={() =>
                                                   void navigate(
-                                                      `/projects/${projectId}/tickets/${ticket.id}`,
+                                                      `${PATHS.PROJECTS}/${projectId}${PATHS.TICKET}/${ticket.id}`,
                                                   )
                                               }
-                                              priorityColor={getPriorityColor(
-                                                  ticket.priority,
-                                                  theme,
-                                              )}
-                                          >
-                                              <StyledTicketCardContent>
-                                                  <Box mb={1}>
-                                                      <Typography
-                                                          title={ticket.jira_id}
-                                                          variant="caption"
-                                                          fontWeight="bold"
-                                                          color="primary"
-                                                      >
-                                                          {ticket.jira_id}
-                                                      </Typography>
-                                                      <StyledTicketTitle
-                                                          title={ticket.name}
-                                                          variant="body2"
-                                                          fontWeight={600}
-                                                      >
-                                                          {ticket.name}
-                                                      </StyledTicketTitle>
-                                                      {ticket.deadline && (
-                                                          <Typography
-                                                              title={convertIsoToDateYear(
-                                                                  ticket.deadline,
-                                                              )}
-                                                              fontSize="1.2rem"
-                                                              fontWeight={600}
-                                                              color="primary"
-                                                          >
-                                                              {convertIsoToDateYear(
-                                                                  ticket.deadline,
-                                                              )}
-                                                          </Typography>
-                                                      )}
-                                                  </Box>
-                                                  <Stack
-                                                      direction="row"
-                                                      justifyContent="space-between"
-                                                      alignItems="center"
-                                                  >
-                                                      <Typography
-                                                          variant="caption"
-                                                          color="text.secondary"
-                                                      >
-                                                          {ticket.category}
-                                                      </Typography>
-                                                      {ticket.assignee && (
-                                                          <Tooltip
-                                                              title={
-                                                                  ticket
-                                                                      .assignee
-                                                                      .first_name +
-                                                                  ' ' +
-                                                                  ticket
-                                                                      .assignee
-                                                                      .last_name
-                                                              }
-                                                          >
-                                                              <Avatar
-                                                                  sx={{
-                                                                      bgcolor:
-                                                                          stringToColor(
-                                                                              ticket
-                                                                                  .assignee
-                                                                                  .email,
-                                                                          ),
-                                                                      width: 24,
-                                                                      height: 24,
-                                                                      fontSize:
-                                                                          '1rem',
-                                                                  }}
-                                                              >
-                                                                  {
-                                                                      ticket
-                                                                          .assignee
-                                                                          .first_name?.[0]
-                                                                  }
-                                                                  {
-                                                                      ticket
-                                                                          .assignee
-                                                                          .last_name?.[0]
-                                                                  }
-                                                              </Avatar>
-                                                          </Tooltip>
-                                                      )}
-                                                  </Stack>
-                                              </StyledTicketCardContent>
-                                          </StyledTicketCard>
+                                              onAvatarClick={() =>
+                                                  void navigate(
+                                                      `${PATHS.PROFILE}/${ticket.assignee?.user_id}`,
+                                                  )
+                                              }
+                                          />
                                       ))
                                     : !loading && (
                                           <Box
@@ -314,18 +332,20 @@ export const TicketBoard = () => {
                     );
                 })}
             </StyledScrollableArea>
-            <Tooltip title="Create New Ticket" placement="left">
-                <StyledFab
-                    color="primary"
-                    aria-label="add"
-                    onClick={() => {
-                        setSelectedStatus(null);
-                        setModalOpen(true);
-                    }}
-                >
-                    <Add />
-                </StyledFab>
-            </Tooltip>
+            {project?.can_edit && (
+                <Tooltip title="Create New Ticket" placement="left">
+                    <StyledFab
+                        color="primary"
+                        aria-label="add"
+                        onClick={() => {
+                            setSelectedStatus(null);
+                            setModalOpen(true);
+                        }}
+                    >
+                        <Add />
+                    </StyledFab>
+                </Tooltip>
+            )}
             <CreateTicketModal
                 key={selectedStatus}
                 open={isModalOpen}

@@ -1,3 +1,4 @@
+import projectIllustration from '@assets/illustrations/project-illustration.webp';
 import logoLight from '@assets/logo/logo-light.webp';
 
 import {
@@ -10,7 +11,7 @@ export const HeroSection = () => (
     <StyledBrandingSection component="aside">
         <StyledIllustration
             component="img"
-            src="/images/project-illustration.webp"
+            src={projectIllustration}
             alt="Project illustration"
         />
         <StyledLogo component="img" src={logoLight} alt="Logo" />

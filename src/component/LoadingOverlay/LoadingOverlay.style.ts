@@ -12,7 +12,7 @@ export const StyledLoadingOverlay = styled(Box)(
         justifyContent: 'center',
         alignItems: 'center',
 
-        backgroundColor: alpha(palette.common.white, 0.15),
-        zIndex: zIndex.modal,
+        backgroundColor: alpha(palette.common.white, 0.7),
+        zIndex: zIndex.tooltip,
     }),
 );

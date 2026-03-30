@@ -2,6 +2,7 @@ import { Box, Paper, styled } from '@mui/material';
 
 export const StyledJQLSearchWrapper = styled(Paper)(
     ({ theme: { spacing } }) => ({
+        maxWidth: '480px',
         height: '100%',
         padding: spacing(3),
         boxSizing: 'border-box',
@@ -27,7 +28,7 @@ export const StyledTicketItem = styled(Box)(
         border: `1px solid ${palette.divider}`,
         borderRadius: shape.borderRadius,
         marginBottom: spacing(1.5),
-        backgroundColor: palette.background.default,
+        backgroundColor: palette.background.paper,
         boxSizing: 'border-box',
     }),
 );

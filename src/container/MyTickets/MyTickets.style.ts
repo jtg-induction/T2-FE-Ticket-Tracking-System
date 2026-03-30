@@ -5,9 +5,6 @@ import {
     styled,
     TableCell,
     TableContainer,
-    TableRow,
-    TableRowProps,
-    Typography,
 } from '@mui/material';
 
 export const StyledPageRoot = styled(Paper)(({ theme: { spacing } }) => ({
@@ -45,16 +42,6 @@ export const StyledPriorityIndicator = styled(Box, {
     backgroundColor: priorityColor,
 }));
 
-export const StyledTicketKey = styled(Typography)(({ theme: { palette } }) => ({
-    fontWeight: 800,
-    color: palette.primary.main,
-}));
-
 export const StyledHeaderCell = styled(TableCell)({
     fontWeight: 700,
-});
-
-export const StyledTableRow = styled(TableRow)<TableRowProps>({
-    cursor: 'default',
-    textDecoration: 'none',
 });

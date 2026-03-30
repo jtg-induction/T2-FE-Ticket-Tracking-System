@@ -13,16 +13,15 @@ import {
 } from '@service';
 import { ErrorResponse, Project } from '@type';
 
-export const useProjectForm = (projectId: string) => {
+export const useProjectForm = (projectId?: string) => {
     const navigate = useNavigate();
-    const isNew = projectId === 'new';
-
+    const isNew = !projectId;
     const [isEditing, setIsEditing] = useState(isNew);
     const [errorMessages, setErrorMessages] = useState<string[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     const { data: response, isLoading: isFetching } = useGetProjectByIdQuery(
-        projectId,
+        projectId ?? '',
         { skip: isNew },
     );
 
@@ -37,10 +36,10 @@ export const useProjectForm = (projectId: string) => {
         reset,
         watch,
         setValue,
-        formState: { errors, dirtyFields, isDirty, isValid },
+        formState: { errors, dirtyFields },
     } = useForm({
+        mode: 'onTouched',
         resolver: zodResolver(projectSchema),
-        mode: 'onChange',
         defaultValues: {
             title: '',
             description: '',
@@ -49,6 +48,15 @@ export const useProjectForm = (projectId: string) => {
             is_archived: false,
         },
     });
+
+    const form = {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        setValue,
+        formState: { errors, dirtyFields },
+    };
 
     const formValues = watch();
 
@@ -62,31 +70,27 @@ export const useProjectForm = (projectId: string) => {
         try {
             if (isNew) {
                 const res = await createProject(data).unwrap();
-                if (res.data.id)
+                if (res.data.id) {
                     void navigate(`${PATHS.PROJECTS}/${res.data.id}`);
+                }
             } else {
                 const keys = Object.keys(dirtyFields) as Array<keyof Project>;
                 if (keys.length === 0) {
                     setIsEditing(false);
                     return;
                 }
-
-                const payload: Partial<Project> = {};
-                keys.forEach((key) => {
-                    Object.assign(payload, { [key]: data[key] });
-                });
-
-                await updateProject({
-                    id: projectId,
-                    body: payload,
-                }).unwrap();
+                const payload = keys.reduce<Partial<Project>>((acc, key) => {
+                    acc[key] = data[key] as never;
+                    return acc;
+                }, {});
+                await updateProject({ id: projectId, body: payload }).unwrap();
                 setIsEditing(false);
             }
-        } catch (err: unknown) {
+        } catch (err) {
             const errorData = (err as { data: ErrorResponse }).data;
             const messages = errorData?.errors
                 ? Object.values(errorData.errors).flat()
-                : [errorData?.message || 'An error occurred'];
+                : [errorData?.message ?? 'An error occurred'];
             setErrorMessages(messages);
             setSnackbarOpen(true);
         }
@@ -94,11 +98,9 @@ export const useProjectForm = (projectId: string) => {
 
     return {
         project: response?.data,
+        form,
         formValues,
-        isValid,
-        isDirty,
         errors,
-        register,
         isEditing,
         isNew,
         loading: isFetching || isUpdating || isCreating,
@@ -111,7 +113,7 @@ export const useProjectForm = (projectId: string) => {
         },
         handleSave: handleSubmit(onSave, (valErrors) => {
             const messages = Object.values(valErrors).map(
-                (err) => err?.message || 'Invalid input',
+                (err) => err?.message ?? 'Invalid input',
             );
             setErrorMessages(messages);
             setSnackbarOpen(true);
@@ -119,7 +121,7 @@ export const useProjectForm = (projectId: string) => {
         handleUnarchive: async () => {
             try {
                 await updateProject({
-                    id: projectId,
+                    id: projectId ?? '',
                     body: { is_archived: false },
                 }).unwrap();
             } catch {

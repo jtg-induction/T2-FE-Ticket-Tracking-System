@@ -6,21 +6,11 @@ export const TicketBaseSchema = z.object({
     name: z
         .string()
         .trim()
-        .nonempty("This field can't be empty")
-        .max(100, "Name can't be more than 100 characters long"),
-    description: z
-        .string()
-        .trim()
-        .max(255, 'Description must be less than 255 characters')
-        .optional(),
-    priority: z.enum(
-        TicketPriority,
-        'Invalid priority option, select from the options',
-    ),
-    category: z.enum(
-        TicketCategory,
-        'Invalid category, select from the options',
-    ),
+        .nonempty('Name is required')
+        .max(100, 'Max 100 characters'),
+    description: z.string().trim().max(255, 'Max 255 characters').nullish(),
+    priority: z.enum(TicketPriority, 'Invalid priority option'),
+    category: z.enum(TicketCategory, 'Invalid category option'),
     status: z.enum(TicketStatus).optional(),
     deadline: z.string().nullish().or(z.literal('')),
     project: z

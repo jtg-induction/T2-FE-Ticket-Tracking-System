@@ -32,6 +32,7 @@ export const useReport = (
         isLoading: reportsLoading,
         error: reportsError,
         isFetching: reportsFetching,
+        refetch: refetchReports,
     } = useGetTicketReportsQuery({
         projectId,
         userId,
@@ -44,12 +45,14 @@ export const useReport = (
         data: projectRes,
         isLoading: projectLoading,
         error: projectError,
+        refetch: refetchProject,
     } = useGetProjectByIdQuery(projectId!, { skip: !projectId || !!userId });
 
     const {
         data: userRes,
         isLoading: userLoading,
         error: userError,
+        refetch: refetchUser,
     } = useGetUserByIdQuery(userId!, { skip: !userId });
 
     const [generateReport, { isLoading: isStarting }] =
@@ -199,7 +202,15 @@ export const useReport = (
         reportSubject,
         loading: reportsLoading || projectLoading || userLoading,
         isFetching: reportsFetching,
-        error: reportsError || projectError || userError,
+        reportsError,
+        error: projectError || userError,
+        refetch: () => {
+            if (projectError) refetchProject();
+            if (userError) refetchUser();
+        },
+        refetchReport: () => {
+            if (reportsError) refetchReports();
+        },
         priorityKeys: PRIORITY_KEYS,
         handleDownload,
         isDownloading: isStarting || isPolling,

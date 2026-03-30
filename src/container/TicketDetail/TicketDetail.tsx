@@ -25,7 +25,7 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { ErrorSnackbar, UserDetailBlock } from '@component';
+import { ErrorSnackbar, LoadingOverlay, UserDetailBlock } from '@component';
 import { TicketPriority, TicketStatus } from '@constant';
 import { useDocumentTitle, useTicketDetail } from '@hook';
 import { ErrorPage, LoadingPage } from '@page';
@@ -62,6 +62,7 @@ export const TicketDetail = () => {
         isSearching,
         setSearchTerm,
         fetchError,
+        refetch,
         updateError,
         clearUpdateError,
         isSubscribed,
@@ -91,11 +92,22 @@ export const TicketDetail = () => {
 
     if (isLoading) return <LoadingPage />;
 
-    if (fetchError) return <ErrorPage />;
+    if (fetchError)
+        return (
+            <ErrorPage
+                error={fetchError?.message || 'Unable to load ticket'}
+                action={refetch}
+                actionLabel="Retry"
+            />
+        );
 
     if (!ticket)
         return (
-            <Typography color="text.secondary">Ticket not found.</Typography>
+            <ErrorPage
+                error={'Unable to load ticket'}
+                action={refetch}
+                actionLabel="Retry"
+            />
         );
 
     const statusOptions = Object.values(TicketStatus).filter(
@@ -106,7 +118,7 @@ export const TicketDetail = () => {
 
     return (
         <StyledTicketSurface>
-            {isUpdating && <LoadingPage />}
+            {isUpdating && <LoadingOverlay size={80} />}
             <Stack
                 position="sticky"
                 top={0}
@@ -208,7 +220,7 @@ export const TicketDetail = () => {
             </Stack>
 
             <Stack px={4}>
-                <Box sx={{ mb: 4 }}>
+                <Box mb={4}>
                     <Stack
                         direction="row"
                         spacing={1}

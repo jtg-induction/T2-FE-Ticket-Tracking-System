@@ -29,7 +29,8 @@ export const ProjectItem = ({ project, onClick }: ProjectItemProps) => (
                     title={project.title}
                     variant="h6"
                     fontWeight="600"
-                    sx={{ flex: 1, minWidth: 0 }}
+                    minWidth={0}
+                    flex={1}
                 >
                     {project.title}
                 </Typography>
@@ -41,7 +42,7 @@ export const ProjectItem = ({ project, onClick }: ProjectItemProps) => (
                         color="text.secondary"
                     >
                         <Tooltip title={`Jira site: ${project.site_url}`}>
-                            <LinkOutlined sx={{ color: 'text.disabled' }} />
+                            <LinkOutlined color="disabled" />
                         </Tooltip>
                     </Link>
                 )}

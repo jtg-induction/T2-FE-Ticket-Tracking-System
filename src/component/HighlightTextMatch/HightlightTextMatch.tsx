@@ -6,9 +6,6 @@ import { Box } from '@mui/material';
  * @param query {string} String to be highlighted
  * @returns {JSX.Element} Highlighted text
  */
-/**
- * Highlights the matching text from the whole string
- */
 export const HighlightTextMatch = (text: string, query: string) => {
     if (!query.trim()) return <span>{text}</span>;
 
@@ -22,10 +19,8 @@ export const HighlightTextMatch = (text: string, query: string) => {
                     <Box
                         key={index}
                         component="span"
-                        sx={{
-                            color: 'primary.main',
-                            fontWeight: 700,
-                        }}
+                        color="primary.main"
+                        fontWeight={700}
                     >
                         {part}
                     </Box>

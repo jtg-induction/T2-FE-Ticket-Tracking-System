@@ -15,6 +15,7 @@ export const useTicketComments = (ticketId: string) => {
         data: response,
         isLoading,
         isFetching,
+        refetch,
         error: fetchError,
     } = useGetTicketCommentsQuery({ ticketId, cursor }, { skip: !ticketId });
 
@@ -66,6 +67,7 @@ export const useTicketComments = (ticketId: string) => {
         hasMore: !!response?.meta?.next,
         isLoading,
         isFetching,
+        refetch,
         fetchError,
         actionError,
         isCreating,

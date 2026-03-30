@@ -1,7 +1,5 @@
 import { useLocation, useParams } from 'react-router';
 
-import { Paper } from '@mui/material';
-
 import { PATHS } from '@constant';
 import { Reports } from '@container';
 
@@ -13,12 +11,10 @@ export const ReportsPage = () => {
     const effectiveUserId = userId || id;
 
     return (
-        <Paper elevation={4} variant="elevation" sx={{ padding: 4 }}>
-            <Reports
-                projectId={isProjectContext ? projectId : undefined}
-                userId={!isProjectContext ? effectiveUserId : undefined}
-                userFilter={isProjectContext}
-            />
-        </Paper>
+        <Reports
+            projectId={isProjectContext ? projectId : undefined}
+            userId={!isProjectContext ? effectiveUserId : undefined}
+            userFilter={isProjectContext}
+        />
     );
 };

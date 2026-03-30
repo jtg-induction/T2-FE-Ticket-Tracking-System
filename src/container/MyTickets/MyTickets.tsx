@@ -24,9 +24,13 @@ import {
     useTheme,
 } from '@mui/material';
 
-import { FilterBar, LoadingOverlay, SortableHeader } from '@component';
-import { MY_TICKETS_DEFAULTS } from '@constant';
-import { ErrorPage } from '@page';
+import {
+    ErrorOverlay,
+    FilterBar,
+    LoadingOverlay,
+    SortableHeader,
+} from '@component';
+import { MY_TICKETS_DEFAULTS, PATHS } from '@constant';
 import {
     convertIsoToDateYear,
     getPriorityColor,
@@ -39,9 +43,7 @@ import {
     StyledPageRoot,
     StyledPriorityIndicator,
     StyledTableContainer,
-    StyledTableRow,
     StyledTableScrollArea,
-    StyledTicketKey,
 } from './MyTickets.style';
 
 export const MyTickets = () => {
@@ -56,7 +58,7 @@ export const MyTickets = () => {
         handlePageChange,
         handleRowsPerPageChange,
         isLoading,
-        isError,
+        error,
         refetch,
         filters,
         activeFilterCount,
@@ -68,9 +70,16 @@ export const MyTickets = () => {
     } = useMyTicketsPage();
 
     const sortProps = { sortField, sortDirection, onSort: handleSort };
-
     return (
         <StyledPageRoot>
+            {isLoading && <LoadingOverlay />}
+            {error && (
+                <ErrorOverlay
+                    error={error?.message || 'Unable to load tickets'}
+                    actionLabel="Retry"
+                    action={refetch}
+                />
+            )}
             <Stack
                 direction="row"
                 justifyContent="space-between"
@@ -127,14 +136,7 @@ export const MyTickets = () => {
 
             <StyledTableContainer component={Paper} elevation={4}>
                 {!filtersOpen && activeFilterCount > 0 && (
-                    <Box
-                        sx={{
-                            px: 2,
-                            py: 1.5,
-                            borderBottom: (t) =>
-                                `1px solid ${t.palette.divider}`,
-                        }}
-                    >
+                    <Box px={2} py={1.5} borderBottom="divider">
                         <Stack
                             direction="row"
                             spacing={1}
@@ -186,8 +188,6 @@ export const MyTickets = () => {
                     activeFilterCount={activeFilterCount}
                 />
 
-                {isLoading && <LoadingOverlay />}
-
                 <StyledTableScrollArea>
                     <Table
                         stickyHeader
@@ -235,25 +235,17 @@ export const MyTickets = () => {
                                     width="12%"
                                     {...sortProps}
                                 />
-                                <StyledHeaderCell
-                                    align="center"
-                                    sx={{ width: '13%' }}
-                                >
+                                <StyledHeaderCell align="center" width="13%">
                                     REPORTER
                                 </StyledHeaderCell>
-                                <StyledHeaderCell
-                                    align="center"
-                                    sx={{ width: '13%' }}
-                                >
+                                <StyledHeaderCell align="center" width="13%">
                                     ASSIGNEE
                                 </StyledHeaderCell>
                             </TableRow>
                         </TableHead>
 
                         <TableBody>
-                            {isError ? (
-                                <ErrorPage />
-                            ) : !isLoading && tickets.length === 0 ? (
+                            {!isLoading && tickets.length === 0 ? (
                                 <TableRow>
                                     <TableCell
                                         colSpan={8}
@@ -282,182 +274,194 @@ export const MyTickets = () => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                tickets.map((ticket) => (
-                                    <StyledTableRow
-                                        key={ticket.id}
-                                        hover
-                                        component="tr"
-                                        sx={{
-                                            opacity: isLoading ? 0.5 : 1,
-                                            transition: 'opacity 0.2s',
-                                        }}
-                                    >
-                                        <TableCell align="center">
-                                            <Link
-                                                to={`/projects/${ticket.project}/tickets/${ticket.id}`}
-                                                style={{
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
-                                                <StyledTicketKey variant="body2">
-                                                    {ticket.jira_id}
-                                                </StyledTicketKey>
-                                            </Link>
-                                        </TableCell>
+                                tickets.map((ticket) => {
+                                    const reporterName = `${ticket.reporter?.first_name} ${ticket.reporter?.last_name}`;
+                                    const reporterInitials = `${ticket.reporter?.first_name?.[0]}${ticket.reporter?.last_name?.[0]}`;
+                                    const reporterPath = `${PATHS.PROFILE}/${ticket.reporter?.user_id}`;
 
-                                        <TableCell>
-                                            <Typography
-                                                variant="body2"
-                                                fontWeight={600}
-                                                noWrap
-                                                title={ticket.name}
-                                            >
-                                                {ticket.name}
-                                            </Typography>
-                                        </TableCell>
+                                    const assigneeName = ticket.assignee
+                                        ? `${ticket.assignee.first_name} ${ticket.assignee.last_name}`
+                                        : 'Unassigned';
+                                    const assigneeInitials = `${ticket.reporter?.first_name?.[0]}${ticket.reporter?.last_name?.[0]}`;
+                                    const assigneePath = `${PATHS.PROFILE}/${ticket.assignee?.user_id}`;
 
-                                        <TableCell align="center">
-                                            <Chip
-                                                label={ticket.status}
-                                                size="small"
-                                                {...getStatusColor(
-                                                    ticket.status,
-                                                )}
-                                            />
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <Stack
-                                                direction="row"
-                                                alignItems="center"
-                                                gap={1}
-                                            >
-                                                <StyledPriorityIndicator
-                                                    priorityColor={getPriorityColor(
-                                                        ticket.priority,
-                                                        theme,
-                                                    )}
-                                                />
-                                                <Typography variant="body2">
-                                                    {ticket.priority}
-                                                </Typography>
-                                            </Stack>
-                                        </TableCell>
-
-                                        <TableCell align="center">
-                                            <Typography variant="body2">
-                                                {ticket.created_at
-                                                    ? convertIsoToDateYear(
-                                                          ticket.created_at,
-                                                      )
-                                                    : 'Not found'}
-                                            </Typography>
-                                        </TableCell>
-
-                                        <TableCell align="center">
-                                            <Typography
-                                                variant="body2"
-                                                color={
-                                                    !ticket.deadline
-                                                        ? 'textDisabled'
-                                                        : undefined
-                                                }
-                                            >
-                                                {ticket.deadline
-                                                    ? convertIsoToDateYear(
-                                                          ticket.deadline,
-                                                      )
-                                                    : 'Not set'}
-                                            </Typography>
-                                        </TableCell>
-
-                                        <TableCell align="center">
-                                            <Stack
-                                                direction="row"
-                                                gap={1}
-                                                alignItems="center"
-                                                justifyContent="center"
-                                            >
-                                                <Avatar
-                                                    sx={{
-                                                        bgcolor: stringToColor(
-                                                            ticket.reporter
-                                                                ?.email ?? '',
-                                                        ),
-                                                    }}
+                                    return (
+                                        <TableRow key={ticket.id}>
+                                            <TableCell align="center">
+                                                <Typography
+                                                    component={Link}
+                                                    to={`${PATHS.PROJECTS}/${ticket.project}${PATHS.TICKET}/${ticket.id}`}
+                                                    variant="body2"
+                                                    color="primary"
+                                                    fontWeight={800}
                                                 >
-                                                    {
-                                                        ticket.reporter
-                                                            ?.first_name?.[0]
-                                                    }
-                                                    {
-                                                        ticket.reporter
-                                                            ?.last_name?.[0]
-                                                    }
-                                                </Avatar>
+                                                    {ticket.jira_id}
+                                                </Typography>
+                                            </TableCell>
+
+                                            <TableCell>
                                                 <Typography
                                                     variant="body2"
+                                                    fontWeight={600}
                                                     noWrap
+                                                    title={ticket.name}
                                                 >
-                                                    {
-                                                        ticket.reporter
-                                                            ?.first_name
-                                                    }
+                                                    {ticket.name}
                                                 </Typography>
-                                            </Stack>
-                                        </TableCell>
+                                            </TableCell>
 
-                                        <TableCell align="center">
-                                            <Stack
-                                                direction="row"
-                                                spacing={1}
-                                                alignItems="center"
-                                                justifyContent="center"
-                                            >
-                                                {ticket.assignee ? (
-                                                    <>
-                                                        <Avatar
-                                                            sx={{
-                                                                bgcolor:
-                                                                    stringToColor(
-                                                                        ticket
-                                                                            .assignee
-                                                                            ?.email ??
-                                                                            '',
-                                                                    ),
-                                                            }}
-                                                        >
-                                                            {
-                                                                ticket.assignee
-                                                                    ?.first_name?.[0]
-                                                            }
-                                                            {
-                                                                ticket.assignee
-                                                                    ?.last_name?.[0]
-                                                            }
-                                                        </Avatar>
-                                                        <Typography
-                                                            variant="body2"
-                                                            noWrap
-                                                        >
-                                                            {
-                                                                ticket.assignee
-                                                                    ?.first_name
-                                                            }
-                                                        </Typography>
-                                                    </>
-                                                ) : (
+                                            <TableCell align="center">
+                                                <Chip
+                                                    label={ticket.status}
+                                                    size="small"
+                                                    {...getStatusColor(
+                                                        ticket.status,
+                                                    )}
+                                                />
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    gap={1}
+                                                >
+                                                    <StyledPriorityIndicator
+                                                        priorityColor={getPriorityColor(
+                                                            ticket.priority,
+                                                            theme,
+                                                        )}
+                                                    />
+                                                    <Typography variant="body2">
+                                                        {ticket.priority}
+                                                    </Typography>
+                                                </Stack>
+                                            </TableCell>
+
+                                            <TableCell align="center">
+                                                <Typography variant="body2">
+                                                    {ticket.created_at
+                                                        ? convertIsoToDateYear(
+                                                              ticket.created_at,
+                                                          )
+                                                        : 'Not found'}
+                                                </Typography>
+                                            </TableCell>
+
+                                            <TableCell align="center">
+                                                <Typography
+                                                    variant="body2"
+                                                    color={
+                                                        !ticket.deadline
+                                                            ? 'textDisabled'
+                                                            : undefined
+                                                    }
+                                                >
+                                                    {ticket.deadline
+                                                        ? convertIsoToDateYear(
+                                                              ticket.deadline,
+                                                          )
+                                                        : 'Not set'}
+                                                </Typography>
+                                            </TableCell>
+
+                                            <TableCell align="center">
+                                                <Stack
+                                                    component={Link}
+                                                    to={reporterPath}
+                                                    direction="row"
+                                                    gap={1}
+                                                    alignItems="center"
+                                                    justifyContent="center"
+                                                    sx={{
+                                                        textDecoration: 'none',
+                                                    }}
+                                                >
+                                                    <Avatar
+                                                        sx={{
+                                                            bgcolor:
+                                                                stringToColor(
+                                                                    ticket
+                                                                        .reporter
+                                                                        ?.email ??
+                                                                        '',
+                                                                ),
+                                                        }}
+                                                    >
+                                                        {reporterInitials}
+                                                    </Avatar>
                                                     <Typography
                                                         variant="body2"
-                                                        color="textDisabled"
+                                                        noWrap
+                                                        color="textPrimary"
+                                                        sx={{
+                                                            ':hover': {
+                                                                textDecoration:
+                                                                    'underline',
+                                                            },
+                                                        }}
                                                     >
-                                                        Unassigned
+                                                        {reporterName}
                                                     </Typography>
-                                                )}
-                                            </Stack>
-                                        </TableCell>
-                                    </StyledTableRow>
-                                ))
+                                                </Stack>
+                                            </TableCell>
+
+                                            <TableCell align="center">
+                                                <Stack
+                                                    component={Link}
+                                                    to={assigneePath}
+                                                    direction="row"
+                                                    spacing={1}
+                                                    alignItems="center"
+                                                    justifyContent="center"
+                                                    sx={{
+                                                        textDecoration: 'none',
+                                                    }}
+                                                >
+                                                    {ticket.assignee ? (
+                                                        <>
+                                                            <Avatar
+                                                                sx={{
+                                                                    bgcolor:
+                                                                        stringToColor(
+                                                                            ticket
+                                                                                .assignee
+                                                                                ?.email ??
+                                                                                '',
+                                                                        ),
+                                                                }}
+                                                            >
+                                                                {
+                                                                    assigneeInitials
+                                                                }
+                                                            </Avatar>
+                                                            <Typography
+                                                                variant="body2"
+                                                                noWrap
+                                                                color="textPrimary"
+                                                                sx={{
+                                                                    ':hover': {
+                                                                        textDecoration:
+                                                                            'underline',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                {assigneeName}
+                                                            </Typography>
+                                                        </>
+                                                    ) : (
+                                                        <Typography
+                                                            variant="body2"
+                                                            color="textDisabled"
+                                                        >
+                                                            Unassigned
+                                                        </Typography>
+                                                    )}
+                                                </Stack>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             )}
                         </TableBody>
                     </Table>

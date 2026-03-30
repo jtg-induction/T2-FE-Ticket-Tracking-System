@@ -29,8 +29,8 @@ export const useCreateTicket = (
         useCreateTicketMutation();
 
     const form = useForm<CreateTicketInput>({
+        mode: 'onTouched',
         resolver: zodResolver(CreateTicketSchema),
-        mode: 'all',
         defaultValues: {
             priority: TicketPriority.Medium,
             category: TicketCategory.DEVELOPMENT,

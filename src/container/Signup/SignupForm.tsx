@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router';
+import { Link as ReactLink } from 'react-router';
 
 import { InfoOutlined } from '@mui/icons-material';
 import {
     Alert,
     Button,
     FormLabel,
+    Link,
+    Stack,
     TextField,
     Tooltip,
     Typography,
@@ -16,7 +18,6 @@ import { useSignupForm } from '@hook';
 import { StyledSignupContainer, StyledSignupForm } from './SignupForm.style';
 
 export const SignupForm = () => {
-    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -36,6 +37,16 @@ export const SignupForm = () => {
                 }}
                 noValidate
             >
+                <Typography
+                    variant="h4"
+                    width="100%"
+                    textAlign="center"
+                    mb={4}
+                    fontWeight={600}
+                    color="primary"
+                >
+                    Welcome to Taskider
+                </Typography>
                 {formError && <Alert severity="error">{formError}</Alert>}
 
                 {success && (
@@ -48,7 +59,7 @@ export const SignupForm = () => {
                     htmlFor="email"
                     sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                 >
-                    Email{' '}
+                    <Typography>Email</Typography>
                     <Tooltip title="Verification link will be sent on this email">
                         <InfoOutlined
                             sx={{
@@ -74,6 +85,7 @@ export const SignupForm = () => {
                     fullWidth
                     variant="contained"
                     disabled={loading || success}
+                    sx={{ mt: 2 }}
                 >
                     {loading
                         ? 'Sending...'
@@ -81,13 +93,14 @@ export const SignupForm = () => {
                           ? 'Verification Email sent'
                           : 'Send Verification Email'}
                 </Button>
-
-                <Typography textAlign="center">
-                    Already have an account?{' '}
-                    <Button onClick={() => void navigate(PATHS.LOGIN)}>
+                <Stack direction="row" spacing={1} justifyContent="center">
+                    <Typography color="textSecondary">
+                        Already have an account?
+                    </Typography>
+                    <Link component={ReactLink} to={PATHS.LOGIN}>
                         Login
-                    </Button>
-                </Typography>
+                    </Link>
+                </Stack>
             </StyledSignupForm>
         </StyledSignupContainer>
     );

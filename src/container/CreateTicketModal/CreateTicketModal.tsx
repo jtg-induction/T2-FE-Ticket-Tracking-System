@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
-
-import { Form } from 'react-router';
+import { useEffect, useState } from 'react';
 
 import {
     Autocomplete,
+    Box,
     Button,
     CircularProgress,
     Dialog,
@@ -47,6 +46,9 @@ export const CreateTicketModal = ({
         reset,
     } = form;
 
+    const [deadlineFocused, setDeadlineFocused] = useState(false);
+    const deadlineValue = watch('deadline');
+
     useEffect(() => {
         if (open) {
             reset({
@@ -66,21 +68,34 @@ export const CreateTicketModal = ({
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Create New Ticket</DialogTitle>
-            <Form
+            <DialogTitle variant="h4" color="primary" fontWeight={600}>
+                Create Ticket
+            </DialogTitle>
+            <Box
+                component="form"
                 onSubmit={(e) => {
                     e.preventDefault();
                     void onSubmit();
                 }}
+                noValidate
             >
                 <DialogContent>
-                    <Stack spacing={3} sx={{ mt: 1 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ mb: 2, display: 'block' }}
+                    >
+                        * Required fields
+                    </Typography>
+
+                    <Stack spacing={3} mt={1}>
                         <TextField
                             fullWidth
                             label="Ticket Name"
                             {...register('name')}
                             error={!!errors.name}
                             helperText={errors.name?.message}
+                            required
                         />
 
                         <TextField
@@ -98,6 +113,7 @@ export const CreateTicketModal = ({
                                 select
                                 fullWidth
                                 label="Status"
+                                defaultValue={TicketStatus.ToDo}
                                 {...register('status')}
                                 error={!!errors.status}
                                 helperText={errors.status?.message}
@@ -115,18 +131,13 @@ export const CreateTicketModal = ({
                                 select
                                 fullWidth
                                 label="Category"
+                                defaultValue={TicketCategory.DEVELOPMENT}
                                 {...register('category')}
                                 error={!!errors.category}
                                 helperText={errors.category?.message}
                             >
                                 {Object.values(TicketCategory).map((opt) => (
-                                    <MenuItem
-                                        key={opt}
-                                        value={opt}
-                                        defaultValue={
-                                            TicketCategory.DEVELOPMENT
-                                        }
-                                    >
+                                    <MenuItem key={opt} value={opt}>
                                         {opt}
                                     </MenuItem>
                                 ))}
@@ -136,6 +147,7 @@ export const CreateTicketModal = ({
                                 select
                                 fullWidth
                                 label="Priority"
+                                defaultValue={TicketPriority.Medium}
                                 {...register('priority')}
                                 error={!!errors.priority}
                                 helperText={errors.priority?.message}
@@ -153,10 +165,26 @@ export const CreateTicketModal = ({
                                 fullWidth
                                 label="Deadline"
                                 type="datetime-local"
-                                slotProps={{ inputLabel: { shrink: true } }}
                                 {...register('deadline')}
                                 error={!!errors.deadline}
                                 helperText={errors.deadline?.message}
+                                onFocus={() => setDeadlineFocused(true)}
+                                onBlur={() => setDeadlineFocused(false)}
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink:
+                                            deadlineFocused || !!deadlineValue,
+                                    },
+                                    htmlInput: {
+                                        style: {
+                                            colorScheme: 'light',
+                                            color:
+                                                deadlineFocused || deadlineValue
+                                                    ? undefined
+                                                    : 'transparent',
+                                        },
+                                    },
+                                }}
                             />
                             <Stack spacing={0.5} sx={{ width: '100%' }}>
                                 <Autocomplete
@@ -217,7 +245,7 @@ export const CreateTicketModal = ({
                                     <Typography
                                         variant="caption"
                                         color="error"
-                                        sx={{ ml: 1.5 }}
+                                        ml={1.5}
                                     >
                                         {errors.assignee.message}
                                     </Typography>
@@ -236,7 +264,7 @@ export const CreateTicketModal = ({
                         {isSubmitting ? 'Creating...' : 'Create Ticket'}
                     </Button>
                 </DialogActions>
-            </Form>
+            </Box>
             <ErrorSnackbar error={error} onClose={clearError} />
         </Dialog>
     );

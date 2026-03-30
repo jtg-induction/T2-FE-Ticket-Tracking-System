@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router'; // Added useNavigate
+import { useNavigate, useParams } from 'react-router';
 
 import { useDebounce } from '@hook';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,6 +54,7 @@ export const useTicketDetail = () => {
         data: response,
         isLoading,
         error: fetchTicketError,
+        refetch: refetchTicket,
     } = useGetTicketByIdQuery(
         { projectId: projectId!, ticketId: ticketId! },
         { skip: !projectId || !ticketId },
@@ -71,6 +72,7 @@ export const useTicketDetail = () => {
         data: membersRes,
         isFetching: isSearching,
         error: fetchMemberError,
+        refetch: refetchMember,
     } = useGetProjectMembersQuery({
         id: projectId!,
         page: 1,
@@ -82,7 +84,7 @@ export const useTicketDetail = () => {
 
     const form = useForm<CreateTicketInput>({
         resolver: zodResolver(CreateTicketSchema),
-        mode: 'onTouched',
+        mode: 'onChange',
         defaultValues: {
             name: ticket?.name ?? '',
             description: ticket?.description ?? '',
@@ -214,6 +216,10 @@ export const useTicketDetail = () => {
         isSearching,
         setSearchTerm,
         fetchError: fetchTicketError || fetchMemberError,
+        refetch: () => {
+            if (fetchTicketError) refetchTicket();
+            if (fetchMemberError) refetchMember();
+        },
         updateError,
         clearUpdateError: () => setUpdateError(null),
         isSubscribed: ticket?.is_subscribed ?? false,

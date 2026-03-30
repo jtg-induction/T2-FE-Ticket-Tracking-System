@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -19,8 +19,14 @@ import {
     Typography,
 } from '@mui/material';
 
-import { CustomIconButton, LoadingOverlay, ProjectItem } from '@component';
-import { PATHS, PROJECT_PAGE_SIZE } from '@constant';
+import {
+    CustomIconButton,
+    ErrorOverlay,
+    LoadingOverlay,
+    ProjectItem,
+} from '@component';
+import { PATHS,PROJECT_PAGE_SIZE } from '@constant';
+import { CreateProjectModal } from '@container';
 import { useDocumentTitle, useProjectList } from '@hook';
 
 import { EmptyStateContainer, EmptyStateContent } from './ProjectList.style';
@@ -30,6 +36,7 @@ export const ProjectList = () => {
     useDocumentTitle('All Projects');
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const view =
         (searchParams.get('tab') as ProjectState) || ProjectState.ACTIVE;
 
@@ -43,6 +50,10 @@ export const ProjectList = () => {
         archivedPage,
         setArchivedPage,
         isLoading,
+        activeError,
+        archivedError,
+        refetchActive,
+        refetchArchived,
     } = useProjectList();
 
     const handleViewChange = (
@@ -63,8 +74,6 @@ export const ProjectList = () => {
     const currentPage = isShowingActive ? activePage : archivedPage;
     const setCurrentPage = isShowingActive ? setActivePage : setArchivedPage;
 
-    const handleCreateProject = () => navigate(PATHS.PROJECTS + '/new/detail');
-
     return (
         <Stack
             position="relative"
@@ -79,9 +88,29 @@ export const ProjectList = () => {
             overflow="hidden"
         >
             {isLoading && <LoadingOverlay />}
+
+            {(activeError || archivedError) && (
+                <ErrorOverlay
+                    error={
+                        activeError?.message ||
+                        archivedError?.message ||
+                        'Failed to load projects'
+                    }
+                    actionLabel="Retry"
+                    action={() => {
+                        if (activeError) refetchActive();
+                        if (archivedError) refetchArchived();
+                    }}
+                />
+            )}
+
+            <CreateProjectModal
+                open={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+            />
+
             {!isLoading &&
-            activeProjects.length + archivedProjects.length === 0 &&
-            currentPage == 0 ? (
+            activeProjects.length + archivedProjects.length === 0 ? (
                 <EmptyStateContainer>
                     <EmptyStateContent>
                         <FolderOpenIcon
@@ -92,11 +121,10 @@ export const ProjectList = () => {
                             Get started by creating your first project.
                         </Typography>
                     </EmptyStateContent>
-
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={() => void handleCreateProject()}
+                        onClick={() => setIsCreateModalOpen(true)}
                         size="medium"
                     >
                         Create your first project
@@ -115,7 +143,7 @@ export const ProjectList = () => {
                         </Typography>
                         <Tooltip title="Create Project">
                             <CustomIconButton
-                                onClick={() => void handleCreateProject()}
+                                onClick={() => setIsCreateModalOpen(true)}
                             >
                                 <AddIcon />
                             </CustomIconButton>
@@ -159,12 +187,10 @@ export const ProjectList = () => {
                         gap={3}
                         flexGrow={1}
                         minHeight={0}
-                        sx={{
-                            overflowY: 'auto',
-                            alignContent: 'start',
-                            pr: 1,
-                            gridAutoRows: 'max-content',
-                        }}
+                        alignContent="start"
+                        pr={1}
+                        gridAutoRows="max-content"
+                        sx={{ overflowY: 'auto' }}
                     >
                         {currentProjects.length > 0
                             ? currentProjects.map((project) => (

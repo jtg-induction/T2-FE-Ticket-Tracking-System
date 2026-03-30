@@ -6,12 +6,8 @@ export const registerSchema = z
             .string()
             .trim()
             .nonempty('First name is required')
-            .max(50, 'First name can not be more then 50 characters long'),
-        last_name: z
-            .string()
-            .trim()
-            .nonempty('Last name is required')
-            .max(50, 'Last name can not be more than 50 characters long'),
+            .max(50, 'Max 50 characters'),
+        last_name: z.string().trim().max(50, 'Max 50 characters').nullish(),
         jira_id: z
             .string()
             .trim()
@@ -25,19 +21,11 @@ export const registerSchema = z
         password: z
             .string()
             .trim()
-            .min(6, 'Minimum 6 characters required')
+            .nonempty('Password is required')
+            .min(6, 'Password too short')
             .max(50, 'Password too long')
-            .regex(/[A-Z]/, {
-                message: 'Password must contain at least one uppercase letter',
-            })
-            .regex(/[a-z]/, {
-                message: 'Password must contain at least one lowercase letter',
-            })
-            .regex(/[0-9]/, {
-                message: 'Password must contain at least one number',
-            })
-            .regex(/[^a-zA-Z0-9]/, {
-                message: 'Password must contain at least one special character',
+            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$/, {
+                message: 'Password too weak',
             }),
         confirm_password: z
             .string()

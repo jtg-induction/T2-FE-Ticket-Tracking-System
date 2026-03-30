@@ -84,10 +84,11 @@ export const JQLSearch = () => {
                                             }}
                                         >
                                             <HelpOutline
+                                                color="action"
                                                 sx={{
                                                     fontSize: '2rem',
-                                                    color: 'text.primary',
                                                     '&:hover': {
+                                                        cursor: 'pointer',
                                                         color: 'primary.main',
                                                     },
                                                 }}
@@ -125,7 +126,7 @@ export const JQLSearch = () => {
             <StyledResultsWrapper>
                 {searchResult.map((ticket) => (
                     <StyledTicketItem key={ticket.jira_id}>
-                        <Stack sx={{ flex: 1, minWidth: 0 }}>
+                        <Stack flex={1} minWidth={0}>
                             <Typography
                                 variant="caption"
                                 color="primary"

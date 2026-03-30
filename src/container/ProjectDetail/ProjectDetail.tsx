@@ -1,15 +1,19 @@
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 import {
     ArrowBack as ArrowBackIcon,
     Edit as EditIcon,
+    InfoOutlined,
+    LinkOutlined,
     Save as SaveIcon,
     Unarchive as UnarchiveIcon,
 } from '@mui/icons-material';
 import {
+    Alert,
     Box,
     Button,
     Checkbox,
+    Collapse,
     Grid2 as Grid,
     Stack,
     TextField,
@@ -27,12 +31,8 @@ export const ProjectDetail = () => {
     const {
         project,
         formValues,
-        isDirty,
-        isValid,
         errors,
-        register,
         isEditing,
-        isNew,
         loading,
         handleToggleEdit,
         handleSave,
@@ -40,21 +40,21 @@ export const ProjectDetail = () => {
         handleUnarchive,
         createError,
         updateError,
-    } = useProjectForm(projectId ?? '');
+        form: { register },
+    } = useProjectForm(projectId);
+
     useDocumentTitle(
         !loading && project
             ? `${project.title} (${project.jira_project_key})`
-            : 'Create Project',
+            : 'Project',
     );
-
-    const pageTitle = isNew
-        ? 'Create Project'
-        : isEditing
-          ? formValues.title
-          : project?.title;
 
     if (loading) {
         return <LoadingOverlay />;
+    }
+
+    if (!project) {
+        return <Alert severity="error">Project not found.</Alert>;
     }
 
     return (
@@ -68,7 +68,8 @@ export const ProjectDetail = () => {
                 <Stack
                     direction="row"
                     alignItems="center"
-                    sx={{ minWidth: 0, flex: 1 }}
+                    minWidth={0}
+                    flex={1}
                 >
                     <CustomIconButton
                         variant="standard"
@@ -81,14 +82,14 @@ export const ProjectDetail = () => {
                     </CustomIconButton>
 
                     <Typography
-                        title={pageTitle}
+                        title={isEditing ? formValues.title : project.title}
                         variant="h5"
                         fontWeight={600}
                         minWidth={0}
                         flex={1}
                     >
-                        {pageTitle}
-                        {project?.is_archived && (
+                        {isEditing ? formValues.title : project.title}
+                        {project.is_archived && (
                             <Typography
                                 component="span"
                                 color="error"
@@ -101,51 +102,66 @@ export const ProjectDetail = () => {
                     </Typography>
                 </Stack>
 
-                <Stack direction="row" spacing={1}>
-                    {!isNew && project?.is_archived && (
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    minWidth={160}
+                    justifyContent="flex-end"
+                >
+                    {!project.is_archived && (
                         <Tooltip title="Unarchive Project">
                             <CustomIconButton
                                 variant="outlined"
                                 aria-label="Unarchive project"
                                 onClick={() => void handleUnarchive()}
+                                sx={{
+                                    visibility: project.is_archived
+                                        ? 'visible'
+                                        : 'hidden',
+                                }}
                             >
                                 <UnarchiveIcon fontSize="medium" />
                             </CustomIconButton>
                         </Tooltip>
                     )}
-                    {!isNew && !project?.is_archived && !isEditing && (
-                        <Button
-                            variant="contained"
-                            startIcon={<EditIcon />}
-                            onClick={() => handleToggleEdit(true)}
-                        >
-                            Edit
-                        </Button>
-                    )}
-                    {isEditing && (
+
+                    {isEditing ? (
                         <Stack direction="row" spacing={2}>
-                            {!isNew && (
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    size="medium"
-                                    onClick={() => handleToggleEdit(false)}
-                                >
-                                    Cancel
-                                </Button>
-                            )}
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                size="medium"
+                                onClick={() => handleToggleEdit(false)}
+                            >
+                                Cancel
+                            </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 size="medium"
                                 startIcon={<SaveIcon />}
-                                disabled={loading || !isDirty || !isValid}
+                                disabled={loading}
                                 type="submit"
                                 form="project-form"
                             >
-                                {isNew ? 'Create' : 'Save'}
+                                Save
                             </Button>
                         </Stack>
+                    ) : (
+                        <Button
+                            variant="contained"
+                            startIcon={<EditIcon />}
+                            onClick={() => handleToggleEdit(true)}
+                            disabled={!project.can_edit || project.is_archived}
+                            sx={{
+                                visibility:
+                                    project.can_edit && !project.is_archived
+                                        ? 'visible'
+                                        : 'hidden',
+                            }}
+                        >
+                            Edit
+                        </Button>
                     )}
                 </Stack>
             </Stack>
@@ -156,12 +172,12 @@ export const ProjectDetail = () => {
                 onSubmit={(e) => void handleSave(e)}
                 noValidate
             >
-                {!isNew && isEditing && (
+                <Collapse in={isEditing}>
                     <Stack
                         direction="row"
                         alignItems="center"
                         spacing={2}
-                        py={2}
+                        pb={2}
                     >
                         <Checkbox
                             {...register('is_archived')}
@@ -179,44 +195,62 @@ export const ProjectDetail = () => {
                                 : 'Archive this project'}
                         </Typography>
                     </Stack>
-                )}
+                </Collapse>
+
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             label="Project Title"
                             {...register('title')}
-                            disabled={!isEditing && !isNew}
+                            disabled={!isEditing}
                             error={!!errors.title}
-                            helperText={errors.title?.message}
+                            helperText={errors.title?.message ?? ' '}
                         />
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
-                            title={formValues.jira_project_key}
                             fullWidth
                             label="Jira Project Key"
                             {...register('jira_project_key')}
-                            disabled={!isNew}
+                            disabled
                             error={!!errors.jira_project_key}
-                            helperText={
-                                !isNew
-                                    ? 'The key is locked for this project.'
-                                    : errors.jira_project_key?.message
-                            }
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <Tooltip title="Unique key of the project on external Jira site">
+                                            <InfoOutlined
+                                                sx={{ fontSize: '2rem' }}
+                                            />
+                                        </Tooltip>
+                                    ),
+                                },
+                            }}
                         />
                     </Grid>
 
                     <Grid size={12}>
                         <TextField
-                            title={formValues.site_url}
                             fullWidth
                             label="Site URL"
                             {...register('site_url')}
-                            disabled={!isNew}
+                            disabled
                             error={!!errors.site_url}
-                            helperText={errors.site_url?.message}
+                            helperText={errors.site_url?.message ?? ' '}
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <Link to={formValues.site_url}>
+                                            <Tooltip title="External site URL of the project on Jira">
+                                                <LinkOutlined
+                                                    sx={{ fontSize: '2rem' }}
+                                                />
+                                            </Tooltip>
+                                        </Link>
+                                    ),
+                                },
+                            }}
                         />
                     </Grid>
 
@@ -227,13 +261,14 @@ export const ProjectDetail = () => {
                             rows={15}
                             label="Description"
                             {...register('description')}
-                            disabled={!isEditing && !isNew}
+                            disabled={!isEditing}
                             error={!!errors.description}
-                            helperText={errors.description?.message}
+                            helperText={errors.description?.message ?? ' '}
                         />
                     </Grid>
                 </Grid>
             </Box>
+
             <ErrorSnackbar
                 error={createError || updateError}
                 onClose={() => {}}

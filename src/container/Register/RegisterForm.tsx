@@ -1,17 +1,24 @@
+import { useState } from 'react';
+
 import { useSearchParams } from 'react-router';
 
-import { HelpOutlineOutlined } from '@mui/icons-material';
+import {
+    HelpOutlineOutlined,
+    Visibility,
+    VisibilityOff,
+} from '@mui/icons-material';
 import {
     Alert,
     Button,
-    FormLabel,
+    FormHelperText,
+    Popover,
     Stack,
     TextField,
     Tooltip,
     Typography,
 } from '@mui/material';
 
-import { PasswordCheckBox } from '@component';
+import { CustomIconButton, PasswordCheckBox } from '@component';
 import { useRegisterForm } from '@hook';
 
 import {
@@ -22,15 +29,13 @@ import {
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();
     const tokenFromUrl = searchParams.get('token') || '';
-    const {
-        watch,
-        register,
-        handleSubmit,
-        errors,
-        formError,
-        isLoading,
-        isValid,
-    } = useRegisterForm(tokenFromUrl);
+    const { watch, register, handleSubmit, errors, formError, isLoading } =
+        useRegisterForm(tokenFromUrl);
+
+    const [passwordAnchor, setPasswordAnchor] = useState<HTMLElement | null>(
+        null,
+    );
+    const [seePassword, setSeePassword] = useState<boolean>(false);
 
     if (!tokenFromUrl) {
         return <Alert severity="error">Invalid Registration Link.</Alert>;
@@ -45,61 +50,55 @@ export const RegisterForm = () => {
                 }}
                 noValidate
             >
-                <Typography variant="h3" fontWeight={600} color="info">
+                <Typography variant="h3" fontWeight={600} color="primary">
                     Create Account
                 </Typography>
 
                 {formError && <Alert severity="error">{formError}</Alert>}
 
-                <Stack spacing={1}>
-                    <FormLabel htmlFor="email">Name *</FormLabel>
-                    <Stack direction="row" gap={4}>
+                <Stack gap={4}>
+                    <Stack direction="row" gap={4} flexWrap="wrap">
                         <TextField
                             label="First Name"
                             {...register('first_name')}
                             error={!!errors.first_name}
-                            helperText={errors.first_name?.message}
-                            fullWidth
+                            required
+                            sx={{ flex: '1 1 200px' }}
                         />
                         <TextField
                             label="Last Name"
                             {...register('last_name')}
                             error={!!errors.last_name}
-                            helperText={errors.last_name?.message}
-                            fullWidth
+                            sx={{ flex: '1 1 200px' }}
                         />
                     </Stack>
-                    <FormLabel
-                        htmlFor="Jira ID"
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                    >
-                        Jira Id *
-                        <Tooltip title="You can get this Id from Jira application by going to profile section">
-                            <HelpOutlineOutlined
-                                color="action"
-                                sx={{ fontSize: 20 }}
-                            />
-                        </Tooltip>
-                    </FormLabel>
+                    <FormHelperText error={true} sx={{ pl: 3, mt: -3 }}>
+                        {errors.first_name?.message ||
+                            errors.last_name?.message}
+                    </FormHelperText>
                     <TextField
                         label="Jira ID"
                         {...register('jira_id')}
                         error={!!errors.jira_id}
                         helperText={errors.jira_id?.message}
                         fullWidth
+                        required
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <Tooltip title="You can get this Id from Jira application by going to profile section">
+                                        <HelpOutlineOutlined
+                                            color="action"
+                                            sx={{
+                                                fontSize: 24,
+                                                cursor: 'help',
+                                            }}
+                                        />
+                                    </Tooltip>
+                                ),
+                            },
+                        }}
                     />
-                    <FormLabel
-                        htmlFor="Jira API Token"
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                    >
-                        Jira API Token *
-                        <Tooltip title="You can get or generate new token from Jira application by going to settings > security">
-                            <HelpOutlineOutlined
-                                color="action"
-                                sx={{ fontSize: 20 }}
-                            />
-                        </Tooltip>
-                    </FormLabel>
                     <TextField
                         label="Jira API Token"
                         type="password"
@@ -107,45 +106,108 @@ export const RegisterForm = () => {
                         error={!!errors.jira_api_token}
                         helperText={errors.jira_api_token?.message}
                         fullWidth
+                        required
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <Tooltip title="You can get or generate new token from Jira application by going to settings > security">
+                                        <HelpOutlineOutlined
+                                            color="action"
+                                            sx={{
+                                                fontSize: 24,
+                                                cursor: 'help',
+                                            }}
+                                        />
+                                    </Tooltip>
+                                ),
+                            },
+                        }}
                     />
-                    <FormLabel htmlFor="password">Password *</FormLabel>
-                    <Stack direction="row" gap={4}>
+                    <Stack direction="row" gap={4} flexWrap="wrap">
                         <TextField
                             label="Password"
-                            type="password"
+                            type={seePassword ? 'text' : 'password'}
                             {...register('password')}
                             error={!!errors.password}
-                            helperText={
-                                !!errors.password ? (
-                                    <PasswordCheckBox
-                                        password={watch('password')}
-                                    />
-                                ) : (
-                                    ''
-                                )
-                            }
-                            fullWidth
+                            required
+                            onFocus={(e) => setPasswordAnchor(e.currentTarget)}
+                            onBlur={() => setPasswordAnchor(null)}
+                            helperText={errors.password?.message}
+                            sx={{ flex: '1 1 200px' }}
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <CustomIconButton
+                                            variant="standard"
+                                            onClick={() =>
+                                                setSeePassword(!seePassword)
+                                            }
+                                            edge="end"
+                                            aria-label="toggle password visibility"
+                                        >
+                                            {seePassword ? (
+                                                <Visibility
+                                                    sx={{ fontSize: '2rem' }}
+                                                />
+                                            ) : (
+                                                <VisibilityOff
+                                                    sx={{ fontSize: '2rem' }}
+                                                />
+                                            )}
+                                        </CustomIconButton>
+                                    ),
+                                },
+                            }}
                         />
+
+                        <Popover
+                            open={!!passwordAnchor}
+                            anchorEl={passwordAnchor}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            disableAutoFocus
+                            disableEnforceFocus
+                            sx={{
+                                mt: !!errors.password ? 6 : 1,
+                            }}
+                        >
+                            <PasswordCheckBox password={watch('password')} />
+                        </Popover>
+
                         <TextField
                             label="Confirm Password"
                             type="password"
                             {...register('confirm_password')}
                             error={!!errors.confirm_password}
                             helperText={errors.confirm_password?.message}
-                            fullWidth
                             required
+                            sx={{ flex: '1 1 200px' }}
                         />
                     </Stack>
                 </Stack>
-
-                <Button
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    disabled={isLoading || !isValid}
-                >
-                    {isLoading ? 'Processing...' : 'Complete Registration'}
-                </Button>
+                <Stack gap={1}>
+                    <Typography
+                        color="textSecondary"
+                        textAlign="right"
+                        variant="caption"
+                    >
+                        All fields marked with * are required
+                    </Typography>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        size="large"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Processing...' : 'Complete Registration'}
+                    </Button>
+                </Stack>
             </StyledRegistrationForm>
         </StyledRegisterContainer>
     );

@@ -175,9 +175,33 @@ export const ticketApi = baseApi.injectEndpoints({
                     ...(cursor && { cursor }),
                 },
             }),
-            keepUnusedDataFor: 0,
-            forceRefetch() {
-                return true;
+            serializeQueryArgs: ({ queryArgs }) => {
+                const { projectId, query } = queryArgs;
+                return `searchTicketsJql-${projectId}-${query}`;
+            },
+            merge: (currentCache, newItems, { arg }) => {
+                if (!arg.cursor) {
+                    return newItems;
+                }
+
+                if (currentCache?.success && newItems?.success) {
+                    const existingIds = new Set(
+                        currentCache.data.map((t) => t.id),
+                    );
+                    const uniqueNewTickets = newItems.data.filter(
+                        (t) => !existingIds.has(t.id),
+                    );
+
+                    return {
+                        ...newItems,
+                        data: [...currentCache.data, ...uniqueNewTickets],
+                        next: newItems.meta.next,
+                    };
+                }
+            },
+            keepUnusedDataFor: 60,
+            forceRefetch({ currentArg, previousArg }) {
+                return currentArg !== previousArg;
             },
         }),
 
