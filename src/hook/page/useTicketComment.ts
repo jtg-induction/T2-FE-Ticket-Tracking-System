@@ -48,17 +48,24 @@ export const useTicketComments = (ticketId: string) => {
         }
     }, [createError, deleteError]);
 
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
     const handleCreateComment = async (message: string) => {
         if (!ticketId) return;
         return await createComment({ ticketId, body: { message } }).unwrap();
     };
 
-    const handleDeleteComment = async (commentId: string) => {
-        if (!ticketId || !window.confirm('Delete this comment?')) return;
+    const handleDeleteComment = async () => {
+        if (!ticketId || !pendingDeleteId) return;
         try {
-            await deleteComment({ ticketId, commentId }).unwrap();
+            await deleteComment({
+                ticketId,
+                commentId: pendingDeleteId,
+            }).unwrap();
         } catch {
             /* useEffect handles the Snackbar */
+        } finally {
+            setPendingDeleteId(null);
         }
     };
 
@@ -75,6 +82,8 @@ export const useTicketComments = (ticketId: string) => {
         handleLoadMore,
         handleCreateComment,
         handleDeleteComment,
+        pendingDeleteId,
+        setPendingDeleteId,
         clearActionError: () => setActionError(null),
     };
 };

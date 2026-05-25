@@ -24,6 +24,7 @@
         "baseUrl": "./src",
         "paths": {
             "@assets/*": ["assets/*"],
+            "@routes": ["routes/index"],
             "@constant": ["constant/index"],
             "@theme": ["theme/index"],
             "@component": ["component/index"],

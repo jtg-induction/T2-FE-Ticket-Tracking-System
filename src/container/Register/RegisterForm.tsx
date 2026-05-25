@@ -25,6 +25,7 @@ import {
     StyledRegisterContainer,
     StyledRegistrationForm,
 } from './RegisterForm.style';
+import { ErrorPage } from '@page';
 
 export const RegisterForm = () => {
     const [searchParams] = useSearchParams();
@@ -38,7 +39,7 @@ export const RegisterForm = () => {
     const [seePassword, setSeePassword] = useState<boolean>(false);
 
     if (!tokenFromUrl) {
-        return <Alert severity="error">Invalid Registration Link.</Alert>;
+        return <ErrorPage error="Invalid token" />;
     }
 
     return (

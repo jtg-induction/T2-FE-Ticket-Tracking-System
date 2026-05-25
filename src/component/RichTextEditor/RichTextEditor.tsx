@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Markdown } from 'tiptap-markdown';
 
@@ -14,7 +14,13 @@ import {
 } from '@mui/icons-material';
 import {
     Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Stack,
+    TextField,
     ToggleButton,
     ToggleButtonGroup,
     Tooltip,
@@ -34,14 +40,14 @@ export const RichTextEditor = ({
     onBlur,
     placeholder,
 }: RichTextEditorProps) => {
+    const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+    const [linkUrl, setLinkUrl] = useState('');
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure(),
             Underline,
-            Link.configure({
-                openOnClick: false,
-                autolink: true,
-            }),
+            Link.configure({ openOnClick: false, autolink: true }),
             Markdown,
             Placeholder.configure({
                 placeholder: placeholder ?? 'Write something...',
@@ -65,24 +71,30 @@ export const RichTextEditor = ({
 
     if (!editor) return null;
 
-    const addLink = () => {
+    const openLinkDialog = () => {
         const attributes = editor.getAttributes('link') as { href?: string };
-        const previousUrl = attributes.href;
-        let url = window.prompt('URL', previousUrl);
-        if (url === null) return;
-        if (url === '') {
+        setLinkUrl(attributes.href ?? '');
+        setLinkDialogOpen(true);
+    };
+
+    const handleLinkConfirm = () => {
+        if (linkUrl === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
-            return;
+        } else {
+            const normalised =
+                linkUrl &&
+                !/^https?:\/\//i.test(linkUrl) &&
+                !linkUrl.startsWith('/')
+                    ? `https://${linkUrl}`
+                    : linkUrl;
+            editor
+                .chain()
+                .focus()
+                .extendMarkRange('link')
+                .setLink({ href: normalised })
+                .run();
         }
-        if (url && !/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-            url = `https://${url}`;
-        }
-        editor
-            .chain()
-            .focus()
-            .extendMarkRange('link')
-            .setLink({ href: url })
-            .run();
+        setLinkDialogOpen(false);
     };
 
     return (
@@ -191,7 +203,7 @@ export const RichTextEditor = ({
                         <ToggleButton
                             value="link"
                             selected={editor.isActive('link')}
-                            onClick={addLink}
+                            onClick={openLinkDialog}
                         >
                             <InsertLink fontSize="small" />
                         </ToggleButton>
@@ -214,6 +226,38 @@ export const RichTextEditor = ({
             </Stack>
 
             <EditorContent editor={editor} onBlur={onBlur} />
+
+            <Dialog
+                open={linkDialogOpen}
+                onClose={() => setLinkDialogOpen(false)}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>Insert Link</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        fullWidth
+                        size="small"
+                        label="URL"
+                        placeholder="https://example.com"
+                        value={linkUrl}
+                        onChange={(e) => setLinkUrl(e.target.value)}
+                        onKeyDown={(e) =>
+                            e.key === 'Enter' && handleLinkConfirm()
+                        }
+                        sx={{ mt: 1 }}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setLinkDialogOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleLinkConfirm}>
+                        {linkUrl === '' ? 'Remove Link' : 'Insert'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

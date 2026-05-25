@@ -83,7 +83,7 @@ export const CommentItem = ({
                 </Avatar>
             </Tooltip>
 
-            <Box sx={{ flex: 1 }}>
+            <Box flex={1}>
                 <Stack
                     direction="row"
                     alignItems="center"
@@ -138,7 +138,7 @@ export const CommentItem = ({
                 </Stack>
 
                 {isEditing ? (
-                    <Box sx={{ mt: 1 }}>
+                    <Box mt={1}>
                         <RichTextEditor
                             value={editMessage}
                             onChange={setEditMessage}
@@ -147,7 +147,7 @@ export const CommentItem = ({
                             direction="row"
                             spacing={1}
                             justifyContent="flex-end"
-                            sx={{ mt: 1 }}
+                            mt={1}
                         >
                             <Button
                                 variant="outlined"

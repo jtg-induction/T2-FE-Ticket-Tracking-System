@@ -27,7 +27,13 @@ export const StackedBarCard = ({
                 {title}
             </Typography>
 
-            <Box width="100%" sx={{ height: { xs: 400, md: 600 } }}>
+            <Box
+                width="100%"
+                height={{
+                    xs: 400,
+                    md: 600,
+                }}
+            >
                 <ResponsiveContainer>
                     <BarChart
                         data={data}
@@ -108,10 +114,8 @@ export const StackedBarCard = ({
                             variant="caption"
                             fontWeight={700}
                             color="text.secondary"
-                            sx={{
-                                textTransform: 'uppercase',
-                                letterSpacing: 0.5,
-                            }}
+                            textTransform="uppercase"
+                            letterSpacing={0.5}
                         >
                             {key}
                         </Typography>

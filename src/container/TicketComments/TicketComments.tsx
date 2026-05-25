@@ -4,6 +4,10 @@ import {
     Box,
     Button,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Paper,
     Stack,
@@ -35,6 +39,8 @@ export const TicketComments = () => {
         handleCreateComment,
         handleDeleteComment,
         clearActionError,
+        pendingDeleteId,
+        setPendingDeleteId,
     } = useTicketComments(ticketId);
 
     return (
@@ -105,9 +111,7 @@ export const TicketComments = () => {
                                 key={comment.id}
                                 comment={comment}
                                 ticketId={ticketId}
-                                onDelete={() =>
-                                    void handleDeleteComment(comment.id)
-                                }
+                                onDelete={() => setPendingDeleteId(comment.id)}
                             />
                         ))}
 
@@ -134,6 +138,35 @@ export const TicketComments = () => {
                     isSubmitting={isCreating}
                 />
             </Stack>
+
+            <Dialog
+                open={!!pendingDeleteId}
+                onClose={() => setPendingDeleteId(null)}
+            >
+                <DialogTitle>Delete Comment</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to delete this comment?
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setPendingDeleteId(null)}>
+                        Cancel
+                    </Button>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        disabled={isDeleting}
+                        onClick={() => void handleDeleteComment()}
+                    >
+                        {isDeleting ? (
+                            <CircularProgress size={20} color="inherit" />
+                        ) : (
+                            'Delete'
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <ErrorSnackbar error={actionError} onClose={clearActionError} />
         </Stack>

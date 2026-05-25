@@ -15,7 +15,7 @@ export const UserDetailBlock = ({ label, user, icon }: UserDetailProps) => (
                 variant="caption"
                 fontWeight={700}
                 color="textSecondary"
-                sx={{ textTransform: 'uppercase' }}
+                textTransform="uppercase"
             >
                 {label}
             </Typography>

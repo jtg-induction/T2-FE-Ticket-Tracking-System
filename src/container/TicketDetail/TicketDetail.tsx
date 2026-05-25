@@ -307,7 +307,8 @@ export const TicketDetail = () => {
                     ) : (
                         <Typography
                             variant="body1"
-                            sx={{ lineHeight: 1.7, whiteSpace: 'pre-wrap' }}
+                            lineHeight="1.7"
+                            whiteSpace="pre-wrap"
                         >
                             {ticket.description || 'No description provided.'}
                         </Typography>
@@ -608,7 +609,7 @@ export const TicketDetail = () => {
                     />
                     <Divider sx={{ my: 3 }} />
 
-                    <Box sx={{ mb: 3 }}>
+                    <Box mb={3}>
                         <Stack
                             direction="row"
                             alignItems="center"

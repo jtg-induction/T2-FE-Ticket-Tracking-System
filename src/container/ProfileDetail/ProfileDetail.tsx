@@ -83,7 +83,6 @@ export const ProfileDetail = () => {
                 void handleSave(e);
             }}
             noValidate
-            sx={{ padding: 4 }}
         >
             {loading && <LoadingOverlay size={80} />}
             <StyledHeaderBox>

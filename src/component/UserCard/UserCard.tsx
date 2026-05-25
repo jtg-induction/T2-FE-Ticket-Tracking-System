@@ -57,7 +57,7 @@ export const UserCard = ({
                 <Typography
                     variant="caption"
                     color="text.secondary"
-                    sx={{ textTransform: 'capitalize' }}
+                    textTransform="capitalize"
                 >
                     {role}
                 </Typography>

@@ -83,7 +83,8 @@ export const CreateTicketModal = ({
                     <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ mb: 2, display: 'block' }}
+                        mb={2}
+                        display="block"
                     >
                         * Required fields
                     </Typography>
@@ -186,7 +187,7 @@ export const CreateTicketModal = ({
                                     },
                                 }}
                             />
-                            <Stack spacing={0.5} sx={{ width: '100%' }}>
+                            <Stack gap={0.5} width="100%">
                                 <Autocomplete
                                     fullWidth
                                     options={members}

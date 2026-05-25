@@ -113,11 +113,7 @@ export const JQLSearch = () => {
                             disabled={isSearching}
                             sx={{ height: 40, flexShrink: 0 }}
                         >
-                            {isSearching ? (
-                                <CircularProgress size={20} color="inherit" />
-                            ) : (
-                                'Search'
-                            )}
+                            {isSearching ? 'Searching...' : 'Search'}
                         </Button>
                     </Tooltip>
                 </Stack>
@@ -161,7 +157,7 @@ export const JQLSearch = () => {
                 {isSearching && (
                     <Stack alignItems="center" py="auto">
                         <CircularProgress size={28} />
-                        <Typography variant="caption" sx={{ mt: 1 }}>
+                        <Typography variant="caption" mt={1}>
                             Loading results...
                         </Typography>
                     </Stack>

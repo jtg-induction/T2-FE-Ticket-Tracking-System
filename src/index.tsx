@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router';
-import { router } from 'routes';
+import { router } from '@routes';
 
 import { CssBaseline, ThemeProvider } from '@mui/material';
 
