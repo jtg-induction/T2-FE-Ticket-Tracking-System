@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "skipLibCheck": true,
+
+        /* Bundler mode */
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "noEmit": true,
+        "jsx": "react-jsx",
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+
+        /* Path aliasing */
+        "baseUrl": "./src",
+        "paths": {
+            "@assets/*": ["assets/*"],
+            "@routes": ["routes/index"],
+            "@constant": ["constant/index"],
+            "@theme": ["theme/index"],
+            "@component": ["component/index"],
+            "@container": ["container/index"],
+            "@layout": ["layout/index"],
+            "@util": ["util/index"],
+            "@hook": ["hook/index"],
+            "@service": ["service/index"],
+            "@context": ["context/index"],
+            "@page": ["page/index"],
+            "@type/*": ["type/*"],
+            "@type": ["type/index"],
+            "@store": ["store/index"],
+            "@store-logic": ["store/auth/index"],
+            "@schema": ["schema/index"]
+        }
+    },
+    "include": ["src"]
+}
